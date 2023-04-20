@@ -193,7 +193,7 @@ class StepCounter internal constructor(private var context: Context?) {
                 }
             }
             if (!found) {
-                storeSteps(sensorValuesList[sensorValuesList.size])
+                storeSteps(sensorValuesList[sensorValuesList.size - 1])
             }
         }
     }
