@@ -149,7 +149,7 @@ class Connection(private val webService: WebService, private val listener: Conne
             } else Logger.e("Input stream is null")
 
         } catch (e: IOException) {
-            Logger.w("Connection error: " + e.message)
+            Logger.w("Connection error: " + e.localizedMessage)
             e.printStackTrace()
         } finally {
             // clean up

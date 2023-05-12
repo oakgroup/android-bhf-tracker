@@ -4,6 +4,8 @@ import android.content.Context
 import androidx.annotation.WorkerThread
 import com.active.orbit.tracker.core.database.models.*
 import com.active.orbit.tracker.core.database.tables.*
+import com.active.orbit.tracker.core.observers.TrackerObserver
+import com.active.orbit.tracker.core.observers.TrackerObserverType
 import com.active.orbit.tracker.core.preferences.engine.Preferences
 import com.active.orbit.tracker.core.tracker.TrackerService
 import com.active.orbit.tracker.core.utils.LocationUtilities
@@ -19,7 +21,9 @@ class DailyComputation(private val context: Context, var startTime: Long, var en
     private var heartRates = mutableListOf<DBHeartRate>()
     private var locations = mutableListOf<DBLocation>()
     private var steps = mutableListOf<DBStep>()
-    private var mobilityResultComputation = MobilityResultComputation(context)
+    private var mobilityComputation = MobilityComputation(context)
+
+    private var trackerObserver: TrackerObserver? = null
 
     /**
      * This computes the results in an asynchronous way and sets the live data
@@ -40,10 +44,20 @@ class DailyComputation(private val context: Context, var startTime: Long, var en
         steps = collectStepsFromDatabase(TrackerService.currentTracker)
         if (computeChartResults) {
             val cleanLocations = cleanLocationsList(locations)
-            mobilityResultComputation.steps = steps
-            mobilityResultComputation.locations = cleanLocations
-            mobilityResultComputation.activities = activities
-            mobilityResultComputation.computeResults()
+            mobilityComputation.steps = steps
+            mobilityComputation.locations = cleanLocations
+            mobilityComputation.activities = activities
+            mobilityComputation.computeResults()
+        }
+
+        // update observer
+        trackerObserver?.onTrackerUpdate(TrackerObserverType.ACTIVITIES, activities)
+        trackerObserver?.onTrackerUpdate(TrackerObserverType.BATTERIES, batteries)
+        trackerObserver?.onTrackerUpdate(TrackerObserverType.HEART_RATES, heartRates)
+        trackerObserver?.onTrackerUpdate(TrackerObserverType.LOCATIONS, locations)
+        trackerObserver?.onTrackerUpdate(TrackerObserverType.STEPS, steps)
+        if (computeChartResults) {
+            trackerObserver?.onTrackerUpdate(TrackerObserverType.MOBILITY, mobilityComputation)
         }
     }
 
@@ -58,7 +72,15 @@ class DailyComputation(private val context: Context, var startTime: Long, var en
         heartRates = mutableListOf()
         locations = mutableListOf()
         steps = mutableListOf()
-        mobilityResultComputation = MobilityResultComputation(context)
+        mobilityComputation = MobilityComputation(context)
+    }
+
+    fun registerObserver(observer: TrackerObserver) {
+        trackerObserver = observer
+    }
+
+    fun unregisterObserver() {
+        trackerObserver = null
     }
 
     /**

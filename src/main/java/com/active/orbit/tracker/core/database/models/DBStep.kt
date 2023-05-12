@@ -11,7 +11,7 @@ import com.active.orbit.tracker.core.utils.TimeUtils
 @Entity(
     tableName = "steps"
 )
-data class DBStep(@PrimaryKey(autoGenerate = true) var idStep: Int = Constants.INVALID) : BaseModel {
+data class DBStep(@PrimaryKey(autoGenerate = true) var idStep: Int = 0) : BaseModel {
 
     var steps: Int = 0
     var timeInMillis: Long = 0

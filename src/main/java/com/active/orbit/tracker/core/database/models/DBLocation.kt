@@ -11,7 +11,7 @@ import com.active.orbit.tracker.core.utils.TimeUtils
 @Entity(
     tableName = "locations"
 )
-data class DBLocation(@PrimaryKey(autoGenerate = true) var idLocation: Int = Constants.INVALID) : BaseModel {
+data class DBLocation(@PrimaryKey(autoGenerate = true) var idLocation: Int = 0) : BaseModel {
 
     var latitude: Double = 0.0
     var longitude: Double = 0.0

@@ -93,7 +93,7 @@ class TrackerService : Service() {
                 }
                 Logger.d("Starting foreground process successful!")
             } catch (e: Exception) {
-                Logger.e("Error starting foreground process " + e.message)
+                Logger.e("Error starting foreground process " + e.localizedMessage)
             }
         }
         startTrackers()
@@ -120,31 +120,31 @@ class TrackerService : Service() {
             Logger.d("Starting step counting ${stepCounter != null}")
             stepCounter?.startStepCounting()
         } catch (e: Exception) {
-            Logger.e("Error starting the step counter: " + e.message)
+            Logger.e("Error starting the step counter: " + e.localizedMessage)
         }
         try {
             Logger.d("Starting A/R ${activityRecognition != null}")
             activityRecognition?.startActivityRecognition(this)
         } catch (e: Exception) {
-            Logger.e("Error starting  A/R: " + e.message)
+            Logger.e("Error starting  A/R: " + e.localizedMessage)
         }
         try {
             Logger.d("Starting location tracking ${locationTracker != null}")
             locationTracker?.startLocationTracking(this)
         } catch (e: Exception) {
-            Logger.e("Error starting the location tracker: " + e.message)
+            Logger.e("Error starting the location tracker: " + e.localizedMessage)
         }
         try {
             Logger.d("Starting heart rate monitoring ${batteryMonitor != null}")
             heartMonitor?.startMonitoring()
         } catch (e: Exception) {
-            Logger.e("Error starting the hr monitor: " + e.message)
+            Logger.e("Error starting the hr monitor: " + e.localizedMessage)
         }
         try {
             Logger.d("Starting battery monitoring ${heartMonitor != null}")
             batteryMonitor?.insertData()
         } catch (e: Exception) {
-            Logger.e("Error starting the battery monitor: " + e.message)
+            Logger.e("Error starting the battery monitor: " + e.localizedMessage)
         }
     }
 
@@ -171,22 +171,22 @@ class TrackerService : Service() {
         try {
             stepCounter?.stopStepCounting()
         } catch (e: Exception) {
-            Logger.w("Step counter failed to stop" + e.message)
+            Logger.w("Step counter failed to stop" + e.localizedMessage)
         }
         try {
             heartMonitor?.stopMonitor()
         } catch (e: Exception) {
-            Logger.w("HR monitor did not stop" + e.message)
+            Logger.w("HR monitor did not stop" + e.localizedMessage)
         }
         try {
             activityRecognition?.stopActivityRecognition(this)
         } catch (e: Exception) {
-            Logger.w("A/R did not stop " + e.message)
+            Logger.w("A/R did not stop " + e.localizedMessage)
         }
         try {
             locationTracker?.stopLocationTracking()
         } catch (e: Exception) {
-            Logger.w("Location tracker did not stop " + e.message)
+            Logger.w("Location tracker did not stop " + e.localizedMessage)
         }
     }
 

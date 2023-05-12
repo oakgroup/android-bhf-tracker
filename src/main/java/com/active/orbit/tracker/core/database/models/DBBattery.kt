@@ -9,7 +9,7 @@ import com.active.orbit.tracker.core.utils.TimeUtils
 @Entity(
     tableName = "batteries"
 )
-data class DBBattery(@PrimaryKey(autoGenerate = true) var idBattery: Int = Constants.INVALID) : BaseModel {
+data class DBBattery(@PrimaryKey(autoGenerate = true) var idBattery: Int = 0) : BaseModel {
 
     var batteryPercent: Int = 0
     var isCharging: Boolean = false

@@ -1,7 +1,7 @@
 package com.active.orbit.tracker.core.utils
 
 import android.location.Location
-import com.active.orbit.tracker.core.computation.MobilityResultComputation.Companion.SHORT_ACTIVITY_DURATION
+import com.active.orbit.tracker.core.computation.MobilityComputation.Companion.SHORT_ACTIVITY_DURATION
 import com.active.orbit.tracker.core.computation.data.MobilityData
 import com.active.orbit.tracker.core.database.models.DBLocation
 import com.active.orbit.tracker.core.database.models.DBTrip
@@ -61,7 +61,7 @@ class LocationUtilities {
 
     fun computeSpeed(prevLocation: DBLocation, location: DBLocation): Double {
         val distance = computeDistance(prevLocation, location)
-        val timeInSecs = (location.timeInMillis - prevLocation.timeInMillis) / 1000
+        val timeInSecs = max(1, (location.timeInMillis - prevLocation.timeInMillis) / 1000)
         return ((distance / timeInSecs) * 100.0).roundToInt() / 100.0
     }
 
@@ -269,9 +269,9 @@ class LocationUtilities {
         newTrip.activityType = STILL
         newTrip.chart = chart
         for (location in locations) {
-            prevLocation?.let {
+            if (prevLocation != null) {
                 // val distance = computeDistance(prevLocation, location)
-                val differenceInTime = location.timeInMillis - prevLocation!!.timeInMillis
+                val differenceInTime = location.timeInMillis - prevLocation.timeInMillis
                 if (differenceInTime <= SHORT_ACTIVITY_DURATION) {
                     newTrip.activityType = activityType
                 } else {

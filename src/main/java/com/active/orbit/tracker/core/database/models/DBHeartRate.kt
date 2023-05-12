@@ -9,7 +9,7 @@ import com.active.orbit.tracker.core.utils.TimeUtils
 @Entity(
     tableName = "heart_rates"
 )
-data class DBHeartRate(@PrimaryKey(autoGenerate = true) var idHeartRate: Int = Constants.INVALID) : BaseModel {
+data class DBHeartRate(@PrimaryKey(autoGenerate = true) var idHeartRate: Int = 0) : BaseModel {
 
     var heartRate: Int = 0
     var accuracy: Int = 0

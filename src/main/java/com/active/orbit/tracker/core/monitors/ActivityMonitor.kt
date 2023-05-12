@@ -185,7 +185,7 @@ class ActivityMonitor(private var callingService: TrackerService) {
             try {
                 context.unregisterReceiver(activityTransitionsReceiver)
             } catch (e: Exception) {
-                Logger.e("Error in registering the receiver: " + e.message)
+                Logger.e("Error in registering the receiver: " + e.localizedMessage)
             }
         }
         val newActivityTransitionsReceiver = ActivityTransitionsReceiver()

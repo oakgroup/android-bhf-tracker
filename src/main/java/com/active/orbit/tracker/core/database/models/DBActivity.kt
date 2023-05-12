@@ -11,7 +11,7 @@ import com.google.android.gms.location.DetectedActivity
 @Entity(
     tableName = "activities"
 )
-data class DBActivity(@PrimaryKey(autoGenerate = true) var idActivity: Int = Constants.INVALID) : BaseModel {
+data class DBActivity(@PrimaryKey(autoGenerate = true) var idActivity: Int = 0) : BaseModel {
 
     var activityType: Int = 0
     var transitionType: Int = 0

@@ -3,7 +3,7 @@ package com.active.orbit.tracker.core.database.models
 import androidx.room.Entity
 import androidx.room.Ignore
 import androidx.room.PrimaryKey
-import com.active.orbit.tracker.core.computation.MobilityResultComputation
+import com.active.orbit.tracker.core.computation.MobilityComputation
 import com.active.orbit.tracker.core.computation.data.MobilityData
 import com.active.orbit.tracker.core.generics.BaseModel
 import com.active.orbit.tracker.core.preferences.engine.Preferences
@@ -18,7 +18,7 @@ import kotlin.math.max
 @Entity(
     tableName = "trips"
 )
-data class DBTrip(@PrimaryKey(autoGenerate = true) var idTrip: Int = Constants.INVALID) : BaseModel {
+data class DBTrip(@PrimaryKey(autoGenerate = true) var idTrip: Int = 0) : BaseModel {
 
     var startTime: Int = 0
     var endTime: Int = 0
@@ -112,7 +112,7 @@ data class DBTrip(@PrimaryKey(autoGenerate = true) var idTrip: Int = Constants.I
      */
     fun compactIfPossible(followingTrip: DBTrip): Boolean {
         val diff = abs(chart[endTime].timeInMSecs - followingTrip.chart[followingTrip.startTime].timeInMSecs)
-        if (compatibleActivityType(followingTrip) && diff < MobilityResultComputation.SHORT_ACTIVITY_DURATION) {
+        if (compatibleActivityType(followingTrip) && diff < MobilityComputation.SHORT_ACTIVITY_DURATION) {
             subTrips.add(followingTrip)
             // select the best type for the conglomerate before changing the end time
             // but after adding to the sub-trips list
@@ -146,7 +146,7 @@ data class DBTrip(@PrimaryKey(autoGenerate = true) var idTrip: Int = Constants.I
                 }
             }
             val maxByIndex = activityDurations.maxByOrNull { it.value }
-            maxByIndex?.let { activityType = it.key }
+            if (maxByIndex != null) activityType = maxByIndex.key
         }
     }
 
@@ -163,7 +163,7 @@ data class DBTrip(@PrimaryKey(autoGenerate = true) var idTrip: Int = Constants.I
                 || ((activityType in listOf(DetectedActivity.RUNNING, DetectedActivity.ON_FOOT))
                 && (otherTrip.activityType in listOf(DetectedActivity.RUNNING, DetectedActivity.ON_FOOT)))
                 // if type is not identical do not compact a long walk followed by a long run: they are distinct activities
-                || ((getDuration(chart) < 2 * MobilityResultComputation.SHORT_ACTIVITY_DURATION || otherTrip.getDuration(chart) < 2 * MobilityResultComputation.SHORT_ACTIVITY_DURATION)
+                || ((getDuration(chart) < 2 * MobilityComputation.SHORT_ACTIVITY_DURATION || otherTrip.getDuration(chart) < 2 * MobilityComputation.SHORT_ACTIVITY_DURATION)
                 && (activityType in listOf(DetectedActivity.WALKING, DetectedActivity.RUNNING, DetectedActivity.ON_FOOT))
                 && (otherTrip.activityType in listOf(DetectedActivity.WALKING, DetectedActivity.RUNNING, DetectedActivity.ON_FOOT))))
     }
@@ -299,7 +299,7 @@ data class DBTrip(@PrimaryKey(autoGenerate = true) var idTrip: Int = Constants.I
     fun hasAverageHighCadence(chart: MutableList<MobilityData>): Boolean {
         val durationInMinutes = getDuration(chart) / TimeUtils.ONE_MINUTE_MILLIS
         val isHighCadence = steps / durationInMinutes > Constants.HIGH_AVERAGE_CADENCE
-        return isHighCadence && (durationInMinutes > MobilityResultComputation.SHORT_ACTIVITY_DURATION * 2 / TimeUtils.ONE_MINUTE_MILLIS)
+        return isHighCadence && (durationInMinutes > MobilityComputation.SHORT_ACTIVITY_DURATION * 2 / TimeUtils.ONE_MINUTE_MILLIS)
     }
 
     /**
@@ -324,7 +324,7 @@ data class DBTrip(@PrimaryKey(autoGenerate = true) var idTrip: Int = Constants.I
                 base = index
             }
         }
-        return highCadenceDurationInSecs > MobilityResultComputation.SHORT_ACTIVITY_DURATION * 2
+        return highCadenceDurationInSecs > MobilityComputation.SHORT_ACTIVITY_DURATION * 2
     }
 
     /**
@@ -414,10 +414,10 @@ data class DBTrip(@PrimaryKey(autoGenerate = true) var idTrip: Int = Constants.I
         newTrip.chart = chart
 
         for (step in steps) {
-            prevSteps?.let {
+            if (prevSteps != null) {
                 // val distance = computeDistance(prevLocation, location)
-                val differenceInTime = step.timeInMillis - prevSteps!!.timeInMillis
-                if (differenceInTime <= MobilityResultComputation.SHORT_ACTIVITY_DURATION) {
+                val differenceInTime = step.timeInMillis - prevSteps.timeInMillis
+                if (differenceInTime <= MobilityComputation.SHORT_ACTIVITY_DURATION) {
                     newTrip.activityType = activityType
                 } else {
                     val stepTime = getChartIndexOfSteps(step, chart)

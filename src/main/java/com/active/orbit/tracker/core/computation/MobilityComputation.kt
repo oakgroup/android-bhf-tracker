@@ -17,7 +17,7 @@ import com.google.android.gms.location.DetectedActivity.*
 import kotlin.math.abs
 import kotlin.math.min
 
-class MobilityResultComputation(val context: Context) {
+class MobilityComputation(val context: Context) {
 
     var steps: MutableList<DBStep> = mutableListOf()
     var locations: MutableList<DBLocation> = mutableListOf()

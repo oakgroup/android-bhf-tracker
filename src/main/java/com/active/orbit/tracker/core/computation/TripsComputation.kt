@@ -91,7 +91,7 @@ class TripsComputation(val context: Context, val chart: MutableList<MobilityData
         val finalTrips: MutableList<DBTrip> = mutableListOf()
         for ((index, trip) in trips.withIndex()) {
             if (trip.activityType == DetectedActivity.STILL
-                && (trip.getDuration(chart) < MobilityResultComputation.SHORT_ACTIVITY_DURATION)
+                && (trip.getDuration(chart) < MobilityComputation.SHORT_ACTIVITY_DURATION)
             ) {
                 Logger.i("CorrectTrips: STILL activity too short ${trip.description()}")
                 // assign the longest between the activity before and after
@@ -133,7 +133,7 @@ class TripsComputation(val context: Context, val chart: MutableList<MobilityData
                     DetectedActivity.RUNNING,
                     DetectedActivity.ON_FOOT
                 ))
-                && (trip.getDuration(chart) < MobilityResultComputation.SHORT_ACTIVITY_DURATION)
+                && (trip.getDuration(chart) < MobilityComputation.SHORT_ACTIVITY_DURATION)
                 && trips[index - 1].activityType == IN_VEHICLE
                 && (trip.getSpeedInMPerSecs() > 11)
             ) {
@@ -174,7 +174,7 @@ class TripsComputation(val context: Context, val chart: MutableList<MobilityData
         val useGlobalSED = Preferences.tracker(context).compactLocations
         val finalTrips = mutableListOf<DBTrip>()
         for (trip in trips) {
-            if ((trip.activityType == DetectedActivity.STILL || trip.activityType == INVALID_VALUE) && trip.getDuration(chart) > MobilityResultComputation.SHORT_ACTIVITY_DURATION * 2) {
+            if ((trip.activityType == DetectedActivity.STILL || trip.activityType == INVALID_VALUE) && trip.getDuration(chart) > MobilityComputation.SHORT_ACTIVITY_DURATION * 2) {
                 val locationUtilities = LocationUtilities()
                 if (trip.hasAverageHighCadence(chart) || trip.steps > 1000) {
                     trip.activityType = WALKING
@@ -203,7 +203,6 @@ class TripsComputation(val context: Context, val chart: MutableList<MobilityData
         trips = finalTrips
     }
 
-
     /**
      * This checks the suspicious trips and in case it changes the activity type
      * for example if a car trip has a radius of gyration <200m and there is no other driving during the day
@@ -216,7 +215,7 @@ class TripsComputation(val context: Context, val chart: MutableList<MobilityData
             if (trip.activityType == IN_VEHICLE && (
                         summaryData.vehicleMsecs < trip.getDuration(chart) * 2
                                 // there are cases to consider that are long (>15 mins) veh trips but no locations
-                                // || (trip.getDuration(chart) > 5 * MobilityResultComputation.SHORT_ACTIVITY_DURATION &&
+                                // || (trip.getDuration(chart) > 5 * MobilityComputation.SHORT_ACTIVITY_DURATION &&
                                 || trip.distanceInMeters < 100)
             ) {
                 if (trip.getCadence() > 20 || trip.steps > 100) {
