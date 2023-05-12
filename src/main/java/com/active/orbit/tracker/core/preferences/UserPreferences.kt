@@ -17,10 +17,10 @@ class UserPreferences : BasePreferences() {
     }
 
     var idUser: String?
-        get() = prefs.getString(res.getString(R.string.preference_user_id_user_key), Constants.EMPTY)
+        get() = prefs.getString(res.getString(R.string.tracker_preference_user_id_user_key), Constants.EMPTY)
         set(value) {
             val editor = prefs.edit()
-            editor.putString(res.getString(R.string.preference_user_id_user_key), value)
+            editor.putString(res.getString(R.string.tracker_preference_user_id_user_key), value)
             editor.apply()
 
             if (!TextUtils.isEmpty(value)) FirebaseCrashlytics.getInstance().setCustomKey("id_user", value!!)

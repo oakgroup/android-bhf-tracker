@@ -21,7 +21,7 @@ import java.util.*
 object Utils {
 
     fun getAppName(context: Context): String {
-        return context.resources.getString(R.string.app_name)
+        return context.resources.getString(R.string.tracker_app_name)
     }
 
     fun getPackageName(context: Context): String {

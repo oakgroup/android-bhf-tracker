@@ -10,14 +10,14 @@ import com.active.orbit.tracker.core.utils.BaseException
  * @author omar.brugna
  */
 enum class Api(private var apiUrl: Int) {
-    EMPTY(R.string.api_empty),
-    INSERT_ACTIVITIES(R.string.api_insert_activities),
-    INSERT_BATTERIES(R.string.api_insert_batteries),
-    INSERT_HEART_RATES(R.string.api_insert_heart_rates),
-    INSERT_LOCATIONS(R.string.api_insert_locations),
-    INSERT_STEPS(R.string.api_insert_steps),
-    INSERT_TRIPS(R.string.api_insert_trips),
-    USER_REGISTRATION(R.string.api_user_registration);
+    EMPTY(R.string.tracker_api_empty),
+    INSERT_ACTIVITIES(R.string.tracker_api_insert_activities),
+    INSERT_BATTERIES(R.string.tracker_api_insert_batteries),
+    INSERT_HEART_RATES(R.string.tracker_api_insert_heart_rates),
+    INSERT_LOCATIONS(R.string.tracker_api_insert_locations),
+    INSERT_STEPS(R.string.tracker_api_insert_steps),
+    INSERT_TRIPS(R.string.tracker_api_insert_trips),
+    USER_REGISTRATION(R.string.tracker_api_user_registration);
 
     private var params = ArrayList<String>()
 

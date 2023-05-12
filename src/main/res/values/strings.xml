@@ -1,8 +1,8 @@
 <resources>
 
     <!-- not translatable strings -->
-    <string name="app_name">Tracker</string>
-    <string name="database_name" translatable="false">Tr4cK3rD4t4b4s3N4m3</string>
+    <string name="tracker_app_name">Tracker</string>
+    <string name="tracker_database_name" translatable="false">Tr4cK3rD4t4b4s3N4m3</string>
 
     <!-- translatable strings -->
     <string name="go">Go</string>

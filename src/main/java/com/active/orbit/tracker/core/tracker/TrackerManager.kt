@@ -15,11 +15,14 @@ import androidx.core.content.PackageManagerCompat
 import androidx.core.content.UnusedAppRestrictionsConstants
 import com.active.orbit.tracker.R
 import com.active.orbit.tracker.core.database.engine.Database
+import com.active.orbit.tracker.core.database.tables.*
 import com.active.orbit.tracker.core.listeners.ResultListener
 import com.active.orbit.tracker.core.managers.UserManager
+import com.active.orbit.tracker.core.preferences.engine.BasePreferences
 import com.active.orbit.tracker.core.preferences.engine.Preferences
 import com.active.orbit.tracker.core.restarter.TrackerRestarter
 import com.active.orbit.tracker.core.utils.Logger
+import com.active.orbit.tracker.core.utils.ThreadHandler.backgroundThread
 
 class TrackerManager private constructor(private val activity: AppCompatActivity) {
 
@@ -47,6 +50,21 @@ class TrackerManager private constructor(private val activity: AppCompatActivity
         private const val ACTIVITY_RECOGNITION_REQUEST_CODE: Int = 1013
         private const val REQUEST_BODY_SENSOR_REQUEST_CODE: Int = 1014
         private const val REQUEST_UNUSED_RESTRICTIONS_REQUEST_CODE: Int = 983724
+
+        fun printInformationLogs(context: Context) {
+            backgroundThread {
+                Logger.i("------------------------------------------")
+                Logger.i("Activities -> ${TableActivities.getAll(context).size}")
+                Logger.i("Batteries  -> ${TableBatteries.getAll(context).size}")
+                Logger.i("HeartRates -> ${TableHeartRates.getAll(context).size}")
+                Logger.i("Locations  -> ${TableLocations.getAll(context).size}")
+                Logger.i("Steps      -> ${TableSteps.getAll(context).size}")
+                Logger.i("Trips      -> ${TableTrips.getAll(context).size}")
+                Logger.i("------------------------------------------")
+
+                BasePreferences.printAll(context)
+            }
+        }
     }
 
     private fun initialize() {

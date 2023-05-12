@@ -1,26 +1,26 @@
 <resources>
 
     <!-- filename preferences -->
-    <string name="preference_filename_key" translatable="false">tracker.preference.filename</string>
+    <string name="tracker_preference_filename_key" translatable="false">tracker.preference.filename</string>
 
     <!-- backend preferences -->
-    <string name="preference_backend_base_url_key" translatable="false">tracker.backend.base.url</string>
-    <string name="preference_backend_upload_data_key" translatable="false">tracker.backend.upload.data</string>
+    <string name="tracker_preference_backend_base_url_key" translatable="false">tracker.backend.base.url</string>
+    <string name="tracker_preference_backend_upload_data_key" translatable="false">tracker.backend.upload.data</string>
 
     <!-- lifecycle preferences -->
-    <string name="preference_lifecycle_first_install_key" translatable="false">tracker.lifecycle.first.install</string>
+    <string name="tracker_preference_lifecycle_first_install_key" translatable="false">tracker.lifecycle.first.install</string>
 
     <!-- user preferences -->
-    <string name="preference_user_id_user_key" translatable="false">tracker.user.id.user</string>
+    <string name="tracker_preference_user_id_user_key" translatable="false">tracker.user.id.user</string>
 
     <!-- tracker preferences -->
-    <string name="preference_tracker_tracker_use_activity_recognition" translatable="false">tracker.tracker.use.activity.recognition</string>
-    <string name="preference_tracker_tracker_use_location_tracking" translatable="false">tracker.tracker.use.location.tracking</string>
-    <string name="preference_tracker_tracker_use_step_counter" translatable="false">tracker.tracker.use.step.counter</string>
-    <string name="preference_tracker_tracker_use_heart_rate_monitor" translatable="false">tracker.tracker.use.heart.rate.monitor</string>
-    <string name="preference_tracker_tracker_use_mobility_modelling" translatable="false">tracker.tracker.use.mobility.modelling</string>
-    <string name="preference_tracker_tracker_use_battery_monitor" translatable="false">tracker.tracker.use.battery.monitor</string>
-    <string name="preference_tracker_tracker_use_stay_points" translatable="false">tracker.tracker.use.stay.points</string>
-    <string name="preference_tracker_tracker_compact_locations" translatable="false">tracker.tracker.compact.locations</string>
+    <string name="tracker_preference_tracker_tracker_use_activity_recognition_key" translatable="false">tracker.tracker.use.activity.recognition</string>
+    <string name="tracker_preference_tracker_tracker_use_location_tracking_key" translatable="false">tracker.tracker.use.location.tracking</string>
+    <string name="tracker_preference_tracker_tracker_use_step_counter_key" translatable="false">tracker.tracker.use.step.counter</string>
+    <string name="tracker_preference_tracker_tracker_use_heart_rate_monitor_key" translatable="false">tracker.tracker.use.heart.rate.monitor</string>
+    <string name="tracker_preference_tracker_tracker_use_mobility_modelling_key" translatable="false">tracker.tracker.use.mobility.modelling</string>
+    <string name="tracker_preference_tracker_tracker_use_battery_monitor_key" translatable="false">tracker.tracker.use.battery.monitor</string>
+    <string name="tracker_preference_tracker_tracker_use_stay_points_key" translatable="false">tracker.tracker.use.stay.points</string>
+    <string name="tracker_preference_tracker_tracker_compact_locations_key" translatable="false">tracker.tracker.compact.locations</string>
 
 </resources>

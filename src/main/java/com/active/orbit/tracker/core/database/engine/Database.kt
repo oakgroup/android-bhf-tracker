@@ -32,7 +32,7 @@ internal abstract class Database : RoomDatabase() {
                 synchronized(Database::class.java) {
                     // double check locking
                     if (instance == null) {
-                        val builder = Room.databaseBuilder(context, Database::class.java, context.getString(R.string.database_name))
+                        val builder = Room.databaseBuilder(context, Database::class.java, context.getString(R.string.tracker_database_name))
                         builder.fallbackToDestructiveMigration()
 
                         @Suppress("ConstantConditionIf")
