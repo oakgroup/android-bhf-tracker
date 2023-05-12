@@ -11,6 +11,7 @@ import com.active.orbit.tracker.core.tracker.TrackerService
 import com.active.orbit.tracker.core.utils.LocationUtilities
 import com.active.orbit.tracker.core.utils.Logger
 import com.active.orbit.tracker.core.utils.ThreadHandler.backgroundThread
+import com.active.orbit.tracker.core.utils.ThreadHandler.mainThread
 import com.active.orbit.tracker.core.utils.TimeUtils
 import com.google.android.gms.location.ActivityTransition
 
@@ -57,7 +58,9 @@ class DailyComputation(private val context: Context, var startTime: Long, var en
         trackerObserver?.onTrackerUpdate(TrackerObserverType.LOCATIONS, locations)
         trackerObserver?.onTrackerUpdate(TrackerObserverType.STEPS, steps)
         if (computeChartResults) {
-            trackerObserver?.onTrackerUpdate(TrackerObserverType.MOBILITY, mobilityComputation)
+            mainThread {
+                trackerObserver?.onTrackerUpdate(TrackerObserverType.MOBILITY, mobilityComputation)
+            }
         }
     }
 
