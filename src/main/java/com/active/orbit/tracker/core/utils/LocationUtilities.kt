@@ -41,7 +41,7 @@ class LocationUtilities {
         val a = (sin(latDistance / 2) * sin(latDistance / 2)
                 + (cos(degreeToRadians(latitude1)) * cos(degreeToRadians(latitude2))
                 * sin(lonDistance / 2) * sin(lonDistance / 2)))
-        val c = 2 * atan2(Math.sqrt(a), sqrt(1 - a))
+        val c = 2 * atan2(sqrt(a), sqrt(1 - a))
         // distance in meters
         var distance = RADIUS_OF_THE_EARTH * c * 1000
         val height = altitude1 - altitude2

@@ -228,9 +228,9 @@ class MobilityComputation(val context: Context) {
                 // next element that had the previous element copied into
                 if (element.latitude != invalidDouble && element.steps == INVALID_VALUE) {
                     val prevTimeDiff: Long =
-                        if (prevElement.latitude == invalidDouble) Math.abs(element.timeInMSecs - prevElement.timeInMSecs) else compressionThreshold
+                        if (prevElement.latitude == invalidDouble) abs(element.timeInMSecs - prevElement.timeInMSecs) else compressionThreshold
                     val nextTimeDiff: Long =
-                        if (nextElement.latitude == invalidDouble) Math.abs(nextElement.timeInMSecs - element.timeInMSecs) else compressionThreshold
+                        if (nextElement.latitude == invalidDouble) abs(nextElement.timeInMSecs - element.timeInMSecs) else compressionThreshold
                     // if the prev is a location and/or next is a location, if the distance in time
                     // is less than 15 secs, then associate the location to the activity
                     // @todo we should probably not do that for activities that are not walking/running - in 15 secs by car you are far
