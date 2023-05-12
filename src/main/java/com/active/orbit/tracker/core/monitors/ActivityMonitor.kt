@@ -66,7 +66,7 @@ class ActivityMonitor(private var callingService: TrackerService) {
 
 
     /**
-     * called by the main service to stop activity recognition
+     * Called by the main service to stop activity recognition
      * @param context the calling context
      */
     fun stopActivityRecognition(context: Context) {

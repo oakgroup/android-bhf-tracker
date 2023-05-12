@@ -85,7 +85,7 @@ class MobilityResultComputation(val context: Context, val steps: MutableList<DBS
         }
         val tripsComputation = TripsComputation(context, chart)
         trips = tripsComputation.trips
-        compileSummary()
+        summaryData = SummaryData(trips, chart)
     }
 
 
@@ -110,7 +110,6 @@ class MobilityResultComputation(val context: Context, val steps: MutableList<DBS
         return finalList
     }
 
-
     /**
      * This fixes imprecision and other issues such as non closed activities
      * or imprecise activities boundaries, etc.
@@ -133,9 +132,8 @@ class MobilityResultComputation(val context: Context, val steps: MutableList<DBS
     }
 
     /**
-     * sometimes A/R gives an activity and immediately closes it within a frqctoin of a second
+     * sometimes A/R gives an activity and immediately closes it within a fraction of a second
      * -- remove them
-     *
      */
     private fun removeOpenClose() {
         for (chartElement in chart) {
@@ -172,10 +170,9 @@ class MobilityResultComputation(val context: Context, val steps: MutableList<DBS
     }
 
     /**
-     * TODO to be implemented: it shoudl recognise when a still activity has an unrecognised
+     * TODO to be implemented: it should recognise when a still activity has an unrecognised
      * burst of walking of at least 5 minutes that was not recognised.
      * This happens on some phones esp. those where a/r does not work
-     * @param finalChart
      */
     private fun recogniseWalkingBurstsInStills() {
         // to be implemented
@@ -183,7 +180,7 @@ class MobilityResultComputation(val context: Context, val steps: MutableList<DBS
     }
 
     /**
-     * some activities must be broken e.g. if an open moving activity has a sudden
+     * Some activities must be broken e.g. if an open moving activity has a sudden
      * no data for more than 3 minutes then it was probably an unrecorded break
      * in that case we just break the activity and continue later with the same activity
      * we had cases where bike trips were stopped and restarted after one hour without data
@@ -202,16 +199,15 @@ class MobilityResultComputation(val context: Context, val steps: MutableList<DBS
         }
     }
 
-
     /**
-     * if two elements were created at the same time we merge them
+     * If two elements were created at the same time we merge them
      * This is useful for the activities so to have start of new activity and end of previous on the same element
      * @return the modified list top be reassigned back to the chart
      */
     private fun compressSameSecondElements(): MutableList<MobilityData> {
         val finalChart: MutableList<MobilityData> = mutableListOf()
-        val INV_DOUB = INVALID_VALUE.toDouble()
-        val COMPRESSION_THRESHOLD = (StepMonitor.WAITING_TIME_IN_MSECS * 1.5).toLong()
+        val invalidDouble = INVALID_VALUE.toDouble()
+        val compressionThreshold = (StepMonitor.WAITING_TIME_IN_MSECS * 1.5).toLong()
         if (chart.size > 0)
             finalChart.add(chart[0])
         var considerPrevElement = true
@@ -227,18 +223,18 @@ class MobilityResultComputation(val context: Context, val steps: MutableList<DBS
                 // do not consider locations -- if the element has both locations and  steps,
                 // then we previously compressed this element with the precedent, so we just skip it
                 // next element that had the previous element copied into
-                if (element.latitude != INV_DOUB && element.steps == INVALID_VALUE) {
+                if (element.latitude != invalidDouble && element.steps == INVALID_VALUE) {
                     val prevTimeDiff: Long =
-                        if (prevElement.latitude == INV_DOUB) Math.abs(element.timeInMSecs - prevElement.timeInMSecs) else COMPRESSION_THRESHOLD
+                        if (prevElement.latitude == invalidDouble) Math.abs(element.timeInMSecs - prevElement.timeInMSecs) else compressionThreshold
                     val nextTimeDiff: Long =
-                        if (nextElement.latitude == INV_DOUB) Math.abs(nextElement.timeInMSecs - element.timeInMSecs) else COMPRESSION_THRESHOLD
+                        if (nextElement.latitude == invalidDouble) Math.abs(nextElement.timeInMSecs - element.timeInMSecs) else compressionThreshold
                     // if the prev is a location and/or next is a location, if the distance in time
                     // is less than 15 secs, then associate the location to the activity
                     // @todo we should probably not do that for activities that are not walking/running - in 15 secs by car you are far
                     if (min(
                             prevTimeDiff,
                             nextTimeDiff
-                        ) < COMPRESSION_THRESHOLD
+                        ) < compressionThreshold
                     ) {
                         considerPrevElement = if (prevTimeDiff < nextTimeDiff) {
                             prevElement.copyValidFields(element)
@@ -415,9 +411,8 @@ class MobilityResultComputation(val context: Context, val steps: MutableList<DBS
 
 
     /**
-     * some values (e.g. cadence and speed) are to be distributed to the elements intervening
+     * Some values (e.g. cadence and speed) are to be distributed to the elements intervening
      * locations and steps as they keep constant across time
-     * @param chart the activity chart
      */
     private fun distributeValuesAcrossChart() {
         Logger.i("Distributing values across chart")
@@ -441,7 +436,7 @@ class MobilityResultComputation(val context: Context, val steps: MutableList<DBS
     }
 
     /**
-     * many activities are open but never closed
+     * Many activities are open but never closed
      * @param chart the activity chart
      */
     private fun closeOpenActivities() {
@@ -469,14 +464,5 @@ class MobilityResultComputation(val context: Context, val steps: MutableList<DBS
                 }
             }
         }
-    }
-
-
-    /**
-     * This collects teh summary information from the trips and makes them available to
-     * the MobilityChart
-     */
-    fun compileSummary() {
-        summaryData = SummaryData(trips, chart)
     }
 }

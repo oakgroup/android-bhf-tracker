@@ -63,7 +63,7 @@ class TripsComputation(val context: Context, val chart: MutableList<MobilityData
     }
 
     /**
-     * once we have the final trips, we remove the ones that are pointless (e.g. stills of 1 minutes
+     * Once we have the final trips, we remove the ones that are pointless (e.g. stills of 1 minutes
      * or vehicles that are too short, etc.
      *
      */
@@ -151,7 +151,7 @@ class TripsComputation(val context: Context, val chart: MutableList<MobilityData
     }
 
     /**
-     * if we add an element to the chart in position 0 then we have to inrement all the start/end
+     * If we add an element to the chart in position 0 then we have to inrement all the start/end
      *
      * @param trips
      */

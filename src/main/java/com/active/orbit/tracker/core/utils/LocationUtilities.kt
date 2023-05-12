@@ -67,7 +67,7 @@ class LocationUtilities {
 
 
     /**
-     * algorithm for the simplification of a trajectory (Synchronous Euclidean Distance). From
+     * Algorithm for the simplification of a trajectory (Synchronous Euclidean Distance). From
      * http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.85.9949&rep=rep1&type=pdf
      * voted as one of the best metrics in
      * https://journals.sagepub.com/doi/full/10.1177/15501477211050729#
@@ -95,7 +95,7 @@ class LocationUtilities {
     }
 
     /**
-     * metric for the simplification of a trajectory (Synchronous Euclidean Distance). From
+     * Metric for the simplification of a trajectory (Synchronous Euclidean Distance). From
      * http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.85.9949&rep=rep1&type=pdf
      * voted as one of the best metrics in
      * https://journals.sagepub.com/doi/full/10.1177/15501477211050729#
@@ -115,7 +115,7 @@ class LocationUtilities {
     }
 
     /**
-     * given a list of locations and an element to add it decides if it is the case to add the location
+     * Given a list of locations and an element to add it decides if it is the case to add the location
      * by removing another element or to ignooe the current one. The decision is based on the sed of the elements
      * of the list and the sed of the current element. Insertion happens if SED of currElement is >
      * of sed of another list element
@@ -188,7 +188,7 @@ class LocationUtilities {
     }
 
     /**
-     * given a list of locations that are related to a stay point, it finds the stay points,
+     * Given a list of locations that are related to a stay point, it finds the stay points,
      * i.e. the centroid of the cluster
      * @param relatedPoints
      * @return
@@ -251,7 +251,7 @@ class LocationUtilities {
     }
 
     /**
-     * used to recognise sub trips not recognised by activity recognition - for example a missing
+     * Used to recognise sub trips not recognised by activity recognition - for example a missing
      * car trip lost na still activity
      * @param locations of the activities
      * @param minimumDistanceInMeters the minimum distance to consider two locations as part of a trip
@@ -299,7 +299,7 @@ class LocationUtilities {
     }
 
     /**
-     * given a location, it finds the element in the chart referring to that loation, i.e. the element that
+     * Given a location, it finds the element in the chart referring to that loation, i.e. the element that
      * has the time immediately > than the location time
      * @param location the location
      * @param chart the chart to look the position in
@@ -314,7 +314,7 @@ class LocationUtilities {
     }
 
     /**
-     * decisions such as turn a still into a vehicle can only be done when the locations
+     * Decisions such as turn a still into a vehicle can only be done when the locations
      * have high accuracy
      * @param locationsList the original location list
      * @return a copy of the list containing only the lcoations with accuracy <300m
@@ -328,7 +328,7 @@ class LocationUtilities {
     }
 
     /**
-     * spikes are locations that are completely out of the current path. We recognise them
+     * Spikes are locations that are completely out of the current path. We recognise them
      * because the direct distance between the two surrounding points is less than
      * the distance required to reach the point from the surrounding points
      *        p2
@@ -386,7 +386,7 @@ class LocationUtilities {
     }
 
     /**
-     * when in a sequence of three locations we find a spike, we produce a location that is the average
+     * When in a sequence of three locations we find a spike, we produce a location that is the average
      * between the two and remove the spike
      * @param loc1
      * @param loc2 the original location providing the spike

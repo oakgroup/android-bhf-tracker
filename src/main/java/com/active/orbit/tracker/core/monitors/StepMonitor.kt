@@ -92,7 +92,7 @@ class StepMonitor internal constructor(private var context: Context?) {
     }
 
     /**
-     * huawei needs regularly stopping the step counter and restarting it
+     * Huawei needs regularly stopping the step counter and restarting it
      * otherwise it will not return any steps when i the background
      *
      */
@@ -123,7 +123,7 @@ class StepMonitor internal constructor(private var context: Context?) {
     }
 
     /**
-     * constructor for the sensor listener for the step counter
+     * Constructor for the sensor listener for the step counter
      * @return the sensor listener
      */
     private fun getSensorListener(): SensorEventListener {
@@ -163,7 +163,7 @@ class StepMonitor internal constructor(private var context: Context?) {
     }
 
     /**
-     * the sensor returns very quickly (after every step). We collect each step
+     * The sensor returns very quickly (after every step). We collect each step
      * and then every x collection, we select the best one
      * @param sensorValuesList
      */

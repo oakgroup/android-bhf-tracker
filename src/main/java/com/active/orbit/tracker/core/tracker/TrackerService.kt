@@ -216,7 +216,7 @@ class TrackerService : Service() {
     }
 
     /**
-     * signal sent by the AR telling wht activity has been recognised
+     * Signal sent by the AR telling wht activity has been recognised
      * currently used when we are entering still: we start a timer that will stop  tracking
      * if we do not move for a while
      * @param activityData the current activity
@@ -247,7 +247,7 @@ class TrackerService : Service() {
     }
 
     /**
-     * called by the main interface - it reduces the size of the temporary queues to 1
+     * Called by the main interface - it reduces the size of the temporary queues to 1
      * and flushes the db
      * @param flush if true it flushes
      */

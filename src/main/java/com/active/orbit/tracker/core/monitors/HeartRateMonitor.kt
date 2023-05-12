@@ -27,7 +27,7 @@ class HeartRateMonitor(val context: TrackerService) : SensorEventListener {
 
     companion object {
         /**
-         * the size of the stack where we store the HR reading before sending them to the database
+         * The size of the stack where we store the HR reading before sending them to the database
          * consider that each reading comes every second, so 80 means a db operation every 80 seconds
          * which is a lot. On the other hand you do not want to have a large memory footprint,
          * so leave it more or less this size
@@ -100,8 +100,7 @@ class HeartRateMonitor(val context: TrackerService) : SensorEventListener {
     }
 
     /**
-     * API Method
-     * called when the interface is opened - it flushes all data
+     * Called when the interface is opened - it flushes all data
      * and the incoming data will be flushed to the DB immediately
      * @param flush
      */

@@ -32,7 +32,7 @@ class DailyComputation(private val context: Context, var startTime: Long, var en
     }
 
     @WorkerThread
-    fun computeResults() {
+    private fun computeResults() {
         Logger.d("Computing day results for ${TimeUtils.formatMillis(startTime, "dd/MM/yyyy")}")
         activities = collectActivitiesFromDatabase(TrackerService.currentTracker)
         batteries = collectBatteriesFromDatabase()
@@ -78,7 +78,7 @@ class DailyComputation(private val context: Context, var startTime: Long, var en
     }
 
     /**
-     * the closing of the current activity may come by chance immediately after the opening of
+     * The closing of the current activity may come by chance immediately after the opening of
      * the next one, e.g. 1 msec afterwards just because that is how the event work
      * if this is the case, we swap the two activities
      * @param activities

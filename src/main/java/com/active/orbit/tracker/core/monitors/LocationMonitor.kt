@@ -34,12 +34,12 @@ class LocationMonitor(context: Context) {
         const val DETECTION_DELAY_IN_MSECS = 45000
 
         /**
-         * do not return locations less distant than 10m
+         * Do not return locations less distant than 10m
          */
         const val SMALLEST_DISPLACEMENT = 10
 
         /**
-         * max size of {@link locDataList}
+         * Max size of {@link locDataList}
          */
         private const val STANDARD_MAX_SIZE = 40
         private var MAX_SIZE = STANDARD_MAX_SIZE

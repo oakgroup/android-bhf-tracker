@@ -82,7 +82,6 @@ class TrackerManager private constructor(private val activity: AppCompatActivity
     /**
      * API: all implementations must request this after setting their preferences on which modules
      * to use
-     *
      */
     fun askForPermissionAndStartTracker(config: TrackerConfig) {
         Preferences.tracker(activity).useActivityRecognition = config.useActivityRecognition
