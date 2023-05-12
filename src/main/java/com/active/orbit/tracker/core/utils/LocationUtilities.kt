@@ -12,7 +12,7 @@ import kotlin.math.*
 class LocationUtilities {
 
     companion object {
-        private val TAG: String? = this::class.simpleName
+
         private const val RADIUS_OF_THE_EARTH = 6371
         private const val NUMBER_THRESHOLD = 5
         private const val DISTANCE_THRESHOLD = 25

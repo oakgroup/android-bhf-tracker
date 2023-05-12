@@ -185,12 +185,9 @@ class TrackerManager private constructor(private val activity: AppCompatActivity
         } else null
     }
 
-    private fun requestPermissionBodySensor(): Boolean {
+    private fun requestPermissionBodySensor() {
         val permissions = getRequestBodySensorPermissions()
-        return run {
-            ActivityCompat.requestPermissions(activity, permissions, REQUEST_BODY_SENSOR_REQUEST_CODE)
-            false
-        }
+        ActivityCompat.requestPermissions(activity, permissions, REQUEST_BODY_SENSOR_REQUEST_CODE)
     }
 
     private fun getRequestBodySensorPermissions(): Array<String?> {

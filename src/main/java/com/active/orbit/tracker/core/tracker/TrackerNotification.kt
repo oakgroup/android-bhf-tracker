@@ -21,13 +21,12 @@ class TrackerNotification @JvmOverloads constructor(context: Context, private va
     private var notificationManager: NotificationManager? = null
 
     companion object {
-        private val TAG: String = Notification::class.java.simpleName
-        private val CHANNEL_ID = TAG
+
+        private val CHANNEL_ID = Notification::javaClass.name
         var notificationIcon = 0
         var notificationTitle: String? = null
         var thoughtOfTheDay: String? = null
         var notificationText: String? = null
-
     }
 
     init {

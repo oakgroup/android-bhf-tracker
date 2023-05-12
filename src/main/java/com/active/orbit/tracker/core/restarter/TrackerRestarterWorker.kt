@@ -15,8 +15,9 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
 class TrackerRestarterWorker(val context: Context, workerParams: WorkerParameters) : CoroutineWorker(context, workerParams) {
+
     companion object {
-        val TAG: String? = this::class.simpleName
+
         private const val NOTIFICATION_ID = 9972
     }
 

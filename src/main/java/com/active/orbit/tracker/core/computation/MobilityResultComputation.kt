@@ -17,14 +17,17 @@ import com.google.android.gms.location.DetectedActivity.*
 import kotlin.math.abs
 import kotlin.math.min
 
-class MobilityResultComputation(val context: Context, val steps: MutableList<DBStep>, val locations: MutableList<DBLocation>, val activities: MutableList<DBActivity>) {
+class MobilityResultComputation(val context: Context) {
 
+    var steps: MutableList<DBStep> = mutableListOf()
+    var locations: MutableList<DBLocation> = mutableListOf()
+    var activities: MutableList<DBActivity> = mutableListOf()
     var chart: MutableList<MobilityData> = mutableListOf()
     var trips: MutableList<DBTrip> = mutableListOf()
     var summaryData = SummaryData(mutableListOf(), chart)
 
     companion object {
-        private val TAG: String = this::class.simpleName!!
+
         const val SHORT_ACTIVITY_DURATION: Long = 120000
         private const val POSSIBLY_EXPAND: Int = 0
         private const val EXPAND: Int = 1

@@ -19,8 +19,7 @@ class DailyComputation(private val context: Context, var startTime: Long, var en
     private var heartRates = mutableListOf<DBHeartRate>()
     private var locations = mutableListOf<DBLocation>()
     private var steps = mutableListOf<DBStep>()
-
-    lateinit var mobilityResultComputation: MobilityResultComputation
+    private var mobilityResultComputation = MobilityResultComputation(context)
 
     /**
      * This computes the results in an asynchronous way and sets the live data
@@ -41,7 +40,9 @@ class DailyComputation(private val context: Context, var startTime: Long, var en
         steps = collectStepsFromDatabase(TrackerService.currentTracker)
         if (computeChartResults) {
             val cleanLocations = cleanLocationsList(locations)
-            mobilityResultComputation = MobilityResultComputation(context, steps, cleanLocations, activities)
+            mobilityResultComputation.steps = steps
+            mobilityResultComputation.locations = cleanLocations
+            mobilityResultComputation.activities = activities
             mobilityResultComputation.computeResults()
         }
     }
@@ -57,7 +58,7 @@ class DailyComputation(private val context: Context, var startTime: Long, var en
         heartRates = mutableListOf()
         locations = mutableListOf()
         steps = mutableListOf()
-        mobilityResultComputation = MobilityResultComputation(context, steps, locations, activities)
+        mobilityResultComputation = MobilityResultComputation(context)
     }
 
     /**
