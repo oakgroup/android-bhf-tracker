@@ -16,7 +16,7 @@ import net.sqlcipher.database.SupportFactory
  *
  * @author omar.brugna
  */
-@androidx.room.Database(entities = [DBActivity::class, DBBattery::class, DBHeartRate::class, DBLocation::class, DBStep::class, DBTrip::class], version = 2, exportSchema = false)
+@androidx.room.Database(entities = [DBActivity::class, DBBattery::class, DBHeartRate::class, DBLocation::class, DBStep::class, DBTrip::class], version = 1, exportSchema = false)
 internal abstract class Database : RoomDatabase() {
 
     companion object {
