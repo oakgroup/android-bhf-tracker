@@ -61,8 +61,11 @@ class LocationUtilities {
 
     fun computeSpeed(prevLocation: DBLocation, location: DBLocation): Double {
         val distance = computeDistance(prevLocation, location)
-        val timeInSecs = max(1, (location.timeInMillis - prevLocation.timeInMillis) / 1000)
-        return ((distance / timeInSecs) * 100.0).roundToInt() / 100.0
+        val timeInSecs = (location.timeInMillis - prevLocation.timeInMillis) / 1000
+        if (distance > 0 && timeInSecs > 0) {
+            return ((distance / timeInSecs) * 100.0).roundToInt() / 100.0
+        }
+        return 0.0
     }
 
 
