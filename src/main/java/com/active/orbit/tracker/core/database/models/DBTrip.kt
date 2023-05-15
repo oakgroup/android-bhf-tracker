@@ -207,7 +207,7 @@ data class DBTrip(@PrimaryKey(autoGenerate = true) var idTrip: Int = 0) : BaseMo
         // do not add a final location, as if close enough
         // it has been already added to the last element
 
-        if (TrackerService.currentTracker == null || !Preferences.tracker(TrackerService.currentTracker!!).compactLocations) return locations
+        if (TrackerService.currentTracker == null || !Preferences.config(TrackerService.currentTracker!!).compactLocations) return locations
         locations = LocationUtilities().simplifyLocationsListUsingSED(locations)
         return locations
     }

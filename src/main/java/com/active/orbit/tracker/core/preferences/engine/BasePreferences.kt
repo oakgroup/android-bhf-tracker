@@ -23,7 +23,7 @@ abstract class BasePreferences {
             Preferences.backend(context).logout()
             Preferences.lifecycle(context).logout()
             Preferences.user(context).logout()
-            Preferences.tracker(context).logout()
+            Preferences.config(context).logout()
         }
 
         fun printAll(context: Context) {

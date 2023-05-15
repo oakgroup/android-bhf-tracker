@@ -85,14 +85,14 @@ class TrackerManager private constructor(private val activity: AppCompatActivity
      */
     fun askForPermissionAndStartTracker(config: TrackerConfig) {
         Preferences.backend(activity).baseUrl = config.baseUrl
-        Preferences.tracker(activity).useActivityRecognition = config.useActivityRecognition
-        Preferences.tracker(activity).useLocationTracking = config.useLocationTracking
-        Preferences.tracker(activity).useStepCounter = config.useStepCounter
-        Preferences.tracker(activity).useHeartRateMonitor = config.useHeartRateMonitor
-        Preferences.tracker(activity).useMobilityModelling = config.useMobilityModelling
-        Preferences.tracker(activity).useBatteryMonitor = config.useBatteryMonitor
-        Preferences.tracker(activity).useStayPoints = config.useStayPoints
-        Preferences.tracker(activity).compactLocations = config.compactLocations
+        Preferences.config(activity).useActivityRecognition = config.useActivityRecognition
+        Preferences.config(activity).useLocationTracking = config.useLocationTracking
+        Preferences.config(activity).useStepCounter = config.useStepCounter
+        Preferences.config(activity).useHeartRateMonitor = config.useHeartRateMonitor
+        Preferences.config(activity).useMobilityModelling = config.useMobilityModelling
+        Preferences.config(activity).useBatteryMonitor = config.useBatteryMonitor
+        Preferences.config(activity).useStayPoints = config.useStayPoints
+        Preferences.config(activity).compactLocations = config.compactLocations
         Preferences.backend(activity).uploadData = config.uploadData
         askForPermissionAndStartTrackerAux()
     }
@@ -102,13 +102,13 @@ class TrackerManager private constructor(private val activity: AppCompatActivity
      *
      */
     private fun askForPermissionAndStartTrackerAux() {
-        if (Preferences.tracker(activity).useLocationTracking && !hasLocationPermissionsBeenGranted()) {
+        if (Preferences.config(activity).useLocationTracking && !hasLocationPermissionsBeenGranted()) {
             Logger.i("Requesting location permissions")
             requestPermissionLocation()
-        } else if (Preferences.tracker(activity).useActivityRecognition && !hasActivityRecognitionPermissionsBeenGranted()) {
+        } else if (Preferences.config(activity).useActivityRecognition && !hasActivityRecognitionPermissionsBeenGranted()) {
             Logger.i("Requesting A/R permissions")
             requestPermissionActivityRecognition()
-        } else if (Preferences.tracker(activity).useHeartRateMonitor && !hasBodySensorPermissionsBeenGranted()) {
+        } else if (Preferences.config(activity).useHeartRateMonitor && !hasBodySensorPermissionsBeenGranted()) {
             Logger.i("Requesting Body Sensor permissions")
             requestPermissionBodySensor()
         } else {

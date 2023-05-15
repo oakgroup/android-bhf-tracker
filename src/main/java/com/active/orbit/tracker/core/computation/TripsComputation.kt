@@ -171,7 +171,7 @@ class TripsComputation(val context: Context, val chart: MutableList<MobilityData
      */
     private fun recoverLostActivities(context: Context) {
         Logger.i("Recovering lost activities")
-        val useGlobalSED = Preferences.tracker(context).compactLocations
+        val useGlobalSED = Preferences.config(context).compactLocations
         val finalTrips = mutableListOf<DBTrip>()
         for (trip in trips) {
             if ((trip.activityType == DetectedActivity.STILL || trip.activityType == INVALID_VALUE) && trip.getDuration(chart) > MobilityComputation.SHORT_ACTIVITY_DURATION * 2) {
@@ -279,7 +279,7 @@ class TripsComputation(val context: Context, val chart: MutableList<MobilityData
      */
     private fun finaliseLocations() {
         Logger.i("Finalising locations")
-        if (TrackerService.currentTracker != null && Preferences.tracker(TrackerService.currentTracker!!).useStayPoints) {
+        if (TrackerService.currentTracker != null && Preferences.config(TrackerService.currentTracker!!).useStayPoints) {
             for (dbTrip in trips) {
                 if (dbTrip.activityType == DetectedActivity.STILL) {
                     val allLocations: MutableList<DBLocation> = mutableListOf()

@@ -50,11 +50,11 @@ class TrackerService : Service() {
 
         // This initialises the sensor trackers and the repository before starting the foreground process
         // We do it in the onCreate so to avoid calling this every time the intent is re-delivered
-        val useStepCounter = Preferences.tracker(this).useStepCounter
-        val useActivityRecognition = Preferences.tracker(this).useActivityRecognition
-        val useLocationTracking = Preferences.tracker(this).useLocationTracking
-        val useHeartRateMonitoring = Preferences.tracker(this).useHeartRateMonitor
-        val useBatteryMonitoring = Preferences.tracker(this).useBatteryMonitor
+        val useStepCounter = Preferences.config(this).useStepCounter
+        val useActivityRecognition = Preferences.config(this).useActivityRecognition
+        val useLocationTracking = Preferences.config(this).useLocationTracking
+        val useHeartRateMonitoring = Preferences.config(this).useHeartRateMonitor
+        val useBatteryMonitoring = Preferences.config(this).useBatteryMonitor
 
         if (locationTracker == null && useLocationTracking)
             locationTracker = LocationMonitor(this)

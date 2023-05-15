@@ -40,12 +40,12 @@ class UploadWorker(val context: Context, workerParams: WorkerParameters) : Corou
                 return
             }
             // upload data
-            if (Preferences.tracker(context).useActivityRecognition) ActivitiesUploader.uploadData(context)
-            if (Preferences.tracker(context).useBatteryMonitor) BatteriesUploader.uploadData(context)
-            if (Preferences.tracker(context).useLocationTracking) LocationsUploader.uploadData(context)
-            if (Preferences.tracker(context).useStepCounter) StepsUploader.uploadData(context)
-            if (Preferences.tracker(context).useHeartRateMonitor) HeartRatesUploader.uploadData(context)
-            if (Preferences.tracker(context).useMobilityModelling) TripsUploader.uploadData(context)
+            if (Preferences.config(context).useActivityRecognition) ActivitiesUploader.uploadData(context)
+            if (Preferences.config(context).useBatteryMonitor) BatteriesUploader.uploadData(context)
+            if (Preferences.config(context).useLocationTracking) LocationsUploader.uploadData(context)
+            if (Preferences.config(context).useStepCounter) StepsUploader.uploadData(context)
+            if (Preferences.config(context).useHeartRateMonitor) HeartRatesUploader.uploadData(context)
+            if (Preferences.config(context).useMobilityModelling) TripsUploader.uploadData(context)
             sendingData = false
         }
     }

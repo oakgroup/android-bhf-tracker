@@ -163,8 +163,8 @@ class DailyComputation(private val context: Context, var startTime: Long, var en
     private fun cleanLocationsList(originalLocations: MutableList<DBLocation>): MutableList<DBLocation> {
         val locUtils = LocationUtilities()
         var locations = locUtils.removeSpikes(originalLocations)
-        if (Preferences.tracker(context).useStayPoints) locations = locUtils.identifyStayPoint(locations)
-        if (Preferences.tracker(context).compactLocations) locations = locUtils.simplifyLocationsListUsingSED(locations)
+        if (Preferences.config(context).useStayPoints) locations = locUtils.identifyStayPoint(locations)
+        if (Preferences.config(context).compactLocations) locations = locUtils.simplifyLocationsListUsingSED(locations)
         computeSpeedForLocations(locations)
         return locations
     }
