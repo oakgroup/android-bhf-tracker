@@ -51,14 +51,14 @@ class DailyComputation(private val context: Context, var startTime: Long, var en
             mobilityComputation.computeResults()
         }
 
-        // update observer
-        trackerObserver?.onTrackerUpdate(TrackerObserverType.ACTIVITIES, activities)
-        trackerObserver?.onTrackerUpdate(TrackerObserverType.BATTERIES, batteries)
-        trackerObserver?.onTrackerUpdate(TrackerObserverType.HEART_RATES, heartRates)
-        trackerObserver?.onTrackerUpdate(TrackerObserverType.LOCATIONS, locations)
-        trackerObserver?.onTrackerUpdate(TrackerObserverType.STEPS, steps)
-        if (computeChartResults) {
-            mainThread {
+        mainThread {
+            // update observer
+            trackerObserver?.onTrackerUpdate(TrackerObserverType.ACTIVITIES, activities)
+            trackerObserver?.onTrackerUpdate(TrackerObserverType.BATTERIES, batteries)
+            trackerObserver?.onTrackerUpdate(TrackerObserverType.HEART_RATES, heartRates)
+            trackerObserver?.onTrackerUpdate(TrackerObserverType.LOCATIONS, locations)
+            trackerObserver?.onTrackerUpdate(TrackerObserverType.STEPS, steps)
+            if (computeChartResults) {
                 trackerObserver?.onTrackerUpdate(TrackerObserverType.MOBILITY, mobilityComputation)
             }
         }
