@@ -13,8 +13,6 @@ import com.active.orbit.tracker.core.utils.LocationUtilities
 import com.active.orbit.tracker.core.utils.Logger
 import com.active.orbit.tracker.core.utils.TimeUtils
 import com.google.android.gms.location.DetectedActivity
-import com.google.android.gms.location.DetectedActivity.IN_VEHICLE
-import com.google.android.gms.location.DetectedActivity.WALKING
 
 class TripsComputation(val context: Context, val chart: MutableList<MobilityData>) {
 
@@ -33,7 +31,6 @@ class TripsComputation(val context: Context, val chart: MutableList<MobilityData
      * This creates the trips using the chart of activities
      */
     private fun assignTrips(): MutableList<TrackerDBTrip> {
-        Logger.i("Assigning trips")
         // now assign the final activities
         val tripsList: MutableList<TrackerDBTrip> = mutableListOf()
         var currentTrip = TrackerDBTrip(0, 0, DetectedActivity.STILL, this.chart)
@@ -48,8 +45,9 @@ class TripsComputation(val context: Context, val chart: MutableList<MobilityData
 
                 currentTrip.finalise(true)
                 tripsList.add(currentTrip)
-                Logger.i("Added ${currentTrip.description()}")
                 currentTrip = TrackerDBTrip(index, 0, element.activityIn, this.chart)
+
+                Logger.i("Trip assigned ${currentTrip.description()}")
             }
         }
         if (tripsList.size > 0 && currentTrip.endTime == 0 && currentTrip.startTime != chart.size - 1) {
@@ -57,7 +55,8 @@ class TripsComputation(val context: Context, val chart: MutableList<MobilityData
             currentTrip.setNumberOfSteps()
             tripsList.add(currentTrip)
             currentTrip.finalise(true)
-            Logger.i("Added ${currentTrip.description()}")
+
+            Logger.i("Trip added ${currentTrip.description()}")
         }
         return tripsList
     }
@@ -68,7 +67,6 @@ class TripsComputation(val context: Context, val chart: MutableList<MobilityData
      *
      */
     private fun correctTrips(): MutableList<TrackerDBTrip> {
-        Logger.i("Correcting trips")
         // if the first trip in the day is a still, assign start to midnight
         if (trips.size > 0 && trips[0].activityType == DetectedActivity.STILL) {
             // in general if the first trip is still, then we start the time from midnight of that still.
@@ -90,35 +88,26 @@ class TripsComputation(val context: Context, val chart: MutableList<MobilityData
         }
         val finalTrips: MutableList<TrackerDBTrip> = mutableListOf()
         for ((index, trip) in trips.withIndex()) {
-            if (trip.activityType == DetectedActivity.STILL
-                && (trip.getDuration(chart) < MobilityComputation.SHORT_ACTIVITY_DURATION)
-            ) {
+            if (trip.activityType == DetectedActivity.STILL && (trip.getDuration(chart) < MobilityComputation.SHORT_ACTIVITY_DURATION)) {
                 Logger.i("CorrectTrips: STILL activity too short ${trip.description()}")
                 // assign the longest between the activity before and after
                 val previousTripDuration = if (index > 0) trips[index - 1].getDuration(chart) else 0
-                val nextTripDuration =
-                    if (index < trips.size - 1) trips[index + 1].getDuration(chart) else 0
-                trip.activityType =
-                    if (previousTripDuration > nextTripDuration && previousTripDuration > trip.getDuration(
-                            chart
-                        )
-                    )
-                        trips[index - 1].activityType
-                    else if (nextTripDuration > trip.getDuration(chart))
-                        trips[index + 1].activityType
-                    else trip.activityType
+                val nextTripDuration = if (index < trips.size - 1) trips[index + 1].getDuration(chart) else 0
+                trip.activityType = if (previousTripDuration > nextTripDuration && previousTripDuration > trip.getDuration(chart)) trips[index - 1].activityType
+                else if (nextTripDuration > trip.getDuration(chart)) trips[index + 1].activityType
+                else trip.activityType
+
                 trip.tagIfSuspicious()
 
                 // check three elements, discover bike veh bike sequences and normalise veh to bikes
+
             } else if (index > 0 && index < trips.size - 1
                 && trips[index - 1].activityType == DetectedActivity.ON_BICYCLE
-                && trip.activityType == IN_VEHICLE
+                && trip.activityType == DetectedActivity.IN_VEHICLE
                 && trips[index - 1].activityType == DetectedActivity.ON_BICYCLE
-                && (trips[index - 1].getDuration(chart) + trips[index + 1].getDuration(chart) > trip.getDuration(
-                    chart
-                ))
+                && (trips[index - 1].getDuration(chart) + trips[index + 1].getDuration(chart) > trip.getDuration(chart))
             ) {
-                Logger.i("CorrectTrips: changing type of ${trip.description()} to ${TrackerDBActivity.getActivityTypeString(DetectedActivity.ON_BICYCLE)}")
+                Logger.i("Trip corrected ${trip.description()} to ${TrackerDBActivity.getActivityTypeString(DetectedActivity.ON_BICYCLE)}")
                 trip.activityType = DetectedActivity.ON_BICYCLE
                 Logger.i("CorrectTrips: adding  ${trip.description()}")
                 finalTrips.add(trip)
@@ -127,23 +116,23 @@ class TripsComputation(val context: Context, val chart: MutableList<MobilityData
                 // check veh - short walk at high speed - veh
                 // we are probably walking on a train or a plane
             } else if (index > 0 && index < trips.size - 1
-                && trips[index - 1].activityType == IN_VEHICLE
+                && trips[index - 1].activityType == DetectedActivity.IN_VEHICLE
                 && (trip.activityType in listOf(
                     DetectedActivity.WALKING,
                     DetectedActivity.RUNNING,
                     DetectedActivity.ON_FOOT
                 ))
                 && (trip.getDuration(chart) < MobilityComputation.SHORT_ACTIVITY_DURATION)
-                && trips[index - 1].activityType == IN_VEHICLE
+                && trips[index - 1].activityType == DetectedActivity.IN_VEHICLE
                 && (trip.getSpeedInMPerSecs() > 11)
             ) {
-                Logger.i("CorrectTrips: changing type of ${trip.description()} to ${TrackerDBActivity.getActivityTypeString(IN_VEHICLE)}")
-                trip.activityType = IN_VEHICLE
+                Logger.i("Trip corrected ${trip.description()} to ${TrackerDBActivity.getActivityTypeString(DetectedActivity.IN_VEHICLE)}")
+                trip.activityType = DetectedActivity.IN_VEHICLE
                 Logger.i("CorrectTrips: adding  ${trip.description()}")
                 finalTrips.add(trip)
                 trip.tagIfSuspicious()
             } else {
-                Logger.i("CorrectTrips: adding  ${trip.description()}")
+                Logger.i("Trip corrected added ${trip.description()}")
                 finalTrips.add(trip)
             }
         }
@@ -160,7 +149,6 @@ class TripsComputation(val context: Context, val chart: MutableList<MobilityData
             trip.startTime++
             trip.endTime++
         }
-
     }
 
     /**
@@ -170,14 +158,13 @@ class TripsComputation(val context: Context, val chart: MutableList<MobilityData
      * @param context the calling context
      */
     private fun recoverLostActivities(context: Context) {
-        Logger.i("Recovering lost activities")
         val useGlobalSED = TrackerPreferences.config(context).compactLocations
         val finalTrips = mutableListOf<TrackerDBTrip>()
         for (trip in trips) {
             if ((trip.activityType == DetectedActivity.STILL || trip.activityType == INVALID_VALUE) && trip.getDuration(chart) > MobilityComputation.SHORT_ACTIVITY_DURATION * 2) {
                 val locationUtilities = LocationUtilities()
                 if (trip.hasAverageHighCadence(chart) || trip.steps > 1000) {
-                    trip.activityType = WALKING
+                    trip.activityType = DetectedActivity.WALKING
                     // we should check if the trip takes the entire duration or not
                     // in principle we could stay still for two hours and then travel for 10 minutes
                     // we do not do it for now but this is definitely a @todo
@@ -187,12 +174,12 @@ class TripsComputation(val context: Context, val chart: MutableList<MobilityData
 
                     // this is to be fixed. See 4.07.2022 data for example: note that as the A/R sensor did not work, there
                     // are walking and car trips in the same STILL so first you should extract the walking and then try to extract the vehicles
-                    val subTrips = trip.trimTripDuration(WALKING)
+                    val subTrips = trip.trimTripDuration(DetectedActivity.WALKING)
                     finalTrips.addAll(subTrips)
                 } else {
                     val movementFound = locationUtilities.isLinearTrajectoryInActivity(trip.locations, useGlobalSED, 1500)
                     if (movementFound) {
-                        val subTrips = trip.trimTripDuration(IN_VEHICLE)
+                        val subTrips = trip.trimTripDuration(DetectedActivity.IN_VEHICLE)
                         finalTrips.addAll(subTrips)
                     } else
                         finalTrips.add(trip)
@@ -212,16 +199,14 @@ class TripsComputation(val context: Context, val chart: MutableList<MobilityData
         val summaryData = SummaryData(trips, chart)
         for (trip in trips) {
             if (trip.reliable) continue
-            if (trip.activityType == IN_VEHICLE && (
+            if (trip.activityType == DetectedActivity.IN_VEHICLE && (
                         summaryData.vehicleMsecs < trip.getDuration(chart) * 2
                                 // there are cases to consider that are long (>15 mins) veh trips but no locations
                                 // || (trip.getDuration(chart) > 5 * MobilityComputation.SHORT_ACTIVITY_DURATION &&
                                 || trip.distanceInMeters < 100)
             ) {
                 if (trip.getCadence() > 20 || trip.steps > 100) {
-                    if (!trip.isSuspicious(trip.activityType, trip.radiusInMeters)
-                        && summaryData.cyclingMsecs > trip.getDuration(chart)
-                    ) {
+                    if (!trip.isSuspicious(trip.activityType, trip.radiusInMeters) && summaryData.cyclingMsecs > trip.getDuration(chart)) {
                         Logger.i("Changing suspicious type from VEHICLE to BIKE")
                         trip.activityType = DetectedActivity.ON_BICYCLE
                     } else if (trip.getCadence() > 20 || trip.steps > 100) {
@@ -236,9 +221,7 @@ class TripsComputation(val context: Context, val chart: MutableList<MobilityData
                     trip.activityType = DetectedActivity.STILL
                 }
             }
-            if (trip.activityType == DetectedActivity.ON_BICYCLE
-                && summaryData.cyclingMsecs < trip.getDuration(chart) * 2
-            ) {
+            if (trip.activityType == DetectedActivity.ON_BICYCLE && summaryData.cyclingMsecs < trip.getDuration(chart) * 2) {
                 if (trip.getCadence() > 20 || trip.steps > 100) {
                     Logger.i("Changing suspicious type from BIKE to WALKING")
                     trip.activityType = DetectedActivity.ON_FOOT

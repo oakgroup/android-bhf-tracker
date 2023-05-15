@@ -129,7 +129,6 @@ class MobilityComputation(val context: Context) {
             recogniseWalkingBurstsInStills()
             splitUnreasonableActivities()
             removeOpenClose()
-
         }
         Logger.i("Finished building chart")
     }
@@ -145,7 +144,6 @@ class MobilityComputation(val context: Context) {
                 chartElement.activityOut = INVALID_VALUE
             }
         }
-
     }
 
 
@@ -440,7 +438,6 @@ class MobilityComputation(val context: Context) {
 
     /**
      * Many activities are open but never closed
-     * @param chart the activity chart
      */
     private fun closeOpenActivities() {
         Logger.i("Closing open activities")
