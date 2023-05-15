@@ -81,14 +81,14 @@ class LocationUtilities {
     fun simplifyLocationsListUsingSED(locationsList: MutableList<DBLocation>): MutableList<DBLocation> {
         if (locationsList.size < 8)
             return locationsList
-        val MEMORY_SIZE: Int = (locationsList.size * 0.65).toInt()
+        val memorySize: Int = (locationsList.size * 0.65).toInt()
         var finalLocationsList: MutableList<DBLocation> = mutableListOf()
         for (index in 2 until locationsList.size) {
             val prevLoc = locationsList[index - 2]
             val currLoc = locationsList[index - 1]
             val nextLoc = locationsList[index]
             currLoc.sed = computeSynchronousEuclideanDistance(prevLoc, currLoc, nextLoc)
-            if (finalLocationsList.size < MEMORY_SIZE)
+            if (finalLocationsList.size < memorySize)
                 finalLocationsList.add(currLoc)
             else {
                 finalLocationsList = simplifyLocationsListSEDAUX(finalLocationsList, currLoc)

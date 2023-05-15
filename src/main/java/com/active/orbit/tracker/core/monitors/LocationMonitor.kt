@@ -109,7 +109,9 @@ class LocationMonitor(context: Context) {
      * @param location the Android location element
      */
     fun addLocation(context: Context?, location: Location) {
-        insertLocationIntoDB(context, DBLocation(location))
+        val dbLocation = DBLocation(location)
+        Logger.d("Saving location ${dbLocation.description()} ")
+        insertLocationIntoDB(context, dbLocation)
         lastRecordedLocation = when {
             lastRecordedLocation == null -> location
             lastRecordedLocation!!.time < location.time -> location

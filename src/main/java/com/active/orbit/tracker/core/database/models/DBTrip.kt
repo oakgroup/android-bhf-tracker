@@ -54,7 +54,7 @@ data class DBTrip(@PrimaryKey(autoGenerate = true) var idTrip: Int = 0) : BaseMo
     }
 
     fun description(): String {
-        return "[$idTrip - $startTime - $endTime - $activityType - $radiusInMeters - $distanceInMeters - $steps - $timeInMillis - $timeZone - $uploaded]"
+        return "[$idTrip - ${TimeUtils.formatMillis(getStartTime(chart), "HH:mm:ss")} - ${TimeUtils.formatMillis(getEndTime(chart), "HH:mm:ss")} - ${DBActivity.getActivityTypeString(activityType)} - $radiusInMeters - $distanceInMeters - $steps - $timeInMillis - $timeZone - $uploaded]"
     }
 
     override fun isValid(): Boolean {

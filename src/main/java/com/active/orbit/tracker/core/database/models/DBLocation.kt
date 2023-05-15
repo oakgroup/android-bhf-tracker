@@ -54,7 +54,7 @@ data class DBLocation(@PrimaryKey(autoGenerate = true) var idLocation: Int = 0) 
     }
 
     fun description(): String {
-        return "[$idLocation - $latitude - $longitude - $altitude - $accuracy - $timeInMillis - $timeZone - $uploaded]"
+        return "[$idLocation - $latitude - $longitude - $altitude - $accuracy - ${TimeUtils.formatMillis(timeInMillis, Constants.DATE_FORMAT_FULL)} - $timeZone - $uploaded]"
     }
 
     override fun isValid(): Boolean {
