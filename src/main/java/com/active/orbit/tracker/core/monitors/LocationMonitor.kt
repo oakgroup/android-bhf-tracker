@@ -6,9 +6,9 @@ import android.content.IntentFilter
 import android.location.Location
 import android.os.Looper
 import androidx.annotation.WorkerThread
-import com.active.orbit.tracker.core.database.models.DBLocation
-import com.active.orbit.tracker.core.database.tables.TableLocations
-import com.active.orbit.tracker.core.permissions.Permissions
+import com.active.orbit.tracker.core.database.models.TrackerDBLocation
+import com.active.orbit.tracker.core.database.tables.TrackerTableLocations
+import com.active.orbit.tracker.core.permissions.TrackerPermissions
 import com.active.orbit.tracker.core.utils.Logger
 import com.active.orbit.tracker.core.utils.ThreadHandler.backgroundThread
 import com.google.android.gms.location.*
@@ -21,7 +21,7 @@ class LocationMonitor(context: Context) {
     private val locationTracker: LocationMonitor
 
     var currentLocation: Location? = null
-    var locationsList: MutableList<DBLocation> = mutableListOf()
+    var locationsList: MutableList<TrackerDBLocation> = mutableListOf()
 
     companion object {
 
@@ -60,7 +60,7 @@ class LocationMonitor(context: Context) {
 
     @SuppressLint("MissingPermission")
     fun startLocationTracking(context: Context) {
-        if (Permissions(Permissions.Group.ACCESS_FINE_LOCATION).check(context)) {
+        if (TrackerPermissions(TrackerPermissions.Group.ACCESS_FINE_LOCATION).check(context)) {
             if (Looper.myLooper() == null) Looper.prepare()
             Looper.myLooper()?.let {
                 fusedLocationClient?.requestLocationUpdates(locationRequest, locationCallback, it)
@@ -80,7 +80,7 @@ class LocationMonitor(context: Context) {
         fusedLocationClient?.flushLocations()
         if (context != null) {
             backgroundThread {
-                TableLocations.upsert(context, locationsList)
+                TrackerTableLocations.upsert(context, locationsList)
                 locationsList = mutableListOf()
             }
         }
@@ -109,7 +109,7 @@ class LocationMonitor(context: Context) {
      * @param location the Android location element
      */
     fun addLocation(context: Context?, location: Location) {
-        val dbLocation = DBLocation(location)
+        val dbLocation = TrackerDBLocation(location)
         Logger.d("Saving location ${dbLocation.description()} ")
         insertLocationIntoDB(context, dbLocation)
         lastRecordedLocation = when {
@@ -124,11 +124,11 @@ class LocationMonitor(context: Context) {
      * stores the values into the database
      */
     @WorkerThread
-    private fun insertLocationIntoDB(context: Context?, location: DBLocation) {
+    private fun insertLocationIntoDB(context: Context?, location: TrackerDBLocation) {
         locationsList.add(location)
         if (context != null && locationsList.size > MAX_SIZE) {
             backgroundThread {
-                TableLocations.upsert(context, locationsList)
+                TrackerTableLocations.upsert(context, locationsList)
                 locationsList = mutableListOf()
             }
         }

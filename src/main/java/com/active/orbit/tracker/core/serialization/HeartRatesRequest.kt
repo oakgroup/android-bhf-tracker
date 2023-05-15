@@ -1,6 +1,6 @@
 package com.active.orbit.tracker.core.serialization
 
-import com.active.orbit.tracker.core.database.models.DBHeartRate
+import com.active.orbit.tracker.core.database.models.TrackerDBHeartRate
 import com.active.orbit.tracker.core.utils.Constants
 import com.google.gson.annotations.SerializedName
 
@@ -12,7 +12,7 @@ class HeartRatesRequest {
     @SerializedName("heart_rates")
     val heartRates = ArrayList<HeartRateRequest>()
 
-    class HeartRateRequest(dbHeartRate: DBHeartRate) {
+    class HeartRateRequest(dbHeartRate: TrackerDBHeartRate) {
 
         @SerializedName("id")
         val id: Int = dbHeartRate.idHeartRate

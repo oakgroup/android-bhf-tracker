@@ -1,14 +1,14 @@
 package com.active.orbit.tracker.core.upload.uploaders
 
 import android.content.Context
-import com.active.orbit.tracker.core.database.tables.TableTrips
+import com.active.orbit.tracker.core.database.tables.TrackerTableTrips
 import com.active.orbit.tracker.core.deserialization.UploadTripsMap
 import com.active.orbit.tracker.core.listeners.ResultListener
-import com.active.orbit.tracker.core.network.Api
-import com.active.orbit.tracker.core.network.Connection
-import com.active.orbit.tracker.core.network.ConnectionListener
-import com.active.orbit.tracker.core.network.WebService
-import com.active.orbit.tracker.core.preferences.engine.Preferences
+import com.active.orbit.tracker.core.network.TrackerApi
+import com.active.orbit.tracker.core.network.TrackerConnection
+import com.active.orbit.tracker.core.network.TrackerConnectionListener
+import com.active.orbit.tracker.core.network.TrackerWebService
+import com.active.orbit.tracker.core.preferences.engine.TrackerPreferences
 import com.active.orbit.tracker.core.serialization.TripsRequest
 import com.active.orbit.tracker.core.utils.Constants
 import com.active.orbit.tracker.core.utils.Logger
@@ -31,7 +31,7 @@ object TripsUploader {
 
         backgroundThread {
 
-            val models = TableTrips.getNotUploaded(context)
+            val models = TrackerTableTrips.getNotUploaded(context)
             if (models.isEmpty()) {
                 Logger.d("No trips to upload on server")
                 listener?.onResult(false)
@@ -41,17 +41,17 @@ object TripsUploader {
             isUploading = true
 
             val request = TripsRequest()
-            request.userId = Preferences.user(context).idUser ?: Constants.EMPTY
+            request.userId = TrackerPreferences.user(context).idUser ?: Constants.EMPTY
 
             for (model in models) {
                 val modelRequest = TripsRequest.TripRequest(model)
                 request.trips.add(modelRequest)
             }
 
-            val webService = WebService(context, Api.INSERT_TRIPS)
+            val webService = TrackerWebService(context, TrackerApi.INSERT_TRIPS)
             webService.params = Gson().toJson(request)
 
-            Connection(webService, object : ConnectionListener {
+            TrackerConnection(webService, object : TrackerConnectionListener {
                 override fun onConnectionSuccess(tag: Int, response: String) {
                     var map: UploadTripsMap? = null
                     try {
@@ -68,7 +68,7 @@ object TripsUploader {
                             backgroundThread {
                                 // mark trips as uploaded
                                 models.forEach { it.uploaded = true }
-                                TableTrips.upsert(context, models)
+                                TrackerTableTrips.upsert(context, models)
                                 mainThread {
                                     isUploading = false
                                     listener?.onResult(true)

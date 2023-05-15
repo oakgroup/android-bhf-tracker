@@ -4,11 +4,11 @@ import android.content.Context
 import com.active.orbit.tracker.core.computation.data.MobilityData
 import com.active.orbit.tracker.core.computation.data.MobilityData.Companion.INVALID_VALUE
 import com.active.orbit.tracker.core.computation.data.SummaryData
-import com.active.orbit.tracker.core.database.models.DBActivity
-import com.active.orbit.tracker.core.database.models.DBLocation
-import com.active.orbit.tracker.core.database.models.DBStep
-import com.active.orbit.tracker.core.database.models.DBTrip
-import com.active.orbit.tracker.core.generics.BaseModel
+import com.active.orbit.tracker.core.database.models.TrackerDBActivity
+import com.active.orbit.tracker.core.database.models.TrackerDBLocation
+import com.active.orbit.tracker.core.database.models.TrackerDBStep
+import com.active.orbit.tracker.core.database.models.TrackerDBTrip
+import com.active.orbit.tracker.core.generics.TrackerBaseModel
 import com.active.orbit.tracker.core.monitors.StepMonitor
 import com.active.orbit.tracker.core.utils.Logger
 import com.active.orbit.tracker.core.utils.TimeUtils
@@ -19,11 +19,11 @@ import kotlin.math.min
 
 class MobilityComputation(val context: Context) {
 
-    var steps: MutableList<DBStep> = mutableListOf()
-    var locations: MutableList<DBLocation> = mutableListOf()
-    var activities: MutableList<DBActivity> = mutableListOf()
+    var steps: MutableList<TrackerDBStep> = mutableListOf()
+    var locations: MutableList<TrackerDBLocation> = mutableListOf()
+    var activities: MutableList<TrackerDBActivity> = mutableListOf()
     var chart: MutableList<MobilityData> = mutableListOf()
-    var trips: MutableList<DBTrip> = mutableListOf()
+    var trips: MutableList<TrackerDBTrip> = mutableListOf()
     var summaryData = SummaryData(mutableListOf(), chart)
 
     companion object {
@@ -43,18 +43,18 @@ class MobilityComputation(val context: Context) {
         for (boundary in boundariesList) {
             val element = MobilityData(boundary.priority())
             when (boundary) {
-                is DBStep -> {
+                is TrackerDBStep -> {
                     element.steps = boundary.steps
                     element.cadence = boundary.cadence
                 }
-                is DBLocation -> {
+                is TrackerDBLocation -> {
                     element.location = boundary
                     element.speed = boundary.speed
                     element.distance = boundary.distance
                     element.longitude = boundary.longitude
                     element.latitude = boundary.latitude
                 }
-                is DBActivity -> {
+                is TrackerDBActivity -> {
                     if (boundary.transitionType == ActivityTransition.ACTIVITY_TRANSITION_EXIT) {
                         element.activityOut = boundary.activityType
                     } else {
@@ -102,9 +102,9 @@ class MobilityComputation(val context: Context) {
      * @return a list of all the objects sorted by timeInMsecs (which in case of the range objects
      * like activities represents the endTime
      */
-    private fun mergeAllBoundaries(steps: MutableList<DBStep>, locations: MutableList<DBLocation>, activities: MutableList<DBActivity>): MutableList<BaseModel> {
+    private fun mergeAllBoundaries(steps: MutableList<TrackerDBStep>, locations: MutableList<TrackerDBLocation>, activities: MutableList<TrackerDBActivity>): MutableList<TrackerBaseModel> {
         Logger.i("Merging boundaries")
-        val finalList: MutableList<BaseModel> = mutableListOf()
+        val finalList: MutableList<TrackerBaseModel> = mutableListOf()
         finalList.addAll(steps)
         finalList.addAll(locations)
         finalList.addAll(activities)

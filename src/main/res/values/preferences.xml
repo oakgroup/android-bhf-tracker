@@ -8,14 +8,14 @@
     <string name="tracker_preference_backend_upload_data_key" translatable="false">tracker.backend.upload.data</string>
 
     <!-- configuration preferences -->
-    <string name="configuration_preference_tracker_tracker_use_activity_recognition_key" translatable="false">configuration.tracker.use.activity.recognition</string>
-    <string name="configuration_preference_tracker_tracker_use_location_tracking_key" translatable="false">configuration.tracker.use.location.tracking</string>
-    <string name="configuration_preference_tracker_tracker_use_step_counter_key" translatable="false">configuration.tracker.use.step.counter</string>
-    <string name="configuration_preference_tracker_tracker_use_heart_rate_monitor_key" translatable="false">configuration.tracker.use.heart.rate.monitor</string>
-    <string name="configuration_preference_tracker_tracker_use_mobility_modelling_key" translatable="false">configuration.tracker.use.mobility.modelling</string>
-    <string name="configuration_preference_tracker_tracker_use_battery_monitor_key" translatable="false">configuration.tracker.use.battery.monitor</string>
-    <string name="configuration_preference_tracker_tracker_use_stay_points_key" translatable="false">configuration.tracker.use.stay.points</string>
-    <string name="configuration_preference_tracker_tracker_compact_locations_key" translatable="false">configuration.tracker.compact.locations</string>
+    <string name="configuration_preference_tracker_tracker_use_activity_recognition_key" translatable="false">tracker.configuration.use.activity.recognition</string>
+    <string name="configuration_preference_tracker_tracker_use_location_tracking_key" translatable="false">tracker.configuration.use.location.tracking</string>
+    <string name="configuration_preference_tracker_tracker_use_step_counter_key" translatable="false">tracker.configuration.use.step.counter</string>
+    <string name="configuration_preference_tracker_tracker_use_heart_rate_monitor_key" translatable="false">tracker.configuration.use.heart.rate.monitor</string>
+    <string name="configuration_preference_tracker_tracker_use_mobility_modelling_key" translatable="false">tracker.configuration.use.mobility.modelling</string>
+    <string name="configuration_preference_tracker_tracker_use_battery_monitor_key" translatable="false">tracker.configuration.use.battery.monitor</string>
+    <string name="configuration_preference_tracker_tracker_use_stay_points_key" translatable="false">tracker.configuration.use.stay.points</string>
+    <string name="configuration_preference_tracker_tracker_compact_locations_key" translatable="false">tracker.configuration.compact.locations</string>
 
     <!-- lifecycle preferences -->
     <string name="tracker_preference_lifecycle_first_install_key" translatable="false">tracker.lifecycle.first.install</string>

@@ -1,14 +1,14 @@
 package com.active.orbit.tracker.core.upload.uploaders
 
 import android.content.Context
-import com.active.orbit.tracker.core.database.tables.TableBatteries
+import com.active.orbit.tracker.core.database.tables.TrackerTableBatteries
 import com.active.orbit.tracker.core.deserialization.UploadBatteriesMap
 import com.active.orbit.tracker.core.listeners.ResultListener
-import com.active.orbit.tracker.core.network.Api
-import com.active.orbit.tracker.core.network.Connection
-import com.active.orbit.tracker.core.network.ConnectionListener
-import com.active.orbit.tracker.core.network.WebService
-import com.active.orbit.tracker.core.preferences.engine.Preferences
+import com.active.orbit.tracker.core.network.TrackerApi
+import com.active.orbit.tracker.core.network.TrackerConnection
+import com.active.orbit.tracker.core.network.TrackerConnectionListener
+import com.active.orbit.tracker.core.network.TrackerWebService
+import com.active.orbit.tracker.core.preferences.engine.TrackerPreferences
 import com.active.orbit.tracker.core.serialization.BatteriesRequest
 import com.active.orbit.tracker.core.utils.Constants
 import com.active.orbit.tracker.core.utils.Logger
@@ -31,7 +31,7 @@ object BatteriesUploader {
 
         backgroundThread {
 
-            val models = TableBatteries.getNotUploaded(context)
+            val models = TrackerTableBatteries.getNotUploaded(context)
             if (models.isEmpty()) {
                 Logger.d("No batteries to upload on server")
                 listener?.onResult(false)
@@ -41,17 +41,17 @@ object BatteriesUploader {
             isUploading = true
 
             val request = BatteriesRequest()
-            request.userId = Preferences.user(context).idUser ?: Constants.EMPTY
+            request.userId = TrackerPreferences.user(context).idUser ?: Constants.EMPTY
 
             for (model in models) {
                 val modelRequest = BatteriesRequest.BatteryRequest(model)
                 request.batteries.add(modelRequest)
             }
 
-            val webService = WebService(context, Api.INSERT_BATTERIES)
+            val webService = TrackerWebService(context, TrackerApi.INSERT_BATTERIES)
             webService.params = Gson().toJson(request)
 
-            Connection(webService, object : ConnectionListener {
+            TrackerConnection(webService, object : TrackerConnectionListener {
                 override fun onConnectionSuccess(tag: Int, response: String) {
                     var map: UploadBatteriesMap? = null
                     try {
@@ -68,7 +68,7 @@ object BatteriesUploader {
                             backgroundThread {
                                 // mark batteries as uploaded
                                 models.forEach { it.uploaded = true }
-                                TableBatteries.upsert(context, models)
+                                TrackerTableBatteries.upsert(context, models)
                                 mainThread {
                                     isUploading = false
                                     listener?.onResult(true)

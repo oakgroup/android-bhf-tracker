@@ -1,14 +1,14 @@
 package com.active.orbit.tracker.core.upload.uploaders
 
 import android.content.Context
-import com.active.orbit.tracker.core.database.tables.TableHeartRates
+import com.active.orbit.tracker.core.database.tables.TrackerTableHeartRates
 import com.active.orbit.tracker.core.deserialization.UploadHeartRatesMap
 import com.active.orbit.tracker.core.listeners.ResultListener
-import com.active.orbit.tracker.core.network.Api
-import com.active.orbit.tracker.core.network.Connection
-import com.active.orbit.tracker.core.network.ConnectionListener
-import com.active.orbit.tracker.core.network.WebService
-import com.active.orbit.tracker.core.preferences.engine.Preferences
+import com.active.orbit.tracker.core.network.TrackerApi
+import com.active.orbit.tracker.core.network.TrackerConnection
+import com.active.orbit.tracker.core.network.TrackerConnectionListener
+import com.active.orbit.tracker.core.network.TrackerWebService
+import com.active.orbit.tracker.core.preferences.engine.TrackerPreferences
 import com.active.orbit.tracker.core.serialization.HeartRatesRequest
 import com.active.orbit.tracker.core.utils.Constants
 import com.active.orbit.tracker.core.utils.Logger
@@ -31,7 +31,7 @@ object HeartRatesUploader {
 
         backgroundThread {
 
-            val models = TableHeartRates.getNotUploaded(context)
+            val models = TrackerTableHeartRates.getNotUploaded(context)
             if (models.isEmpty()) {
                 Logger.d("No heart rates to upload on server")
                 listener?.onResult(false)
@@ -41,17 +41,17 @@ object HeartRatesUploader {
             isUploading = true
 
             val request = HeartRatesRequest()
-            request.userId = Preferences.user(context).idUser ?: Constants.EMPTY
+            request.userId = TrackerPreferences.user(context).idUser ?: Constants.EMPTY
 
             for (model in models) {
                 val modelRequest = HeartRatesRequest.HeartRateRequest(model)
                 request.heartRates.add(modelRequest)
             }
 
-            val webService = WebService(context, Api.INSERT_HEART_RATES)
+            val webService = TrackerWebService(context, TrackerApi.INSERT_HEART_RATES)
             webService.params = Gson().toJson(request)
 
-            Connection(webService, object : ConnectionListener {
+            TrackerConnection(webService, object : TrackerConnectionListener {
                 override fun onConnectionSuccess(tag: Int, response: String) {
                     var map: UploadHeartRatesMap? = null
                     try {
@@ -68,7 +68,7 @@ object HeartRatesUploader {
                             backgroundThread {
                                 // mark heart rates as uploaded
                                 models.forEach { it.uploaded = true }
-                                TableHeartRates.upsert(context, models)
+                                TrackerTableHeartRates.upsert(context, models)
                                 mainThread {
                                     isUploading = false
                                     listener?.onResult(true)

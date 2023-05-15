@@ -8,8 +8,8 @@ import android.hardware.SensorManager
 import android.os.Build
 import android.os.Handler
 import android.os.Looper
-import com.active.orbit.tracker.core.database.models.DBStep
-import com.active.orbit.tracker.core.database.tables.TableSteps
+import com.active.orbit.tracker.core.database.models.TrackerDBStep
+import com.active.orbit.tracker.core.database.tables.TrackerTableSteps
 import com.active.orbit.tracker.core.utils.Logger
 import com.active.orbit.tracker.core.utils.ThreadHandler.backgroundThread
 import com.active.orbit.tracker.core.utils.TimeUtils
@@ -21,8 +21,8 @@ class StepMonitor internal constructor(private var context: Context?) {
     private var stepCounterListener: SensorEventListener? = null
     private var sensorManager: SensorManager? = null
     private var stepCounterSensor: Sensor? = null
-    var stepsList: MutableList<DBStep> = mutableListOf()
-    var sensorValuesList: MutableList<DBStep> = mutableListOf()
+    var stepsList: MutableList<TrackerDBStep> = mutableListOf()
+    var sensorValuesList: MutableList<TrackerDBStep> = mutableListOf()
 
     companion object {
 
@@ -80,12 +80,12 @@ class StepMonitor internal constructor(private var context: Context?) {
      * This stores the steps into the temp list (or in case of overflow into the DB)
      * and it sets the variable lastStepsDetected
      */
-    private fun storeSteps(stepsData: DBStep) {
+    private fun storeSteps(stepsData: TrackerDBStep) {
         Logger.i("Found ${stepsData.steps} steps at ${TimeUtils.formatMillis(stepsData.timeInMillis, "HH:mm:ss")}")
         stepsList.add(stepsData)
         backgroundThread {
             if (context != null && stepsList.size > MAX_SIZE) {
-                TableSteps.upsert(context!!, stepsList)
+                TrackerTableSteps.upsert(context!!, stepsList)
                 stepsList = mutableListOf()
             }
         }
@@ -130,7 +130,7 @@ class StepMonitor internal constructor(private var context: Context?) {
         return object : SensorEventListener {
             override fun onSensorChanged(event: SensorEvent) {
                 if (event.sensor.type == Sensor.TYPE_STEP_COUNTER) {
-                    val dbStep = DBStep()
+                    val dbStep = TrackerDBStep()
                     dbStep.timeInMillis = TimeUtils.fromEventTimeToEpoch(event.timestamp)
                     dbStep.steps = event.values[0].toInt()
                     sensorValuesList.add(dbStep)
@@ -156,7 +156,7 @@ class StepMonitor internal constructor(private var context: Context?) {
         }
         backgroundThread {
             if (context != null && stepsList.size > MAX_SIZE) {
-                TableSteps.upsert(context!!, stepsList)
+                TrackerTableSteps.upsert(context!!, stepsList)
                 stepsList = mutableListOf()
             }
         }
@@ -167,7 +167,7 @@ class StepMonitor internal constructor(private var context: Context?) {
      * and then every x collection, we select the best one
      * @param sensorValuesList
      */
-    private fun selectBestSensorValue(sensorValuesList: MutableList<DBStep>) {
+    private fun selectBestSensorValue(sensorValuesList: MutableList<TrackerDBStep>) {
         if (sensorValuesList.size == 0) return
         if (sensorValuesList.size == 1) {
             storeSteps(sensorValuesList[0])

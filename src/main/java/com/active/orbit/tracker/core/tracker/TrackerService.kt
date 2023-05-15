@@ -7,9 +7,9 @@ import android.content.pm.ServiceInfo
 import android.location.Location
 import android.os.*
 import android.os.PowerManager.WakeLock
-import com.active.orbit.tracker.core.database.models.DBActivity
+import com.active.orbit.tracker.core.database.models.TrackerDBActivity
 import com.active.orbit.tracker.core.monitors.*
-import com.active.orbit.tracker.core.preferences.engine.Preferences
+import com.active.orbit.tracker.core.preferences.engine.TrackerPreferences
 import com.active.orbit.tracker.core.utils.LocationUtilities
 import com.active.orbit.tracker.core.utils.Logger
 import com.google.android.gms.location.ActivityTransition
@@ -50,11 +50,11 @@ class TrackerService : Service() {
 
         // This initialises the sensor trackers and the repository before starting the foreground process
         // We do it in the onCreate so to avoid calling this every time the intent is re-delivered
-        val useStepCounter = Preferences.config(this).useStepCounter
-        val useActivityRecognition = Preferences.config(this).useActivityRecognition
-        val useLocationTracking = Preferences.config(this).useLocationTracking
-        val useHeartRateMonitoring = Preferences.config(this).useHeartRateMonitor
-        val useBatteryMonitoring = Preferences.config(this).useBatteryMonitor
+        val useStepCounter = TrackerPreferences.config(this).useStepCounter
+        val useActivityRecognition = TrackerPreferences.config(this).useActivityRecognition
+        val useLocationTracking = TrackerPreferences.config(this).useLocationTracking
+        val useHeartRateMonitoring = TrackerPreferences.config(this).useHeartRateMonitor
+        val useBatteryMonitoring = TrackerPreferences.config(this).useBatteryMonitor
 
         if (locationTracker == null && useLocationTracking)
             locationTracker = LocationMonitor(this)
@@ -222,7 +222,7 @@ class TrackerService : Service() {
      * @param activityData the current activity
      *
      */
-    fun currentActivity(activityData: DBActivity) {
+    fun currentActivity(activityData: TrackerDBActivity) {
         if (activityData.activityType == DetectedActivity.STILL && activityData.transitionType == ActivityTransition.ACTIVITY_TRANSITION_ENTER) {
             if (!isContDownTimerRunning) {
                 isContDownTimerRunning = true

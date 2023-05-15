@@ -3,8 +3,8 @@ package com.active.orbit.tracker.core.utils
 import android.location.Location
 import com.active.orbit.tracker.core.computation.MobilityComputation.Companion.SHORT_ACTIVITY_DURATION
 import com.active.orbit.tracker.core.computation.data.MobilityData
-import com.active.orbit.tracker.core.database.models.DBLocation
-import com.active.orbit.tracker.core.database.models.DBTrip
+import com.active.orbit.tracker.core.database.models.TrackerDBLocation
+import com.active.orbit.tracker.core.database.models.TrackerDBTrip
 import com.google.android.gms.location.DetectedActivity.STILL
 import kotlin.math.*
 
@@ -23,7 +23,7 @@ class LocationUtilities {
      * This is a modified version of the Haversine distance.
      * Code taken from http://stackoverflow.com/questions/3694380/calculating-distance-between-two-points-using-latitude-longitude-what-am-i-doi
      */
-    fun computeDistance(location1: DBLocation?, location2: DBLocation?): Double {
+    fun computeDistance(location1: TrackerDBLocation?, location2: TrackerDBLocation?): Double {
         if (location1 == null || location2 == null) return 0.0
         val latitude1: Double = location1.latitude
         val longitude1: Double = location1.longitude
@@ -51,7 +51,7 @@ class LocationUtilities {
 
     fun computeDistance(location1: Location?, location2: Location?): Double {
         if (location1 != null && location2 != null)
-            return computeDistance(DBLocation(location1), DBLocation(location2))
+            return computeDistance(TrackerDBLocation(location1), TrackerDBLocation(location2))
         return 0.0
     }
 
@@ -59,7 +59,7 @@ class LocationUtilities {
         return deg * Math.PI / 180.0
     }
 
-    fun computeSpeed(prevLocation: DBLocation, location: DBLocation): Double {
+    fun computeSpeed(prevLocation: TrackerDBLocation, location: TrackerDBLocation): Double {
         val distance = computeDistance(prevLocation, location)
         val timeInSecs = (location.timeInMillis - prevLocation.timeInMillis) / 1000
         if (distance > 0 && timeInSecs > 0) {
@@ -78,11 +78,11 @@ class LocationUtilities {
      * @param locationsList the list of the locations for a trip or day
      * @return the simplified list of locations
      */
-    fun simplifyLocationsListUsingSED(locationsList: MutableList<DBLocation>): MutableList<DBLocation> {
+    fun simplifyLocationsListUsingSED(locationsList: MutableList<TrackerDBLocation>): MutableList<TrackerDBLocation> {
         if (locationsList.size < 8)
             return locationsList
         val memorySize: Int = (locationsList.size * 0.65).toInt()
-        var finalLocationsList: MutableList<DBLocation> = mutableListOf()
+        var finalLocationsList: MutableList<TrackerDBLocation> = mutableListOf()
         for (index in 2 until locationsList.size) {
             val prevLoc = locationsList[index - 2]
             val currLoc = locationsList[index - 1]
@@ -107,7 +107,7 @@ class LocationUtilities {
      * @param pointC the point after the one to simplify
      * @return
      */
-    private fun computeSynchronousEuclideanDistance(pointA: DBLocation, pointB: DBLocation, pointC: DBLocation): Double {
+    private fun computeSynchronousEuclideanDistance(pointA: TrackerDBLocation, pointB: TrackerDBLocation, pointC: TrackerDBLocation): Double {
         val vLatAC = (pointC.latitude - pointA.latitude) / (pointC.timeInMillis - pointA.timeInMillis)
         val vLonAC =
             (pointC.longitude - pointA.longitude) / (pointC.timeInMillis - pointA.timeInMillis)
@@ -126,7 +126,7 @@ class LocationUtilities {
      * @param currLoc the location we want to add
      * @return teh modified list of locations
      */
-    private fun simplifyLocationsListSEDAUX(locationsList: MutableList<DBLocation>, currLoc: DBLocation): MutableList<DBLocation> {
+    private fun simplifyLocationsListSEDAUX(locationsList: MutableList<TrackerDBLocation>, currLoc: TrackerDBLocation): MutableList<TrackerDBLocation> {
         // how to find the index of the minimum element of a list
         // https://stackoverflow.com/questions/55260175/kotlin-the-most-effective-way-to-find-first-index-of-minimum-element-in-some-li
         val minIndex = locationsList.minByOrNull { it.sed }?.let { locationsList.indexOf(it) }
@@ -153,13 +153,13 @@ class LocationUtilities {
      * @param locationsList
      * @return
      */
-    fun identifyStayPoint(locationsList: MutableList<DBLocation>): MutableList<DBLocation> {
+    fun identifyStayPoint(locationsList: MutableList<TrackerDBLocation>): MutableList<TrackerDBLocation> {
         var index = 0
         val locationUtilities = LocationUtilities()
-        val finalLocationsList: MutableList<DBLocation> = mutableListOf()
+        val finalLocationsList: MutableList<TrackerDBLocation> = mutableListOf()
         while (index < locationsList.size - 1) {
             val currentLocation = locationsList[index]
-            val relatedPoints: MutableList<DBLocation> = mutableListOf()
+            val relatedPoints: MutableList<TrackerDBLocation> = mutableListOf()
             relatedPoints.add(currentLocation)
             var index2 = index + 1
             // the following is necessary because there is no increment on the last element
@@ -196,10 +196,10 @@ class LocationUtilities {
      * @param relatedPoints
      * @return
      */
-    fun createCentroid(relatedPoints: MutableList<DBLocation>): DBLocation {
+    fun createCentroid(relatedPoints: MutableList<TrackerDBLocation>): TrackerDBLocation {
         // if there are no locations, we just put 0,0 as centroid
         if (relatedPoints.size == 0)
-            return DBLocation(0L, 0.0, 0.0, 0.0, 0.0)
+            return TrackerDBLocation(0L, 0.0, 0.0, 0.0, 0.0)
         var latitude = 0.0
         var longitude = 0.0
         var altitude = 0.0
@@ -215,7 +215,7 @@ class LocationUtilities {
         longitude /= relatedPoints.size
         altitude /= relatedPoints.size
         accuracy /= relatedPoints.size
-        val centroid = DBLocation(timeInMillis, latitude, longitude, accuracy, altitude)
+        val centroid = TrackerDBLocation(timeInMillis, latitude, longitude, accuracy, altitude)
         centroid.locationsSupportingCentroid = relatedPoints
         return centroid
     }
@@ -232,11 +232,11 @@ class LocationUtilities {
      * @param locationsList its locations
      * @return true if the max distance among locations >  MIN_DISTANCE_FOR_MOVEMENTS_IN_METERS
      */
-    fun isLinearTrajectoryInActivity(locationsList: MutableList<DBLocation>, useGlobalSED: Boolean?, minimumDistanceInMeters: Int): Boolean {
-        var locationCopies: MutableList<DBLocation> = removeLowAccuracyLocations(locationsList)
+    fun isLinearTrajectoryInActivity(locationsList: MutableList<TrackerDBLocation>, useGlobalSED: Boolean?, minimumDistanceInMeters: Int): Boolean {
+        var locationCopies: MutableList<TrackerDBLocation> = removeLowAccuracyLocations(locationsList)
         // normalise the locations if not done already
         if (useGlobalSED != null && !useGlobalSED) {
-            val locationCopies2: MutableList<DBLocation> = mutableListOf()
+            val locationCopies2: MutableList<TrackerDBLocation> = mutableListOf()
             for (loc in locationCopies) {
                 locationCopies2.add(loc.copy())
             }
@@ -261,12 +261,12 @@ class LocationUtilities {
      * @return a list of location timing indicating separated activities
      * (e.g. ( (1234556 1234556 1322234) (33344455 33344433 666545566 ) ... (77766677 86677766))
      */
-    fun findLocationMovementInLocationsList(locations: MutableList<DBLocation>, minimumDistanceInMeters: Int, activityType: Int, chart: MutableList<MobilityData>): MutableList<DBTrip> {
-        val tripsList = mutableListOf<DBTrip>()
+    fun findLocationMovementInLocationsList(locations: MutableList<TrackerDBLocation>, minimumDistanceInMeters: Int, activityType: Int, chart: MutableList<MobilityData>): MutableList<TrackerDBTrip> {
+        val tripsList = mutableListOf<TrackerDBTrip>()
 
-        var prevLocation: DBLocation? = null
+        var prevLocation: TrackerDBLocation? = null
         val initialStartTime = if (locations.size > 0) getChartIndexOfLocation(locations.get(0), chart) else -1
-        var newTrip = DBTrip()
+        var newTrip = TrackerDBTrip()
         newTrip.startTime = initialStartTime
         newTrip.endTime = Constants.INVALID
         newTrip.activityType = STILL
@@ -282,7 +282,7 @@ class LocationUtilities {
                     newTrip.endTime = locationTime
                     tripsList.add(newTrip)
 
-                    newTrip = DBTrip()
+                    newTrip = TrackerDBTrip()
                     newTrip.startTime = locationTime
                     newTrip.endTime = Constants.INVALID
                     newTrip.activityType = STILL
@@ -308,7 +308,7 @@ class LocationUtilities {
      * @param chart the chart to look the position in
      * @return the index of the chart element with the time immediately > than the location time
      */
-    private fun getChartIndexOfLocation(location: DBLocation, chart: MutableList<MobilityData>): Int {
+    private fun getChartIndexOfLocation(location: TrackerDBLocation, chart: MutableList<MobilityData>): Int {
         for (index in 0 until chart.size) {
             if (chart[index].timeInMSecs >= location.timeInMillis)
                 return index
@@ -322,8 +322,8 @@ class LocationUtilities {
      * @param locationsList the original location list
      * @return a copy of the list containing only the lcoations with accuracy <300m
      */
-    fun removeLowAccuracyLocations(locationsList: MutableList<DBLocation>): MutableList<DBLocation> {
-        val newLocationList: MutableList<DBLocation> = mutableListOf()
+    fun removeLowAccuracyLocations(locationsList: MutableList<TrackerDBLocation>): MutableList<TrackerDBLocation> {
+        val newLocationList: MutableList<TrackerDBLocation> = mutableListOf()
         for (location in locationsList)
             if (location.accuracy < 300)
                 newLocationList.add(location)
@@ -346,13 +346,13 @@ class LocationUtilities {
      * @param locations the locations list
      * @return the filtered locations list
      */
-    fun removeSpikes(originalLocations: MutableList<DBLocation>): MutableList<DBLocation> {
+    fun removeSpikes(originalLocations: MutableList<TrackerDBLocation>): MutableList<TrackerDBLocation> {
         var locations = originalLocations
         var removed = true
         var timesLooped = 0
         while (removed) {
             removed = false
-            val cleanedLocations: MutableList<DBLocation> = mutableListOf()
+            val cleanedLocations: MutableList<TrackerDBLocation> = mutableListOf()
             if (locations.size <= 2) return locations
             cleanedLocations.add(locations[0])
             var skipNext = false
@@ -396,8 +396,8 @@ class LocationUtilities {
      * @param loc3
      * @return a new DBLocation
      */
-    private fun getAverageLocation(loc1: DBLocation, loc2: DBLocation, loc3: DBLocation): DBLocation {
-        return DBLocation(
+    private fun getAverageLocation(loc1: TrackerDBLocation, loc2: TrackerDBLocation, loc3: TrackerDBLocation): TrackerDBLocation {
+        return TrackerDBLocation(
             loc2.timeInMillis, (loc1.latitude + loc3.latitude) / 2,
             (loc1.longitude + loc3.longitude) / 2,
             (loc1.accuracy + loc3.accuracy) / 2,

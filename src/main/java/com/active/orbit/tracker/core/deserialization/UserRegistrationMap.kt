@@ -1,11 +1,11 @@
 package com.active.orbit.tracker.core.deserialization
 
 import android.text.TextUtils
-import com.active.orbit.tracker.core.generics.BaseModel
+import com.active.orbit.tracker.core.generics.TrackerBaseModel
 import com.active.orbit.tracker.core.utils.Constants
 import com.google.gson.annotations.SerializedName
 
-class UserRegistrationMap : BaseModel {
+class UserRegistrationMap : TrackerBaseModel {
 
     @SerializedName("_id")
     var id = Constants.EMPTY

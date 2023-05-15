@@ -3,8 +3,8 @@ package com.active.orbit.tracker.core.restarter
 import android.content.Context
 import androidx.work.*
 import com.active.orbit.tracker.core.listeners.ResultListener
-import com.active.orbit.tracker.core.preferences.engine.Preferences
-import com.active.orbit.tracker.core.upload.UploadWorker
+import com.active.orbit.tracker.core.preferences.engine.TrackerPreferences
+import com.active.orbit.tracker.core.upload.TrackerUploadWorker
 import com.active.orbit.tracker.core.utils.Logger
 import java.util.concurrent.TimeUnit
 
@@ -22,7 +22,7 @@ class TrackerRestarter {
      * @param context
      */
     fun startDataUploader(context: Context, requiresCharging: Boolean, resultListener: ResultListener? = null) {
-        if (!Preferences.user(context).isUserRegistered()) {
+        if (!TrackerPreferences.user(context).isUserRegistered()) {
             Logger.d("Data upload not started because the user is not registered")
             return
         }
@@ -42,7 +42,7 @@ class TrackerRestarter {
             //
             // he last 15 minutes because it makes testing impossible
             // (you have to wait for 1.45 hours!)
-            val work = PeriodicWorkRequestBuilder<UploadWorker>(45, TimeUnit.MINUTES, 15, TimeUnit.MINUTES)
+            val work = PeriodicWorkRequestBuilder<TrackerUploadWorker>(45, TimeUnit.MINUTES, 15, TimeUnit.MINUTES)
                 .setConstraints(constraints)
                 .build()
             val workManager = WorkManager.getInstance(context)
@@ -53,7 +53,7 @@ class TrackerRestarter {
                 work
             )
         } else {
-            val request = OneTimeWorkRequestBuilder<UploadWorker>()
+            val request = OneTimeWorkRequestBuilder<TrackerUploadWorker>()
                 .setExpedited(OutOfQuotaPolicy.RUN_AS_NON_EXPEDITED_WORK_REQUEST)
                 .setConstraints(constraints)
                 .build()
@@ -74,7 +74,7 @@ class TrackerRestarter {
      * @param context
      */
     private fun startTrackerProper(context: Context) {
-        if (!Preferences.user(context).isUserRegistered()) {
+        if (!TrackerPreferences.user(context).isUserRegistered()) {
             Logger.d("Tracker not started because the user is not registered")
             return
         }

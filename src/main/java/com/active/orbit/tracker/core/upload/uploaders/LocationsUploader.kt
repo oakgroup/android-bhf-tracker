@@ -1,14 +1,14 @@
 package com.active.orbit.tracker.core.upload.uploaders
 
 import android.content.Context
-import com.active.orbit.tracker.core.database.tables.TableLocations
+import com.active.orbit.tracker.core.database.tables.TrackerTableLocations
 import com.active.orbit.tracker.core.deserialization.UploadLocationsMap
 import com.active.orbit.tracker.core.listeners.ResultListener
-import com.active.orbit.tracker.core.network.Api
-import com.active.orbit.tracker.core.network.Connection
-import com.active.orbit.tracker.core.network.ConnectionListener
-import com.active.orbit.tracker.core.network.WebService
-import com.active.orbit.tracker.core.preferences.engine.Preferences
+import com.active.orbit.tracker.core.network.TrackerApi
+import com.active.orbit.tracker.core.network.TrackerConnection
+import com.active.orbit.tracker.core.network.TrackerConnectionListener
+import com.active.orbit.tracker.core.network.TrackerWebService
+import com.active.orbit.tracker.core.preferences.engine.TrackerPreferences
 import com.active.orbit.tracker.core.serialization.LocationsRequest
 import com.active.orbit.tracker.core.utils.Constants
 import com.active.orbit.tracker.core.utils.Logger
@@ -31,7 +31,7 @@ object LocationsUploader {
 
         backgroundThread {
 
-            val models = TableLocations.getNotUploaded(context)
+            val models = TrackerTableLocations.getNotUploaded(context)
             if (models.isEmpty()) {
                 Logger.d("No locations to upload on server")
                 listener?.onResult(false)
@@ -41,17 +41,17 @@ object LocationsUploader {
             isUploading = true
 
             val request = LocationsRequest()
-            request.userId = Preferences.user(context).idUser ?: Constants.EMPTY
+            request.userId = TrackerPreferences.user(context).idUser ?: Constants.EMPTY
 
             for (model in models) {
                 val modelRequest = LocationsRequest.LocationRequest(model)
                 request.locations.add(modelRequest)
             }
 
-            val webService = WebService(context, Api.INSERT_LOCATIONS)
+            val webService = TrackerWebService(context, TrackerApi.INSERT_LOCATIONS)
             webService.params = Gson().toJson(request)
 
-            Connection(webService, object : ConnectionListener {
+            TrackerConnection(webService, object : TrackerConnectionListener {
                 override fun onConnectionSuccess(tag: Int, response: String) {
                     var map: UploadLocationsMap? = null
                     try {
@@ -68,7 +68,7 @@ object LocationsUploader {
                             backgroundThread {
                                 // mark locations as uploaded
                                 models.forEach { it.uploaded = true }
-                                TableLocations.upsert(context, models)
+                                TrackerTableLocations.upsert(context, models)
                                 mainThread {
                                     isUploading = false
                                     listener?.onResult(true)

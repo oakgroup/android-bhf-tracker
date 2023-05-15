@@ -7,7 +7,7 @@ import androidx.work.CoroutineWorker
 import androidx.work.ForegroundInfo
 import androidx.work.WorkerParameters
 import com.active.orbit.tracker.R
-import com.active.orbit.tracker.core.preferences.engine.Preferences
+import com.active.orbit.tracker.core.preferences.engine.TrackerPreferences
 import com.active.orbit.tracker.core.tracker.TrackerNotification
 import com.active.orbit.tracker.core.tracker.TrackerService
 import com.active.orbit.tracker.core.utils.Logger
@@ -25,7 +25,7 @@ class TrackerRestarterWorker(val context: Context, workerParams: WorkerParameter
         return try {
             withContext(Dispatchers.IO) {
                 try {
-                    if (Preferences.user(context).isUserRegistered()) {
+                    if (TrackerPreferences.user(context).isUserRegistered()) {
                         // start the tracker only if the user id is set
                         Logger.i("Checking if current service is null: ${TrackerService.currentTracker}")
                         if (TrackerService.currentTracker == null) {

@@ -14,12 +14,12 @@ import androidx.core.content.IntentCompat
 import androidx.core.content.PackageManagerCompat
 import androidx.core.content.UnusedAppRestrictionsConstants
 import com.active.orbit.tracker.R
-import com.active.orbit.tracker.core.database.engine.Database
+import com.active.orbit.tracker.core.database.engine.TrackerDatabase
 import com.active.orbit.tracker.core.database.tables.*
 import com.active.orbit.tracker.core.listeners.ResultListener
-import com.active.orbit.tracker.core.managers.UserManager
-import com.active.orbit.tracker.core.preferences.engine.BasePreferences
-import com.active.orbit.tracker.core.preferences.engine.Preferences
+import com.active.orbit.tracker.core.managers.TrackerUserManager
+import com.active.orbit.tracker.core.preferences.engine.TrackerBasePreferences
+import com.active.orbit.tracker.core.preferences.engine.TrackerPreferences
 import com.active.orbit.tracker.core.restarter.TrackerRestarter
 import com.active.orbit.tracker.core.utils.Logger
 import com.active.orbit.tracker.core.utils.ThreadHandler.backgroundThread
@@ -54,15 +54,15 @@ class TrackerManager private constructor(private val activity: AppCompatActivity
         fun printInformationLogs(context: Context) {
             backgroundThread {
                 Logger.i("------------------------------------------")
-                Logger.i("Activities -> ${TableActivities.getAll(context).size}")
-                Logger.i("Batteries  -> ${TableBatteries.getAll(context).size}")
-                Logger.i("HeartRates -> ${TableHeartRates.getAll(context).size}")
-                Logger.i("Locations  -> ${TableLocations.getAll(context).size}")
-                Logger.i("Steps      -> ${TableSteps.getAll(context).size}")
-                Logger.i("Trips      -> ${TableTrips.getAll(context).size}")
+                Logger.i("Activities -> ${TrackerTableActivities.getAll(context).size}")
+                Logger.i("Batteries  -> ${TrackerTableBatteries.getAll(context).size}")
+                Logger.i("HeartRates -> ${TrackerTableHeartRates.getAll(context).size}")
+                Logger.i("Locations  -> ${TrackerTableLocations.getAll(context).size}")
+                Logger.i("Steps      -> ${TrackerTableSteps.getAll(context).size}")
+                Logger.i("Trips      -> ${TrackerTableTrips.getAll(context).size}")
                 Logger.i("------------------------------------------")
 
-                BasePreferences.printAll(context)
+                TrackerBasePreferences.printAll(context)
             }
         }
     }
@@ -84,16 +84,16 @@ class TrackerManager private constructor(private val activity: AppCompatActivity
      * to use
      */
     fun askForPermissionAndStartTracker(config: TrackerConfig) {
-        Preferences.backend(activity).baseUrl = config.baseUrl
-        Preferences.config(activity).useActivityRecognition = config.useActivityRecognition
-        Preferences.config(activity).useLocationTracking = config.useLocationTracking
-        Preferences.config(activity).useStepCounter = config.useStepCounter
-        Preferences.config(activity).useHeartRateMonitor = config.useHeartRateMonitor
-        Preferences.config(activity).useMobilityModelling = config.useMobilityModelling
-        Preferences.config(activity).useBatteryMonitor = config.useBatteryMonitor
-        Preferences.config(activity).useStayPoints = config.useStayPoints
-        Preferences.config(activity).compactLocations = config.compactLocations
-        Preferences.backend(activity).uploadData = config.uploadData
+        TrackerPreferences.backend(activity).baseUrl = config.baseUrl
+        TrackerPreferences.config(activity).useActivityRecognition = config.useActivityRecognition
+        TrackerPreferences.config(activity).useLocationTracking = config.useLocationTracking
+        TrackerPreferences.config(activity).useStepCounter = config.useStepCounter
+        TrackerPreferences.config(activity).useHeartRateMonitor = config.useHeartRateMonitor
+        TrackerPreferences.config(activity).useMobilityModelling = config.useMobilityModelling
+        TrackerPreferences.config(activity).useBatteryMonitor = config.useBatteryMonitor
+        TrackerPreferences.config(activity).useStayPoints = config.useStayPoints
+        TrackerPreferences.config(activity).compactLocations = config.compactLocations
+        TrackerPreferences.backend(activity).uploadData = config.uploadData
         askForPermissionAndStartTrackerAux()
     }
 
@@ -102,13 +102,13 @@ class TrackerManager private constructor(private val activity: AppCompatActivity
      *
      */
     private fun askForPermissionAndStartTrackerAux() {
-        if (Preferences.config(activity).useLocationTracking && !hasLocationPermissionsBeenGranted()) {
+        if (TrackerPreferences.config(activity).useLocationTracking && !hasLocationPermissionsBeenGranted()) {
             Logger.i("Requesting location permissions")
             requestPermissionLocation()
-        } else if (Preferences.config(activity).useActivityRecognition && !hasActivityRecognitionPermissionsBeenGranted()) {
+        } else if (TrackerPreferences.config(activity).useActivityRecognition && !hasActivityRecognitionPermissionsBeenGranted()) {
             Logger.i("Requesting A/R permissions")
             requestPermissionActivityRecognition()
-        } else if (Preferences.config(activity).useHeartRateMonitor && !hasBodySensorPermissionsBeenGranted()) {
+        } else if (TrackerPreferences.config(activity).useHeartRateMonitor && !hasBodySensorPermissionsBeenGranted()) {
             Logger.i("Requesting Body Sensor permissions")
             requestPermissionBodySensor()
         } else {
@@ -323,20 +323,20 @@ class TrackerManager private constructor(private val activity: AppCompatActivity
      * If the user is not registered with the server, it registers it
      */
     fun checkUserRegistration() {
-        if (!Preferences.user(activity).isUserRegistered()) {
+        if (!TrackerPreferences.user(activity).isUserRegistered()) {
             Logger.i("Registering user")
-            UserManager.registerUser(activity)
-        } else Logger.i("User already registered with id ${Preferences.user(activity).idUser}")
+            TrackerUserManager.registerUser(activity)
+        } else Logger.i("User already registered with id ${TrackerPreferences.user(activity).idUser}")
     }
 
     fun saveUserRegistrationId(userId: String?) {
-        Preferences.user(activity).idUser = userId
+        TrackerPreferences.user(activity).idUser = userId
     }
 
     @WorkerThread
     fun logout(context: Context) {
         stopTracker()
         saveUserRegistrationId(null)
-        Database.getInstance(context).logout()
+        TrackerDatabase.getInstance(context).logout()
     }
 }

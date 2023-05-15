@@ -7,8 +7,8 @@ import android.hardware.SensorEventListener
 import android.hardware.SensorManager
 import android.os.Handler
 import android.os.Looper
-import com.active.orbit.tracker.core.database.models.DBHeartRate
-import com.active.orbit.tracker.core.database.tables.TableHeartRates
+import com.active.orbit.tracker.core.database.models.TrackerDBHeartRate
+import com.active.orbit.tracker.core.database.tables.TrackerTableHeartRates
 import com.active.orbit.tracker.core.tracker.TrackerService
 import com.active.orbit.tracker.core.utils.Logger
 import com.active.orbit.tracker.core.utils.ThreadHandler.backgroundThread
@@ -23,7 +23,7 @@ class HeartRateMonitor(val context: TrackerService) : SensorEventListener {
     private val heartRateMonitor: HeartRateMonitor = this
     private var monitoringStartTime: Long = System.currentTimeMillis()
     private var noContactTimes: Int
-    var heartRateReadingStack: MutableList<DBHeartRate> = mutableListOf()
+    var heartRateReadingStack: MutableList<TrackerDBHeartRate> = mutableListOf()
 
     companion object {
         /**
@@ -85,7 +85,7 @@ class HeartRateMonitor(val context: TrackerService) : SensorEventListener {
     private fun flushHeartRateToDB() {
         Logger.i("Flushing hr values to database")
         backgroundThread {
-            TableHeartRates.upsert(context, heartRateReadingStack)
+            TrackerTableHeartRates.upsert(context, heartRateReadingStack)
             heartRateReadingStack = mutableListOf()
         }
     }
@@ -137,7 +137,7 @@ class HeartRateMonitor(val context: TrackerService) : SensorEventListener {
     override fun onSensorChanged(event: SensorEvent) {
         if (event.sensor.type == Sensor.TYPE_HEART_RATE) {
             if (event.accuracy != SensorManager.SENSOR_STATUS_NO_CONTACT) {
-                val dbHeartRate = DBHeartRate()
+                val dbHeartRate = TrackerDBHeartRate()
                 dbHeartRate.timeInMillis = System.currentTimeMillis()
                 dbHeartRate.heartRate = event.values[0].toInt()
                 dbHeartRate.accuracy = event.accuracy

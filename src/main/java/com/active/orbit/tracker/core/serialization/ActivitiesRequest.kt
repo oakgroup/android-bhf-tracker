@@ -1,6 +1,6 @@
 package com.active.orbit.tracker.core.serialization
 
-import com.active.orbit.tracker.core.database.models.DBActivity
+import com.active.orbit.tracker.core.database.models.TrackerDBActivity
 import com.active.orbit.tracker.core.utils.Constants
 import com.google.gson.annotations.SerializedName
 
@@ -12,7 +12,7 @@ class ActivitiesRequest {
     @SerializedName("activities")
     val activities = ArrayList<ActivityRequest>()
 
-    class ActivityRequest(dbActivity: DBActivity) {
+    class ActivityRequest(dbActivity: TrackerDBActivity) {
 
         @SerializedName("id")
         val id: Int = dbActivity.idActivity

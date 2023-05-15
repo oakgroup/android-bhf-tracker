@@ -6,7 +6,7 @@ import com.active.orbit.tracker.core.database.models.*
 import com.active.orbit.tracker.core.database.tables.*
 import com.active.orbit.tracker.core.observers.TrackerObserver
 import com.active.orbit.tracker.core.observers.TrackerObserverType
-import com.active.orbit.tracker.core.preferences.engine.Preferences
+import com.active.orbit.tracker.core.preferences.engine.TrackerPreferences
 import com.active.orbit.tracker.core.tracker.TrackerService
 import com.active.orbit.tracker.core.utils.LocationUtilities
 import com.active.orbit.tracker.core.utils.Logger
@@ -17,11 +17,11 @@ import com.google.android.gms.location.ActivityTransition
 
 class DailyComputation(private val context: Context, var startTime: Long, var endTime: Long, private val computeChartResults: Boolean = true) {
 
-    private var activities = mutableListOf<DBActivity>()
-    private var batteries = mutableListOf<DBBattery>()
-    private var heartRates = mutableListOf<DBHeartRate>()
-    private var locations = mutableListOf<DBLocation>()
-    private var steps = mutableListOf<DBStep>()
+    private var activities = mutableListOf<TrackerDBActivity>()
+    private var batteries = mutableListOf<TrackerDBBattery>()
+    private var heartRates = mutableListOf<TrackerDBHeartRate>()
+    private var locations = mutableListOf<TrackerDBLocation>()
+    private var steps = mutableListOf<TrackerDBStep>()
     private var mobilityComputation = MobilityComputation(context)
 
     private var trackerObserver: TrackerObserver? = null
@@ -92,9 +92,9 @@ class DailyComputation(private val context: Context, var startTime: Long, var en
      * @param currentTracker the tracker so to get the activity recogniser module
      * @return a list of activities
      */
-    private fun collectActivitiesFromDatabase(currentTracker: TrackerService?): MutableList<DBActivity> {
-        val models = arrayListOf<DBActivity>()
-        models.addAll(TableActivities.getBetween(context, startTime, endTime))
+    private fun collectActivitiesFromDatabase(currentTracker: TrackerService?): MutableList<TrackerDBActivity> {
+        val models = arrayListOf<TrackerDBActivity>()
+        models.addAll(TrackerTableActivities.getBetween(context, startTime, endTime))
         if (currentTracker?.activityRecognition?.activitiesList != null) {
             models.addAll(currentTracker.activityRecognition!!.activitiesList)
             currentTracker.activityRecognition?.flush(context)
@@ -110,8 +110,8 @@ class DailyComputation(private val context: Context, var startTime: Long, var en
      * @param activities
      * @return
      */
-    private fun normaliseActivityFlow(activities: MutableList<DBActivity>) {
-        var prevActivity: DBActivity? = null
+    private fun normaliseActivityFlow(activities: MutableList<TrackerDBActivity>) {
+        var prevActivity: TrackerDBActivity? = null
         for (activity in activities) {
             if (prevActivity?.transitionType == ActivityTransition.ACTIVITY_TRANSITION_ENTER && activity.transitionType == ActivityTransition.ACTIVITY_TRANSITION_EXIT && activity.timeInMillis - prevActivity.timeInMillis < 2000) {
                 val prevTime = prevActivity.timeInMillis
@@ -128,13 +128,13 @@ class DailyComputation(private val context: Context, var startTime: Long, var en
         }
     }
 
-    private fun collectBatteriesFromDatabase(): MutableList<DBBattery> {
-        return TableBatteries.getBetween(context, startTime, endTime).toMutableList()
+    private fun collectBatteriesFromDatabase(): MutableList<TrackerDBBattery> {
+        return TrackerTableBatteries.getBetween(context, startTime, endTime).toMutableList()
     }
 
-    private fun collectHeartRatesFromDatabase(currentTracker: TrackerService?): MutableList<DBHeartRate> {
-        val models = arrayListOf<DBHeartRate>()
-        models.addAll(TableHeartRates.getBetween(context, startTime, endTime))
+    private fun collectHeartRatesFromDatabase(currentTracker: TrackerService?): MutableList<TrackerDBHeartRate> {
+        val models = arrayListOf<TrackerDBHeartRate>()
+        models.addAll(TrackerTableHeartRates.getBetween(context, startTime, endTime))
         if (currentTracker?.heartMonitor?.heartRateReadingStack != null) {
             models.addAll(currentTracker.heartMonitor!!.heartRateReadingStack)
             currentTracker.heartMonitor?.flush()
@@ -149,9 +149,9 @@ class DailyComputation(private val context: Context, var startTime: Long, var en
      * @return a list of locations
 
      */
-    private fun collectLocationsFromDatabase(currentTracker: TrackerService?): MutableList<DBLocation> {
-        val models = arrayListOf<DBLocation>()
-        models.addAll(TableLocations.getBetween(context, startTime, endTime))
+    private fun collectLocationsFromDatabase(currentTracker: TrackerService?): MutableList<TrackerDBLocation> {
+        val models = arrayListOf<TrackerDBLocation>()
+        models.addAll(TrackerTableLocations.getBetween(context, startTime, endTime))
         if (currentTracker?.locationTracker?.locationsList != null) {
             models.addAll(currentTracker.locationTracker!!.locationsList)
             currentTracker.locationTracker?.flush(context)
@@ -160,11 +160,11 @@ class DailyComputation(private val context: Context, var startTime: Long, var en
         return models
     }
 
-    private fun cleanLocationsList(originalLocations: MutableList<DBLocation>): MutableList<DBLocation> {
+    private fun cleanLocationsList(originalLocations: MutableList<TrackerDBLocation>): MutableList<TrackerDBLocation> {
         val locUtils = LocationUtilities()
         var locations = locUtils.removeSpikes(originalLocations)
-        if (Preferences.config(context).useStayPoints) locations = locUtils.identifyStayPoint(locations)
-        if (Preferences.config(context).compactLocations) locations = locUtils.simplifyLocationsListUsingSED(locations)
+        if (TrackerPreferences.config(context).useStayPoints) locations = locUtils.identifyStayPoint(locations)
+        if (TrackerPreferences.config(context).compactLocations) locations = locUtils.simplifyLocationsListUsingSED(locations)
         computeSpeedForLocations(locations)
         return locations
     }
@@ -173,8 +173,8 @@ class DailyComputation(private val context: Context, var startTime: Long, var en
      * This associates the speed between two locations
      * @param locations
      */
-    private fun computeSpeedForLocations(locations: MutableList<DBLocation>) {
-        var prevLocation: DBLocation? = null
+    private fun computeSpeedForLocations(locations: MutableList<TrackerDBLocation>) {
+        var prevLocation: TrackerDBLocation? = null
         for (location in locations) {
             if (prevLocation == null)
                 prevLocation = location
@@ -193,9 +193,9 @@ class DailyComputation(private val context: Context, var startTime: Long, var en
      * @param currentTracker the tracker so to get the step counter module
      * @return a list of steps
      */
-    private fun collectStepsFromDatabase(currentTracker: TrackerService?): MutableList<DBStep> {
-        val models = arrayListOf<DBStep>()
-        models.addAll(TableSteps.getBetween(context, startTime, endTime))
+    private fun collectStepsFromDatabase(currentTracker: TrackerService?): MutableList<TrackerDBStep> {
+        val models = arrayListOf<TrackerDBStep>()
+        models.addAll(TrackerTableSteps.getBetween(context, startTime, endTime))
         if (currentTracker?.stepCounter?.stepsList != null) {
             models.addAll(currentTracker.stepCounter!!.stepsList)
             currentTracker.stepCounter?.flush()
@@ -208,8 +208,8 @@ class DailyComputation(private val context: Context, var startTime: Long, var en
      * This assigns the cadence based on the sequence of steps
      * @param steps the list of steps for a day
      */
-    private fun computeCadenceForSteps(steps: MutableList<DBStep>) {
-        var prevStepsData: DBStep? = null
+    private fun computeCadenceForSteps(steps: MutableList<TrackerDBStep>) {
+        var prevStepsData: TrackerDBStep? = null
         for (stepData in steps) {
             if (prevStepsData != null) {
                 stepData.cadence = stepData.computeCadence(prevStepsData)

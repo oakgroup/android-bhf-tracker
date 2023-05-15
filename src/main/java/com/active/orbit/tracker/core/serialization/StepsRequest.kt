@@ -1,6 +1,6 @@
 package com.active.orbit.tracker.core.serialization
 
-import com.active.orbit.tracker.core.database.models.DBStep
+import com.active.orbit.tracker.core.database.models.TrackerDBStep
 import com.active.orbit.tracker.core.utils.Constants
 import com.google.gson.annotations.SerializedName
 
@@ -12,7 +12,7 @@ class StepsRequest {
     @SerializedName("steps")
     val steps = ArrayList<StepRequest>()
 
-    class StepRequest(dbStep: DBStep) {
+    class StepRequest(dbStep: TrackerDBStep) {
 
         @SerializedName("id")
         val id: Int = dbStep.idStep

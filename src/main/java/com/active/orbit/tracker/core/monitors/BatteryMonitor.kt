@@ -1,11 +1,11 @@
 package com.active.orbit.tracker.core.monitors
 
-import com.active.orbit.tracker.core.database.models.DBBattery
-import com.active.orbit.tracker.core.database.tables.TableBatteries
+import com.active.orbit.tracker.core.database.models.TrackerDBBattery
+import com.active.orbit.tracker.core.database.tables.TrackerTableBatteries
 import com.active.orbit.tracker.core.tracker.TrackerService
 import com.active.orbit.tracker.core.utils.Logger
 import com.active.orbit.tracker.core.utils.ThreadHandler.backgroundThread
-import com.active.orbit.tracker.core.utils.Utils
+import com.active.orbit.tracker.core.utils.TrackerUtils
 
 class BatteryMonitor(val context: TrackerService) {
 
@@ -29,11 +29,11 @@ class BatteryMonitor(val context: TrackerService) {
 
     private fun saveBatteryData() {
         backgroundThread {
-            val dbBattery = DBBattery()
+            val dbBattery = TrackerDBBattery()
             dbBattery.timeInMillis = System.currentTimeMillis()
-            dbBattery.batteryPercent = Utils.getBatteryPercentage(context)
-            dbBattery.isCharging = Utils.isCharging(context)
-            TableBatteries.upsert(context, dbBattery)
+            dbBattery.batteryPercent = TrackerUtils.getBatteryPercentage(context)
+            dbBattery.isCharging = TrackerUtils.isCharging(context)
+            TrackerTableBatteries.upsert(context, dbBattery)
             Logger.d("Writing battery to database ${dbBattery.description()}")
             lastBatterySentMillis = dbBattery.timeInMillis
         }

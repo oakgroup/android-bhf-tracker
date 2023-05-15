@@ -1,7 +1,7 @@
 package com.active.orbit.tracker.core.computation.data
 
-import com.active.orbit.tracker.core.database.models.DBActivity
-import com.active.orbit.tracker.core.database.models.DBLocation
+import com.active.orbit.tracker.core.database.models.TrackerDBActivity
+import com.active.orbit.tracker.core.database.models.TrackerDBLocation
 import com.active.orbit.tracker.core.utils.TimeUtils
 import com.google.android.gms.location.ActivityTransition
 
@@ -12,7 +12,7 @@ class MobilityData(var timeInMSecs: Long) {
     }
 
     // WARNING!! if you change the fields make sure that the function copyValidFields is updated
-    var location: DBLocation? = null
+    var location: TrackerDBLocation? = null
 
     var steps: Int = INVALID_VALUE
     var cadence: Int = INVALID_VALUE
@@ -38,13 +38,13 @@ class MobilityData(var timeInMSecs: Long) {
             if (cadence == INVALID_VALUE) " , ," else "$steps, $cadence,"
         } ${
             if (activityOut == INVALID_VALUE) " ," else {
-                " ${DBActivity.getActivityTypeString(activityOut)} " +
-                        DBActivity.getTransitionType(ActivityTransition.ACTIVITY_TRANSITION_EXIT) + ", "
+                " ${TrackerDBActivity.getActivityTypeString(activityOut)} " +
+                        TrackerDBActivity.getTransitionType(ActivityTransition.ACTIVITY_TRANSITION_EXIT) + ", "
             }
         } ${
             if (activityIn == INVALID_VALUE) ", , " else {
-                " ${DBActivity.getActivityTypeString(activityIn)} " +
-                        DBActivity.getTransitionType(ActivityTransition.ACTIVITY_TRANSITION_ENTER) + ", "
+                " ${TrackerDBActivity.getActivityTypeString(activityIn)} " +
+                        TrackerDBActivity.getTransitionType(ActivityTransition.ACTIVITY_TRANSITION_ENTER) + ", "
             }
         } ${
             if (speed == INVALID_VALUE.toDouble()) ", , " else {
@@ -52,7 +52,7 @@ class MobilityData(var timeInMSecs: Long) {
             }
         } ${
             if (assignedActivity == INVALID_VALUE) ", " else {
-                "$DBActivity.getActivityTypeString(assignedActivity),"
+                "$TrackerDBActivity.getActivityTypeString(assignedActivity),"
             }
         }"
     }

@@ -1,11 +1,11 @@
 package com.active.orbit.tracker.core.computation.data
 
-import com.active.orbit.tracker.core.database.models.DBLocation
-import com.active.orbit.tracker.core.database.models.DBTrip
+import com.active.orbit.tracker.core.database.models.TrackerDBLocation
+import com.active.orbit.tracker.core.database.models.TrackerDBTrip
 import com.active.orbit.tracker.core.utils.Logger
 import com.google.android.gms.location.DetectedActivity
 
-class SummaryData(trips: MutableList<DBTrip>, chart: MutableList<MobilityData>) {
+class SummaryData(trips: MutableList<TrackerDBTrip>, chart: MutableList<MobilityData>) {
 
     var steps: Int = 0
     var vehicleMsecs: Long = 0
@@ -23,7 +23,7 @@ class SummaryData(trips: MutableList<DBTrip>, chart: MutableList<MobilityData>) 
 
     init {
         Logger.d("Creating day summary results")
-        var baseLocation: DBLocation? = null
+        var baseLocation: TrackerDBLocation? = null
         var index = 0
         while (baseLocation == null) {
             if (index == trips.size) break

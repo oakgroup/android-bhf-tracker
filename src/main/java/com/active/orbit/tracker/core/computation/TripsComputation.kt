@@ -4,10 +4,10 @@ import android.content.Context
 import com.active.orbit.tracker.core.computation.data.MobilityData
 import com.active.orbit.tracker.core.computation.data.MobilityData.Companion.INVALID_VALUE
 import com.active.orbit.tracker.core.computation.data.SummaryData
-import com.active.orbit.tracker.core.database.models.DBActivity
-import com.active.orbit.tracker.core.database.models.DBLocation
-import com.active.orbit.tracker.core.database.models.DBTrip
-import com.active.orbit.tracker.core.preferences.engine.Preferences
+import com.active.orbit.tracker.core.database.models.TrackerDBActivity
+import com.active.orbit.tracker.core.database.models.TrackerDBLocation
+import com.active.orbit.tracker.core.database.models.TrackerDBTrip
+import com.active.orbit.tracker.core.preferences.engine.TrackerPreferences
 import com.active.orbit.tracker.core.tracker.TrackerService
 import com.active.orbit.tracker.core.utils.LocationUtilities
 import com.active.orbit.tracker.core.utils.Logger
@@ -18,7 +18,7 @@ import com.google.android.gms.location.DetectedActivity.WALKING
 
 class TripsComputation(val context: Context, val chart: MutableList<MobilityData>) {
 
-    var trips: MutableList<DBTrip>
+    var trips: MutableList<TrackerDBTrip>
 
     init {
         trips = assignTrips()
@@ -32,11 +32,11 @@ class TripsComputation(val context: Context, val chart: MutableList<MobilityData
     /**
      * This creates the trips using the chart of activities
      */
-    private fun assignTrips(): MutableList<DBTrip> {
+    private fun assignTrips(): MutableList<TrackerDBTrip> {
         Logger.i("Assigning trips")
         // now assign the final activities
-        val tripsList: MutableList<DBTrip> = mutableListOf()
-        var currentTrip = DBTrip(0, 0, DetectedActivity.STILL, this.chart)
+        val tripsList: MutableList<TrackerDBTrip> = mutableListOf()
+        var currentTrip = TrackerDBTrip(0, 0, DetectedActivity.STILL, this.chart)
         for ((index, element) in chart.withIndex()) {
             // just in case the tag was not balanced in the end we allow also element.activityIn != INVALID_VALUE
             if (element.activityOut != INVALID_VALUE || element.activityIn != INVALID_VALUE) {
@@ -49,7 +49,7 @@ class TripsComputation(val context: Context, val chart: MutableList<MobilityData
                 currentTrip.finalise(true)
                 tripsList.add(currentTrip)
                 Logger.i("Added ${currentTrip.description()}")
-                currentTrip = DBTrip(index, 0, element.activityIn, this.chart)
+                currentTrip = TrackerDBTrip(index, 0, element.activityIn, this.chart)
             }
         }
         if (tripsList.size > 0 && currentTrip.endTime == 0 && currentTrip.startTime != chart.size - 1) {
@@ -67,7 +67,7 @@ class TripsComputation(val context: Context, val chart: MutableList<MobilityData
      * or vehicles that are too short, etc.
      *
      */
-    private fun correctTrips(): MutableList<DBTrip> {
+    private fun correctTrips(): MutableList<TrackerDBTrip> {
         Logger.i("Correcting trips")
         // if the first trip in the day is a still, assign start to midnight
         if (trips.size > 0 && trips[0].activityType == DetectedActivity.STILL) {
@@ -88,7 +88,7 @@ class TripsComputation(val context: Context, val chart: MutableList<MobilityData
             chart[0].timeInMSecs = TimeUtils.midnightInMsecs(chart[0].timeInMSecs)
             trips[0].startTime = 0
         }
-        val finalTrips: MutableList<DBTrip> = mutableListOf()
+        val finalTrips: MutableList<TrackerDBTrip> = mutableListOf()
         for ((index, trip) in trips.withIndex()) {
             if (trip.activityType == DetectedActivity.STILL
                 && (trip.getDuration(chart) < MobilityComputation.SHORT_ACTIVITY_DURATION)
@@ -118,7 +118,7 @@ class TripsComputation(val context: Context, val chart: MutableList<MobilityData
                     chart
                 ))
             ) {
-                Logger.i("CorrectTrips: changing type of ${trip.description()} to ${DBActivity.getActivityTypeString(DetectedActivity.ON_BICYCLE)}")
+                Logger.i("CorrectTrips: changing type of ${trip.description()} to ${TrackerDBActivity.getActivityTypeString(DetectedActivity.ON_BICYCLE)}")
                 trip.activityType = DetectedActivity.ON_BICYCLE
                 Logger.i("CorrectTrips: adding  ${trip.description()}")
                 finalTrips.add(trip)
@@ -137,7 +137,7 @@ class TripsComputation(val context: Context, val chart: MutableList<MobilityData
                 && trips[index - 1].activityType == IN_VEHICLE
                 && (trip.getSpeedInMPerSecs() > 11)
             ) {
-                Logger.i("CorrectTrips: changing type of ${trip.description()} to ${DBActivity.getActivityTypeString(IN_VEHICLE)}")
+                Logger.i("CorrectTrips: changing type of ${trip.description()} to ${TrackerDBActivity.getActivityTypeString(IN_VEHICLE)}")
                 trip.activityType = IN_VEHICLE
                 Logger.i("CorrectTrips: adding  ${trip.description()}")
                 finalTrips.add(trip)
@@ -155,7 +155,7 @@ class TripsComputation(val context: Context, val chart: MutableList<MobilityData
      *
      * @param trips
      */
-    private fun incrementAllTripIndexByOne(trips: MutableList<DBTrip>) {
+    private fun incrementAllTripIndexByOne(trips: MutableList<TrackerDBTrip>) {
         for (trip in trips) {
             trip.startTime++
             trip.endTime++
@@ -171,8 +171,8 @@ class TripsComputation(val context: Context, val chart: MutableList<MobilityData
      */
     private fun recoverLostActivities(context: Context) {
         Logger.i("Recovering lost activities")
-        val useGlobalSED = Preferences.config(context).compactLocations
-        val finalTrips = mutableListOf<DBTrip>()
+        val useGlobalSED = TrackerPreferences.config(context).compactLocations
+        val finalTrips = mutableListOf<TrackerDBTrip>()
         for (trip in trips) {
             if ((trip.activityType == DetectedActivity.STILL || trip.activityType == INVALID_VALUE) && trip.getDuration(chart) > MobilityComputation.SHORT_ACTIVITY_DURATION * 2) {
                 val locationUtilities = LocationUtilities()
@@ -208,7 +208,7 @@ class TripsComputation(val context: Context, val chart: MutableList<MobilityData
      * for example if a car trip has a radius of gyration <200m and there is no other driving during the day
      * then it is suspicious
      */
-    private fun correctSuspiciousTrips(chart: MutableList<MobilityData>): MutableList<DBTrip> {
+    private fun correctSuspiciousTrips(chart: MutableList<MobilityData>): MutableList<TrackerDBTrip> {
         val summaryData = SummaryData(trips, chart)
         for (trip in trips) {
             if (trip.reliable) continue
@@ -255,10 +255,10 @@ class TripsComputation(val context: Context, val chart: MutableList<MobilityData
     /**
      * This takes sequences of walking walking walking and turns them into just one overarching walking
      */
-    private fun compactConsecutiveTrips(): MutableList<DBTrip> {
-        val finalTrips: MutableList<DBTrip> = mutableListOf()
+    private fun compactConsecutiveTrips(): MutableList<TrackerDBTrip> {
+        val finalTrips: MutableList<TrackerDBTrip> = mutableListOf()
         if (trips.size > 0) finalTrips.add(trips[0])
-        var prevTrip: DBTrip? = null
+        var prevTrip: TrackerDBTrip? = null
         for (index in 1 until trips.size) {
             val currentTrip = trips[index]
             if (prevTrip == null)
@@ -279,10 +279,10 @@ class TripsComputation(val context: Context, val chart: MutableList<MobilityData
      */
     private fun finaliseLocations() {
         Logger.i("Finalising locations")
-        if (TrackerService.currentTracker != null && Preferences.config(TrackerService.currentTracker!!).useStayPoints) {
+        if (TrackerService.currentTracker != null && TrackerPreferences.config(TrackerService.currentTracker!!).useStayPoints) {
             for (dbTrip in trips) {
                 if (dbTrip.activityType == DetectedActivity.STILL) {
-                    val allLocations: MutableList<DBLocation> = mutableListOf()
+                    val allLocations: MutableList<TrackerDBLocation> = mutableListOf()
                     for (location in dbTrip.locations) {
                         allLocations.add(location)
                         if (location.locationsSupportingCentroid.size > 0)

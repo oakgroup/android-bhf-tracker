@@ -11,8 +11,8 @@ import android.os.Build
 import android.text.TextUtils
 import androidx.core.app.ActivityCompat
 import androidx.viewbinding.BuildConfig
-import com.active.orbit.tracker.core.database.models.DBActivity
-import com.active.orbit.tracker.core.database.tables.TableActivities
+import com.active.orbit.tracker.core.database.models.TrackerDBActivity
+import com.active.orbit.tracker.core.database.tables.TrackerTableActivities
 import com.active.orbit.tracker.core.tracker.TrackerService
 import com.active.orbit.tracker.core.utils.Logger
 import com.active.orbit.tracker.core.utils.ThreadHandler.backgroundThread
@@ -24,7 +24,7 @@ import java.util.*
 class ActivityMonitor(private var callingService: TrackerService) {
 
     private var activityTransitionsReceiver: ActivityTransitionsReceiver? = null
-    var activitiesList: MutableList<DBActivity> = mutableListOf()
+    var activitiesList: MutableList<TrackerDBActivity> = mutableListOf()
 
     /**
      *  The intent action triggered by the identification of a transition
@@ -89,7 +89,7 @@ class ActivityMonitor(private var callingService: TrackerService) {
      */
     private fun flushToDatabase() {
         backgroundThread {
-            TableActivities.upsert(callingService, activitiesList)
+            TrackerTableActivities.upsert(callingService, activitiesList)
             activitiesList = mutableListOf()
         }
     }
@@ -99,7 +99,7 @@ class ActivityMonitor(private var callingService: TrackerService) {
      */
     fun flush(context: Context) {
         backgroundThread {
-            TableActivities.upsert(context, activitiesList)
+            TrackerTableActivities.upsert(context, activitiesList)
             activitiesList = mutableListOf()
         }
     }
@@ -218,7 +218,7 @@ class ActivityMonitor(private var callingService: TrackerService) {
                         val eventTimeInMsecs = TimeUtils.fromEventTimeToEpoch(transitionEvent.getElapsedRealTimeNanos())
                         Logger.d("Transition: " + getActivityType(transitionEvent.activityType) + " (" + getTransitionTypeString(transitionType) + ")" + "   " + SimpleDateFormat("HH:mm:ss", Locale.US).format(Date()))
                         // insert the  activity into the db
-                        val dbActivity = DBActivity()
+                        val dbActivity = TrackerDBActivity()
                         dbActivity.activityType = transitionEvent.activityType
                         dbActivity.transitionType = transitionType
                         dbActivity.timeInMillis = eventTimeInMsecs
