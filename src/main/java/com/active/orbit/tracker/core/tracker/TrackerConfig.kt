@@ -1,7 +1,10 @@
 package com.active.orbit.tracker.core.tracker
 
+import com.active.orbit.tracker.core.utils.Constants
+
 class TrackerConfig {
 
+    var baseUrl = Constants.EMPTY
     var useStepCounter = true
     var useActivityRecognition = true
     var useLocationTracking = true

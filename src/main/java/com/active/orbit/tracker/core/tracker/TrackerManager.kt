@@ -84,6 +84,7 @@ class TrackerManager private constructor(private val activity: AppCompatActivity
      * to use
      */
     fun askForPermissionAndStartTracker(config: TrackerConfig) {
+        Preferences.backend(activity).baseUrl = config.baseUrl
         Preferences.tracker(activity).useActivityRecognition = config.useActivityRecognition
         Preferences.tracker(activity).useLocationTracking = config.useLocationTracking
         Preferences.tracker(activity).useStepCounter = config.useStepCounter
