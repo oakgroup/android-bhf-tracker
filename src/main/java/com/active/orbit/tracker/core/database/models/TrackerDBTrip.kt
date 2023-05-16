@@ -2,6 +2,7 @@ package com.active.orbit.tracker.core.database.models
 
 import androidx.room.Entity
 import androidx.room.Ignore
+import androidx.room.Index
 import androidx.room.PrimaryKey
 import com.active.orbit.tracker.core.computation.MobilityComputation
 import com.active.orbit.tracker.core.computation.data.MobilityData
@@ -16,8 +17,12 @@ import kotlin.math.abs
 import kotlin.math.max
 
 @Entity(
-    tableName = "trips"
+    tableName = "trips",
+    indices = [
+        Index(value = ["startTime"], unique = true)
+    ]
 )
+
 data class TrackerDBTrip(@PrimaryKey(autoGenerate = true) var idTrip: Int = 0) : TrackerBaseModel {
 
     var startTime: Int = 0
@@ -54,7 +59,7 @@ data class TrackerDBTrip(@PrimaryKey(autoGenerate = true) var idTrip: Int = 0) :
     }
 
     fun description(): String {
-        return "[$idTrip - ${TimeUtils.formatMillis(getStartTime(chart), "HH:mm:ss")} - ${TimeUtils.formatMillis(getEndTime(chart), "HH:mm:ss")} - ${TrackerDBActivity.getActivityTypeString(activityType)} - $radiusInMeters - $distanceInMeters - $steps - $timeInMillis - $timeZone - $uploaded]"
+        return "[$idTrip - ${TimeUtils.formatMillis(getStartTime(chart), "HH:mm:ss")} - ${TimeUtils.formatMillis(getEndTime(chart), "HH:mm:ss")} - ${TrackerDBActivity.getActivityTypeString(activityType)} - $radiusInMeters - $distanceInMeters - $steps - ${TimeUtils.formatMillis(timeInMillis, Constants.DATE_FORMAT_UTC)} - $timeZone - $uploaded]"
     }
 
     override fun isValid(): Boolean {

@@ -1,13 +1,17 @@
 package com.active.orbit.tracker.core.database.models
 
 import androidx.room.Entity
+import androidx.room.Index
 import androidx.room.PrimaryKey
 import com.active.orbit.tracker.core.generics.TrackerBaseModel
 import com.active.orbit.tracker.core.utils.Constants
 import com.active.orbit.tracker.core.utils.TimeUtils
 
 @Entity(
-    tableName = "batteries"
+    tableName = "batteries",
+    indices = [
+        Index(value = ["timeInMillis"], unique = true)
+    ]
 )
 data class TrackerDBBattery(@PrimaryKey(autoGenerate = true) var idBattery: Int = 0) : TrackerBaseModel {
 

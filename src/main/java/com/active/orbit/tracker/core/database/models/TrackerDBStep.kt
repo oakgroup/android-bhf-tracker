@@ -2,6 +2,7 @@ package com.active.orbit.tracker.core.database.models
 
 import androidx.room.Entity
 import androidx.room.Ignore
+import androidx.room.Index
 import androidx.room.PrimaryKey
 import com.active.orbit.tracker.core.generics.TrackerBaseModel
 import com.active.orbit.tracker.core.monitors.StepMonitor
@@ -9,7 +10,10 @@ import com.active.orbit.tracker.core.utils.Constants
 import com.active.orbit.tracker.core.utils.TimeUtils
 
 @Entity(
-    tableName = "steps"
+    tableName = "steps",
+    indices = [
+        Index(value = ["timeInMillis"], unique = true)
+    ]
 )
 data class TrackerDBStep(@PrimaryKey(autoGenerate = true) var idStep: Int = 0) : TrackerBaseModel {
 

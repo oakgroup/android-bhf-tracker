@@ -1,6 +1,7 @@
 package com.active.orbit.tracker.core.database.models
 
 import androidx.room.Entity
+import androidx.room.Index
 import androidx.room.PrimaryKey
 import com.active.orbit.tracker.core.generics.TrackerBaseModel
 import com.active.orbit.tracker.core.monitors.ActivityMonitor
@@ -9,7 +10,10 @@ import com.active.orbit.tracker.core.utils.TimeUtils
 import com.google.android.gms.location.DetectedActivity
 
 @Entity(
-    tableName = "activities"
+    tableName = "activities",
+    indices = [
+        Index(value = ["timeInMillis"], unique = true)
+    ]
 )
 data class TrackerDBActivity(@PrimaryKey(autoGenerate = true) var idActivity: Int = 0) : TrackerBaseModel {
 
@@ -43,7 +47,7 @@ data class TrackerDBActivity(@PrimaryKey(autoGenerate = true) var idActivity: In
     }
 
     fun description(): String {
-        return "[$idActivity - $activityType - $transitionType - $timeInMillis - $timeZone - $uploaded]"
+        return "[$idActivity - ${getActivityTypeString(activityType)} - ${getTransitionType(transitionType)} - ${TimeUtils.formatMillis(timeInMillis, Constants.DATE_FORMAT_UTC)} - $timeZone - $uploaded]"
     }
 
     override fun isValid(): Boolean {

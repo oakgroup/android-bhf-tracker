@@ -3,13 +3,17 @@ package com.active.orbit.tracker.core.database.models
 import android.location.Location
 import androidx.room.Entity
 import androidx.room.Ignore
+import androidx.room.Index
 import androidx.room.PrimaryKey
 import com.active.orbit.tracker.core.generics.TrackerBaseModel
 import com.active.orbit.tracker.core.utils.Constants
 import com.active.orbit.tracker.core.utils.TimeUtils
 
 @Entity(
-    tableName = "locations"
+    tableName = "locations",
+    indices = [
+        Index(value = ["timeInMillis"], unique = true)
+    ]
 )
 data class TrackerDBLocation(@PrimaryKey(autoGenerate = true) var idLocation: Int = 0) : TrackerBaseModel {
 
