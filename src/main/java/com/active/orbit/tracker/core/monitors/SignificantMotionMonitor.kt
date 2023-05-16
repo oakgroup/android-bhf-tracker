@@ -10,8 +10,8 @@ import com.active.orbit.tracker.core.utils.Logger
 
 class SignificantMotionMonitor(val trackerService: TrackerService?) {
 
-    private var sensorManager: SensorManager = trackerService?.getSystemService(Context.SENSOR_SERVICE) as SensorManager
-    var motionSensor: Sensor? = sensorManager.getDefaultSensor(Sensor.TYPE_SIGNIFICANT_MOTION)
+    private var sensorManager: SensorManager? = trackerService?.getSystemService(Context.SENSOR_SERVICE) as SensorManager?
+    private var motionSensor: Sensor? = sensorManager?.getDefaultSensor(Sensor.TYPE_SIGNIFICANT_MOTION)
     private val triggerEventListener: TriggerEventListener
 
     init {
@@ -28,7 +28,7 @@ class SignificantMotionMonitor(val trackerService: TrackerService?) {
      * @return T if sensor successfully started,  otherwise F
      */
     fun startListener(): Boolean {
-        val started = sensorManager.requestTriggerSensor(triggerEventListener, motionSensor)
+        val started = sensorManager?.requestTriggerSensor(triggerEventListener, motionSensor) == true
         if (started) {
             Logger.i("Motion Sensor started - flushing and stopping locations")
             TrackerService.currentTracker?.flushDataToDB()
