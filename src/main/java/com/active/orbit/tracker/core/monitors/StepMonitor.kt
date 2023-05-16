@@ -10,6 +10,7 @@ import android.os.Handler
 import android.os.Looper
 import com.active.orbit.tracker.core.database.models.TrackerDBStep
 import com.active.orbit.tracker.core.database.tables.TrackerTableSteps
+import com.active.orbit.tracker.core.utils.Constants
 import com.active.orbit.tracker.core.utils.Logger
 import com.active.orbit.tracker.core.utils.ThreadHandler.backgroundThread
 import com.active.orbit.tracker.core.utils.TimeUtils
@@ -81,7 +82,7 @@ class StepMonitor internal constructor(private var context: Context?) {
      * and it sets the variable lastStepsDetected
      */
     private fun storeSteps(stepsData: TrackerDBStep) {
-        Logger.i("Found ${stepsData.steps} steps at ${TimeUtils.formatMillis(stepsData.timeInMillis, "HH:mm:ss")}")
+        Logger.i("Found ${stepsData.steps} steps at ${TimeUtils.formatMillis(stepsData.timeInMillis, Constants.DATE_FORMAT_HOUR_MINUTE_SECONDS)}")
         stepsList.add(stepsData)
         backgroundThread {
             if (context != null && stepsList.size > MAX_SIZE) {

@@ -59,7 +59,7 @@ data class TrackerDBTrip(@PrimaryKey(autoGenerate = true) var idTrip: Int = 0) :
     }
 
     fun description(): String {
-        return "[$idTrip - ${TimeUtils.formatMillis(getStartTime(chart), "HH:mm:ss")} - ${TimeUtils.formatMillis(getEndTime(chart), "HH:mm:ss")} - ${TrackerDBActivity.getActivityTypeString(activityType)} - $radiusInMeters - $distanceInMeters - $steps - ${TimeUtils.formatMillis(timeInMillis, Constants.DATE_FORMAT_UTC)} - $timeZone - $uploaded]"
+        return "[$idTrip - ${TimeUtils.formatMillis(getStartTime(chart), Constants.DATE_FORMAT_HOUR_MINUTE_SECONDS)} - ${TimeUtils.formatMillis(getEndTime(chart), Constants.DATE_FORMAT_HOUR_MINUTE_SECONDS)} - ${TrackerDBActivity.getActivityTypeString(activityType)} - $radiusInMeters - $distanceInMeters - $steps - ${TimeUtils.formatMillis(timeInMillis, Constants.DATE_FORMAT_UTC)} - $timeZone - $uploaded]"
     }
 
     override fun isValid(): Boolean {

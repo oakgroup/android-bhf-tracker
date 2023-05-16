@@ -2,6 +2,7 @@ package com.active.orbit.tracker.core.computation.data
 
 import com.active.orbit.tracker.core.database.models.TrackerDBActivity
 import com.active.orbit.tracker.core.database.models.TrackerDBLocation
+import com.active.orbit.tracker.core.utils.Constants
 import com.active.orbit.tracker.core.utils.TimeUtils
 import com.google.android.gms.location.ActivityTransition
 
@@ -31,30 +32,19 @@ class MobilityData(var timeInMSecs: Long) {
     var assignedActivity: Int = INVALID_VALUE
 
     override fun toString(): String {
-        //return "MobilityElementData(timeInMSecs=${Utils.millisecondsToString(timeInMSecs, "HH:mm:ss")},  steps=$steps, cadence=$cadence, cadenceInLastNMinutes=$cadenceInLastNMinutes, speed=$speed, speedInLastNMinutes=$speedInLastNMinutes, activity=${ActivityData.getActivityTypeString(activity)}, activitiesInLastNMinutes=$activitiesInLastNMinutes, transitionType=${ActivityData.getTransitionType(transitionType)})"
-        return "${
-            TimeUtils.formatMillis(timeInMSecs, "HH:mm:ss")
-        },  ${
-            if (cadence == INVALID_VALUE) " , ," else "$steps, $cadence,"
-        } ${
-            if (activityOut == INVALID_VALUE) " ," else {
-                " ${TrackerDBActivity.getActivityTypeString(activityOut)} " +
-                        TrackerDBActivity.getTransitionType(ActivityTransition.ACTIVITY_TRANSITION_EXIT) + ", "
-            }
-        } ${
-            if (activityIn == INVALID_VALUE) ", , " else {
-                " ${TrackerDBActivity.getActivityTypeString(activityIn)} " +
-                        TrackerDBActivity.getTransitionType(ActivityTransition.ACTIVITY_TRANSITION_ENTER) + ", "
-            }
-        } ${
-            if (speed == INVALID_VALUE.toDouble()) ", , " else {
-                "$speed, $distance,"
-            }
-        } ${
-            if (assignedActivity == INVALID_VALUE) ", " else {
-                "$TrackerDBActivity.getActivityTypeString(assignedActivity),"
-            }
-        }"
+        val stringBuilder = StringBuilder()
+        stringBuilder.append(TimeUtils.formatMillis(timeInMSecs, Constants.DATE_FORMAT_HOUR_MINUTE_SECONDS))
+        stringBuilder.append(", ")
+        stringBuilder.append(if (cadence == INVALID_VALUE) " INVALID, INVALID" else "$steps, $cadence")
+        stringBuilder.append(", ")
+        stringBuilder.append(if (activityIn == INVALID_VALUE) " INVALID, INVALID" else "${TrackerDBActivity.getActivityTypeString(activityIn)}, ${TrackerDBActivity.getTransitionType(ActivityTransition.ACTIVITY_TRANSITION_ENTER)}")
+        stringBuilder.append(", ")
+        stringBuilder.append(if (activityOut == INVALID_VALUE) " INVALID, INVALID" else "${TrackerDBActivity.getActivityTypeString(activityOut)}, ${TrackerDBActivity.getTransitionType(ActivityTransition.ACTIVITY_TRANSITION_EXIT)}")
+        stringBuilder.append(", ")
+        stringBuilder.append(if (speed == INVALID_VALUE.toDouble()) " INVALID, INVALID" else "$speed, $distance")
+        stringBuilder.append(", ")
+        stringBuilder.append(if (assignedActivity == INVALID_VALUE) " INVALID" else TrackerDBActivity.getActivityTypeString(assignedActivity))
+        return stringBuilder.toString()
     }
 
     /**

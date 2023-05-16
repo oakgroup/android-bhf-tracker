@@ -8,6 +8,7 @@ import com.active.orbit.tracker.core.observers.TrackerObserver
 import com.active.orbit.tracker.core.observers.TrackerObserverType
 import com.active.orbit.tracker.core.preferences.engine.TrackerPreferences
 import com.active.orbit.tracker.core.tracker.TrackerService
+import com.active.orbit.tracker.core.utils.Constants
 import com.active.orbit.tracker.core.utils.LocationUtilities
 import com.active.orbit.tracker.core.utils.Logger
 import com.active.orbit.tracker.core.utils.ThreadHandler.backgroundThread
@@ -37,7 +38,7 @@ class DailyComputation(private val context: Context, var startTime: Long, var en
 
     @WorkerThread
     private fun computeResults() {
-        Logger.d("Computing day results for ${TimeUtils.formatMillis(startTime, "dd/MM/yyyy")}")
+        Logger.d("Computing day results for ${TimeUtils.formatMillis(startTime, Constants.DATE_FORMAT_UTC)}")
         activities = collectActivitiesFromDatabase(TrackerService.currentTracker)
         batteries = collectBatteriesFromDatabase()
         heartRates = collectHeartRatesFromDatabase(TrackerService.currentTracker)
