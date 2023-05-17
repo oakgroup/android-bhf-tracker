@@ -159,7 +159,11 @@ class TrackerService : Service() {
         Logger.d("TrackerService OnDestroy")
         stopSensors()
         wakeLockHandler?.removeCallbacks(updateTimerThread)
-        wakeLock?.release()
+        try {
+            wakeLock?.release()
+        } catch (e: Exception) {
+            Logger.e("Exception releasing the wake lock from onDestroy")
+        }
         currentTracker = null
     }
 
@@ -205,9 +209,13 @@ class TrackerService : Service() {
                         significantMotionSensor?.startListener()
                         isContDownTimerRunning = false
                         savedLocation = null
-                        wakeLock?.release()
+                        try {
+                            Logger.d("Removing the wakelock")
+                            wakeLock?.release()
+                        } catch (e: Exception) {
+                            Logger.e("Exception releasing the wake lock")
+                        }
                         countDownTimer?.cancel()
-                        Logger.d("Removing the wakelock")
                     } else
                         countDownTimer?.start()
                 }
