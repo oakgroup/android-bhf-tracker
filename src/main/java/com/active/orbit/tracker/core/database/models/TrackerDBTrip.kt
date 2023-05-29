@@ -406,7 +406,7 @@ data class TrackerDBTrip(@PrimaryKey(autoGenerate = true) var idTrip: Int = 0) :
         return finalList
     }
 
-    fun findWalkingMovementInStepsList(steps: MutableList<TrackerDBStep>, activityType: Int, chart: MutableList<MobilityData>): MutableList<TrackerDBTrip> {
+    private fun findWalkingMovementInStepsList(steps: MutableList<TrackerDBStep>, activityType: Int, chart: MutableList<MobilityData>): MutableList<TrackerDBTrip> {
         val tripsList = mutableListOf<TrackerDBTrip>()
 
         var prevSteps: TrackerDBStep? = null

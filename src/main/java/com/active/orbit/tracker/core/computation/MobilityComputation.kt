@@ -1,6 +1,7 @@
 package com.active.orbit.tracker.core.computation
 
 import android.content.Context
+import androidx.annotation.WorkerThread
 import com.active.orbit.tracker.core.computation.data.MobilityData
 import com.active.orbit.tracker.core.computation.data.MobilityData.Companion.INVALID_VALUE
 import com.active.orbit.tracker.core.computation.data.SummaryData
@@ -8,6 +9,7 @@ import com.active.orbit.tracker.core.database.models.TrackerDBActivity
 import com.active.orbit.tracker.core.database.models.TrackerDBLocation
 import com.active.orbit.tracker.core.database.models.TrackerDBStep
 import com.active.orbit.tracker.core.database.models.TrackerDBTrip
+import com.active.orbit.tracker.core.database.tables.TrackerTableTrips
 import com.active.orbit.tracker.core.generics.TrackerBaseModel
 import com.active.orbit.tracker.core.monitors.StepMonitor
 import com.active.orbit.tracker.core.utils.Logger
@@ -38,6 +40,7 @@ class MobilityComputation(val context: Context) {
      * This creates the mobility chart, it normalises the values, then recognises trips
      * and creates summaries for the data provided
      */
+    @WorkerThread
     fun computeResults() {
         val boundariesList = mergeAllBoundaries(steps, locations, activities)
         for (boundary in boundariesList) {
@@ -89,6 +92,9 @@ class MobilityComputation(val context: Context) {
         val tripsComputation = TripsComputation(context, chart)
         trips = tripsComputation.trips
         summaryData = SummaryData(trips, chart)
+
+        TrackerTableTrips.deleteTodayTrips(context)
+        TrackerTableTrips.upsert(context, trips)
     }
 
 

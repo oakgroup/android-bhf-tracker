@@ -5,6 +5,7 @@ import androidx.annotation.WorkerThread
 import com.active.orbit.tracker.core.database.engine.TrackerDatabase
 import com.active.orbit.tracker.core.database.models.TrackerDBTrip
 import com.active.orbit.tracker.core.utils.Logger
+import com.active.orbit.tracker.core.utils.TimeUtils
 
 object TrackerTableTrips {
 
@@ -26,6 +27,17 @@ object TrackerTableTrips {
         } catch (e: Exception) {
             e.printStackTrace()
             Logger.e("Error on getting not uploaded trips from database ${e.localizedMessage}")
+        }
+        return arrayListOf()
+    }
+
+    @WorkerThread
+    fun getNotUploadedBefore(context: Context, millis: Long): List<TrackerDBTrip> {
+        try {
+            return TrackerDatabase.getInstance(context).getTrips().getNotUploadedBefore(millis)
+        } catch (e: Exception) {
+            e.printStackTrace()
+            Logger.e("Error on getting not uploaded trips before $millis from database ${e.localizedMessage}")
         }
         return arrayListOf()
     }
@@ -64,6 +76,17 @@ object TrackerTableTrips {
         } catch (e: Exception) {
             e.printStackTrace()
             Logger.e("Error on upsert trips to database ${e.localizedMessage}")
+        }
+    }
+
+    @WorkerThread
+    fun deleteTodayTrips(context: Context) {
+        try {
+            val currentMidnight = TimeUtils.midnightInMsecs(System.currentTimeMillis())
+            TrackerDatabase.getInstance(context).getTrips().deleteTodayTrips(currentMidnight)
+        } catch (e: Exception) {
+            e.printStackTrace()
+            Logger.e("Error on delete today trips from database ${e.localizedMessage}")
         }
     }
 

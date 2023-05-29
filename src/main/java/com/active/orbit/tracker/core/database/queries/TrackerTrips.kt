@@ -12,6 +12,9 @@ interface TrackerTrips {
     @Query("SELECT * FROM trips WHERE uploaded = 0 ORDER BY timeInMillis")
     fun getNotUploaded(): List<TrackerDBTrip>
 
+    @Query("SELECT * FROM trips WHERE uploaded = 0 AND timeInMillis < :millis ORDER BY timeInMillis")
+    fun getNotUploadedBefore(millis: Long): List<TrackerDBTrip>
+
     @Query("SELECT count(0) FROM trips WHERE uploaded = 0 AND timeInMillis < :millis ORDER BY timeInMillis")
     fun getNotUploadedCountBefore(millis: Long): Int
 
@@ -33,6 +36,9 @@ interface TrackerTrips {
         insert(models)
         update(models)
     }
+
+    @Query("DELETE FROM trips WHERE startTime > :startOfTheDay")
+    fun deleteTodayTrips(startOfTheDay: Long)
 
     @Query("DELETE FROM trips WHERE idTrip == :idTrip")
     fun delete(idTrip: Int)

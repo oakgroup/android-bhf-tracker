@@ -14,6 +14,7 @@ import com.active.orbit.tracker.core.utils.Constants
 import com.active.orbit.tracker.core.utils.Logger
 import com.active.orbit.tracker.core.utils.ThreadHandler.backgroundThread
 import com.active.orbit.tracker.core.utils.ThreadHandler.mainThread
+import com.active.orbit.tracker.core.utils.TimeUtils
 import com.google.gson.Gson
 import com.google.gson.JsonSyntaxException
 import com.google.gson.reflect.TypeToken
@@ -31,7 +32,9 @@ object TripsUploader {
 
         backgroundThread {
 
-            val models = TrackerTableTrips.getNotUploaded(context)
+            // we can only send the trips up to yesterday night
+            val currentMidnight = TimeUtils.midnightInMsecs(System.currentTimeMillis())
+            val models = TrackerTableTrips.getNotUploadedBefore(context, currentMidnight)
             if (models.isEmpty()) {
                 Logger.d("No trips to upload on server")
                 listener?.onResult(false)
