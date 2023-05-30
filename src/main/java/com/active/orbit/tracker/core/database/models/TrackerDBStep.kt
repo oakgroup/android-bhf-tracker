@@ -30,7 +30,7 @@ data class TrackerDBStep(@PrimaryKey(autoGenerate = true) var idStep: Int = 0) :
     }
 
     fun description(): String {
-        return "[$idStep - $steps - $timeInMillis - $timeZone - $uploaded]"
+        return "[$idStep - $steps - ${TimeUtils.formatMillis(timeInMillis, Constants.DATE_FORMAT_UTC)} - $timeZone - $uploaded]"
     }
 
     override fun isValid(): Boolean {
