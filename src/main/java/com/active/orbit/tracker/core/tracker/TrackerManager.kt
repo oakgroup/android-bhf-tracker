@@ -343,6 +343,7 @@ class TrackerManager private constructor(private val activity: AppCompatActivity
     fun logout(context: Context) {
         stopTracker()
         saveUserRegistrationId(null)
+        TrackerBasePreferences.logout(activity)
         TrackerDatabase.getInstance(context).logout()
     }
 }
