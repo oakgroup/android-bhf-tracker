@@ -1,6 +1,7 @@
 package com.active.orbit.tracker.core.upload.uploaders
 
 import android.content.Context
+import com.active.orbit.tracker.core.computation.DailyComputation
 import com.active.orbit.tracker.core.database.tables.TrackerTableTrips
 import com.active.orbit.tracker.core.deserialization.UploadTripsMap
 import com.active.orbit.tracker.core.listeners.ResultListener
@@ -34,6 +35,29 @@ object TripsUploader {
 
             // we can only send the trips up to yesterday night
             val currentMidnight = TimeUtils.midnightInMsecs(System.currentTimeMillis())
+
+            var lastTripsUpload = TrackerPreferences.lifecycle(context).lastTripsUpload
+            if (lastTripsUpload == null || lastTripsUpload == Constants.INVALID.toLong()) {
+                val firstInstall = TrackerPreferences.lifecycle(context).firstInstall
+                lastTripsUpload = if (firstInstall == null || firstInstall == Constants.INVALID.toLong()) {
+                    TimeUtils.midnightInMsecs(System.currentTimeMillis())
+                } else {
+                    TimeUtils.midnightInMsecs(firstInstall)
+                }
+            }
+
+            if (lastTripsUpload >= (currentMidnight - TimeUtils.ONE_DAY_MILLIS)) {
+                Logger.d("Trying to upload trips on server too soon")
+                listener?.onResult(false)
+                return@backgroundThread
+            }
+
+            while (lastTripsUpload < currentMidnight) {
+                val dataComputer = DailyComputation(context, lastTripsUpload, currentMidnight)
+                dataComputer.computeResults(false)
+                lastTripsUpload += TimeUtils.ONE_DAY_MILLIS
+            }
+
             val models = TrackerTableTrips.getNotUploadedBefore(context, currentMidnight)
             if (models.isEmpty()) {
                 Logger.d("No trips to upload on server")
@@ -68,6 +92,7 @@ object TripsUploader {
                     if (map?.isValid() == true) {
                         if (map.inserted!! >= models.size) {
                             Logger.d("Trips uploaded to server ${map.inserted} success")
+                            TrackerPreferences.lifecycle(context).lastTripsUpload = lastTripsUpload
                             backgroundThread {
                                 // mark trips as uploaded
                                 models.forEach { it.uploaded = true }

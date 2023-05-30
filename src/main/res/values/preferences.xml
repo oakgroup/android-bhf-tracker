@@ -19,6 +19,7 @@
 
     <!-- lifecycle preferences -->
     <string name="tracker_preference_lifecycle_first_install_key" translatable="false">tracker.lifecycle.first.install</string>
+    <string name="tracker_preference_lifecycle_last_trips_upload_key" translatable="false">tracker.lifecycle.last.trips.upload</string>
 
     <!-- user preferences -->
     <string name="tracker_preference_user_id_user_key" translatable="false">tracker.user.id.user</string>
