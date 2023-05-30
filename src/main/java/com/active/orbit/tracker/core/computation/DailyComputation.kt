@@ -37,7 +37,7 @@ class DailyComputation(private val context: Context, var startTime: Long, var en
     }
 
     @WorkerThread
-    private fun computeResults() {
+    fun computeResults(notifyObserver: Boolean = true) {
         Logger.d("Computing day results for ${TimeUtils.formatMillis(startTime, Constants.DATE_FORMAT_UTC)}")
         activities = collectActivitiesFromDatabase(TrackerService.currentTracker)
         batteries = collectBatteriesFromDatabase()
@@ -52,15 +52,17 @@ class DailyComputation(private val context: Context, var startTime: Long, var en
             mobilityComputation.computeResults()
         }
 
-        mainThread {
-            // update observer
-            trackerObserver?.onTrackerUpdate(TrackerObserverType.ACTIVITIES, activities)
-            trackerObserver?.onTrackerUpdate(TrackerObserverType.BATTERIES, batteries)
-            trackerObserver?.onTrackerUpdate(TrackerObserverType.HEART_RATES, heartRates)
-            trackerObserver?.onTrackerUpdate(TrackerObserverType.LOCATIONS, locations)
-            trackerObserver?.onTrackerUpdate(TrackerObserverType.STEPS, steps)
-            if (computeChartResults) {
-                trackerObserver?.onTrackerUpdate(TrackerObserverType.MOBILITY, mobilityComputation)
+        if (notifyObserver) {
+            mainThread {
+                // update observer
+                trackerObserver?.onTrackerUpdate(TrackerObserverType.ACTIVITIES, activities)
+                trackerObserver?.onTrackerUpdate(TrackerObserverType.BATTERIES, batteries)
+                trackerObserver?.onTrackerUpdate(TrackerObserverType.HEART_RATES, heartRates)
+                trackerObserver?.onTrackerUpdate(TrackerObserverType.LOCATIONS, locations)
+                trackerObserver?.onTrackerUpdate(TrackerObserverType.STEPS, steps)
+                if (computeChartResults) {
+                    trackerObserver?.onTrackerUpdate(TrackerObserverType.MOBILITY, mobilityComputation)
+                }
             }
         }
     }
