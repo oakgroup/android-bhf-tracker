@@ -21,6 +21,7 @@ import com.active.orbit.tracker.core.managers.TrackerUserManager
 import com.active.orbit.tracker.core.preferences.engine.TrackerBasePreferences
 import com.active.orbit.tracker.core.preferences.engine.TrackerPreferences
 import com.active.orbit.tracker.core.restarter.TrackerRestarter
+import com.active.orbit.tracker.core.utils.Constants
 import com.active.orbit.tracker.core.utils.Logger
 import com.active.orbit.tracker.core.utils.ThreadHandler.backgroundThread
 
@@ -331,6 +332,11 @@ class TrackerManager private constructor(private val activity: AppCompatActivity
 
     fun saveUserRegistrationId(userId: String?) {
         TrackerPreferences.user(activity).idUser = userId
+
+        val firstInstall = TrackerPreferences.lifecycle(activity).firstInstall
+        if (firstInstall == null || firstInstall == Constants.INVALID.toLong()) {
+            TrackerPreferences.lifecycle(activity).firstInstall = System.currentTimeMillis()
+        }
     }
 
     @WorkerThread
