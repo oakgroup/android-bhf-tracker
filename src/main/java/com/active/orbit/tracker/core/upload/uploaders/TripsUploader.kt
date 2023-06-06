@@ -85,8 +85,14 @@ object TripsUploader {
                         map = Gson().fromJson<UploadTripsMap>(response, object : TypeToken<UploadTripsMap>() {}.type)
                     } catch (e: JsonSyntaxException) {
                         Logger.e("Error parsing trips json response")
+                        isUploading = false
+                        listener?.onResult(false)
+                        return
                     } catch (e: IllegalStateException) {
                         Logger.e("Error trips json response")
+                        isUploading = false
+                        listener?.onResult(false)
+                        return
                     }
 
                     if (map?.isValid() == true) {

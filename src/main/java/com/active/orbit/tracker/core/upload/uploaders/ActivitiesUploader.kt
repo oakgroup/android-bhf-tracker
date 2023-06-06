@@ -58,8 +58,14 @@ object ActivitiesUploader {
                         map = Gson().fromJson<UploadActivitiesMap>(response, object : TypeToken<UploadActivitiesMap>() {}.type)
                     } catch (e: JsonSyntaxException) {
                         Logger.e("Error parsing activities json response")
+                        isUploading = false
+                        listener?.onResult(false)
+                        return
                     } catch (e: IllegalStateException) {
                         Logger.e("Error activities json response")
+                        isUploading = false
+                        listener?.onResult(false)
+                        return
                     }
 
                     if (map?.isValid() == true) {

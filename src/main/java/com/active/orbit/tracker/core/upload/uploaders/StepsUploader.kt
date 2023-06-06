@@ -58,8 +58,14 @@ object StepsUploader {
                         map = Gson().fromJson<UploadStepsMap>(response, object : TypeToken<UploadStepsMap>() {}.type)
                     } catch (e: JsonSyntaxException) {
                         Logger.e("Error parsing steps json response")
+                        isUploading = false
+                        listener?.onResult(false)
+                        return
                     } catch (e: IllegalStateException) {
                         Logger.e("Error steps json response")
+                        isUploading = false
+                        listener?.onResult(false)
+                        return
                     }
 
                     if (map?.isValid() == true) {

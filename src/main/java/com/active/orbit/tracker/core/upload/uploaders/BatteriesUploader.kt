@@ -58,8 +58,14 @@ object BatteriesUploader {
                         map = Gson().fromJson<UploadBatteriesMap>(response, object : TypeToken<UploadBatteriesMap>() {}.type)
                     } catch (e: JsonSyntaxException) {
                         Logger.e("Error parsing batteries json response")
+                        isUploading = false
+                        listener?.onResult(false)
+                        return
                     } catch (e: IllegalStateException) {
                         Logger.e("Error batteries json response")
+                        isUploading = false
+                        listener?.onResult(false)
+                        return
                     }
 
                     if (map?.isValid() == true) {

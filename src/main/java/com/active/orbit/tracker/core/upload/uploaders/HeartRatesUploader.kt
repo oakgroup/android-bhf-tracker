@@ -58,8 +58,14 @@ object HeartRatesUploader {
                         map = Gson().fromJson<UploadHeartRatesMap>(response, object : TypeToken<UploadHeartRatesMap>() {}.type)
                     } catch (e: JsonSyntaxException) {
                         Logger.e("Error parsing heart rates json response")
+                        isUploading = false
+                        listener?.onResult(false)
+                        return
                     } catch (e: IllegalStateException) {
                         Logger.e("Error heart rates json response")
+                        isUploading = false
+                        listener?.onResult(false)
+                        return
                     }
 
                     if (map?.isValid() == true) {
