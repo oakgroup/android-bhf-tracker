@@ -97,11 +97,13 @@ data class TrackerDBTrip(@PrimaryKey(autoGenerate = true) var idTrip: Int = 0) :
     }
 
     fun getStartTime(chart: MutableList<MobilityData>): Long {
-        return chart[startTime].timeInMSecs
+        if (chart.size > 0) return chart[startTime].timeInMSecs
+        return 0
     }
 
     fun getEndTime(chart: MutableList<MobilityData>): Long {
-        return chart[endTime].timeInMSecs
+        if (chart.size > 1) return chart[endTime].timeInMSecs
+        return 0
     }
 
     fun getDuration(chart: MutableList<MobilityData>): Long {

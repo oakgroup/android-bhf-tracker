@@ -21,10 +21,10 @@ class TripsRequest {
         val timeInMsecs: Long = dbTrip.timeInMillis
 
         @SerializedName("startTime")
-        val startTime: Long = dbTrip.chart[dbTrip.startTime].timeInMSecs
+        val startTime: Long = dbTrip.getStartTime(dbTrip.chart)
 
         @SerializedName("endTime")
-        val endTime: Long = dbTrip.chart[dbTrip.endTime].timeInMSecs
+        val endTime: Long = dbTrip.getEndTime(dbTrip.chart)
 
         @SerializedName("activityType")
         val activityType: Int = dbTrip.activityType
