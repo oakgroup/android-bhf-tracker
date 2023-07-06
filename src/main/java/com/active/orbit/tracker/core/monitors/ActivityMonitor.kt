@@ -10,16 +10,21 @@ import android.content.pm.PackageManager
 import android.os.Build
 import android.text.TextUtils
 import androidx.core.app.ActivityCompat
-import androidx.viewbinding.BuildConfig
+import com.active.orbit.tracker.BuildConfig
 import com.active.orbit.tracker.core.database.models.TrackerDBActivity
 import com.active.orbit.tracker.core.database.tables.TrackerTableActivities
 import com.active.orbit.tracker.core.tracker.TrackerService
 import com.active.orbit.tracker.core.utils.Logger
 import com.active.orbit.tracker.core.utils.ThreadHandler.backgroundThread
 import com.active.orbit.tracker.core.utils.TimeUtils
-import com.google.android.gms.location.*
+import com.google.android.gms.location.ActivityRecognition
+import com.google.android.gms.location.ActivityTransition
+import com.google.android.gms.location.ActivityTransitionRequest
+import com.google.android.gms.location.ActivityTransitionResult
+import com.google.android.gms.location.DetectedActivity
 import java.text.SimpleDateFormat
-import java.util.*
+import java.util.Date
+import java.util.Locale
 
 class ActivityMonitor(private var callingService: TrackerService) {
 
