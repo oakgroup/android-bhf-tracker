@@ -32,7 +32,7 @@
             android:name="org.apache.http.legacy"
             android:required="false" />
         <receiver
-            android:name="com.active.orbit.tracker.core.restarter.TrackerRestarterBroadcastReceiver"
+            android:name="uk.ac.shef.tracker.core.restarter.TrackerRestarterBroadcastReceiver"
             android:enabled="true"
             android:exported="true"
             android:label="StartMyServiceAtBootReceiver">
@@ -47,7 +47,7 @@
         </receiver>
 
         <service
-            android:name="com.active.orbit.tracker.core.tracker.TrackerService"
+            android:name="uk.ac.shef.tracker.core.tracker.TrackerService"
             android:clearTaskOnLaunch="true"
             android:enabled="true"
             android:excludeFromRecents="true"
@@ -56,7 +56,7 @@
             android:launchMode="singleInstance" />
 
         <receiver
-            android:name="com.active.orbit.tracker.core.monitors.ActivityMonitor$ActivityTransitionsReceiver"
+            android:name="uk.ac.shef.tracker.core.monitors.ActivityMonitor$ActivityTransitionsReceiver"
             android:enabled="true"
             tools:ignore="Instantiatable" />
 

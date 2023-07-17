@@ -8,7 +8,7 @@ android {
 
     compileSdk 33
     flavorDimensions "default"
-    namespace 'com.active.orbit.tracker'
+    namespace 'uk.ac.shef.tracker'
 
     defaultConfig {
         minSdk 23

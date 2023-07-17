@@ -37,13 +37,13 @@
 ## End | proguard configuration for SQLChiper
 
 ## Begin | proguard configuration for project database models
--keep class com.active.orbit.tracker.core.database.models.** { *; }
+-keep class uk.ac.shef.tracker.core.database.models.** { *; }
 ## End | proguard configuration for project database models
 
 ## Begin | proguard configuration for project serialization models
--keep class com.active.orbit.tracker.core.serialization.** { *; }
+-keep class uk.ac.shef.tracker.core.serialization.** { *; }
 ## End | proguard configuration for project serialization models
 
 ## Begin | proguard configuration for project deserialization models
--keep class com.active.orbit.tracker.core.deserialization.** { *; }
+-keep class uk.ac.shef.tracker.core.deserialization.** { *; }
 ## End | proguard configuration for project deserialization models
