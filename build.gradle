@@ -67,10 +67,11 @@ dependencies {
     implementation 'com.google.android.material:material:1.9.0'
 
     implementation 'androidx.core:core-ktx:1.10.1'
+    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.4'
 
     // firebase
     implementation 'com.google.firebase:firebase-core:21.1.1'
-    implementation 'com.google.firebase:firebase-crashlytics-ktx:18.3.7'
+    implementation 'com.google.firebase:firebase-crashlytics-ktx:18.4.0'
 
     // play services
     implementation 'com.google.android.gms:play-services-location:21.0.1'
@@ -84,11 +85,11 @@ dependencies {
     kapt 'androidx.room:room-compiler:2.5.2'
 
     // database encryption
-    implementation 'net.zetetic:android-database-sqlcipher:4.4.2'
+    implementation 'net.zetetic:android-database-sqlcipher:4.5.4'
     implementation "androidx.sqlite:sqlite-ktx:2.3.1"
 
     // json deserialization
-    implementation 'com.google.code.gson:gson:2.10'
+    implementation 'com.google.code.gson:gson:2.10.1'
 
     implementation "androidx.work:work-runtime-ktx:2.8.1"
     implementation 'com.github.judemanutd:autostarter:1.1.0'
