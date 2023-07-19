@@ -6,20 +6,26 @@ package uk.ac.shef.tracker.core.network
 
 import android.text.TextUtils
 import androidx.annotation.WorkerThread
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import uk.ac.shef.tracker.BuildConfig
 import uk.ac.shef.tracker.core.utils.Constants
 import uk.ac.shef.tracker.core.utils.Logger
-import uk.ac.shef.tracker.core.utils.ThreadHandler.backgroundThread
-import uk.ac.shef.tracker.core.utils.ThreadHandler.mainThread
+import uk.ac.shef.tracker.core.utils.background
+import uk.ac.shef.tracker.core.utils.main
 import java.io.*
 import java.net.HttpURLConnection
+import kotlin.coroutines.CoroutineContext
 
 /**
  * Class used to build a connection using an instance of [TrackerWebService]
  *
  * @author omar.brugna
  */
-class TrackerConnection(private val webService: TrackerWebService, private val listener: TrackerConnectionListener) {
+class TrackerConnection(private val webService: TrackerWebService, private val listener: TrackerConnectionListener) : CoroutineScope {
+
+    override val coroutineContext: CoroutineContext
+        get() = Dispatchers.Default
 
     private var mInputStream: InputStream? = null
     private var mInputStreamReader: InputStreamReader? = null
@@ -34,14 +40,14 @@ class TrackerConnection(private val webService: TrackerWebService, private val l
     }
 
     fun connect() {
-        backgroundThread {
+        background {
             initConnection()
         }
     }
 
     @WorkerThread
     private fun initConnection() {
-        mainThread {
+        main {
             listener.onConnectionStarted(tag)
         }
 
@@ -55,17 +61,17 @@ class TrackerConnection(private val webService: TrackerWebService, private val l
 
         if (response != null) {
             Logger.i("Connection response [${webService.urlString}]: $response")
-            mainThread {
+            main {
                 listener.onConnectionSuccess(tag, response)
             }
         } else {
             Logger.w("Connection response [${webService.urlString}] is null")
-            mainThread {
+            main {
                 listener.onConnectionError(tag)
             }
         }
 
-        mainThread {
+        main {
             // always notify completed request
             listener.onConnectionCompleted(tag)
         }
@@ -137,6 +143,7 @@ class TrackerConnection(private val webService: TrackerWebService, private val l
 
             // read the response
             mInputStream = BufferedInputStream(inputStream)
+            @Suppress("KotlinConstantConditions")
             if (mInputStream != null) {
                 mInputStreamReader = InputStreamReader(mInputStream!!, TrackerNetwork.ENCODING_UTF8)
                 mBufferedReader = BufferedReader(mInputStreamReader!!)

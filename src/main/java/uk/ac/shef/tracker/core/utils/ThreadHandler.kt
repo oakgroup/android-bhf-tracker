@@ -4,29 +4,22 @@
 
 package uk.ac.shef.tracker.core.utils
 
-import android.os.Handler
-import android.os.Looper
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.CoroutineStart
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
 
-/**
- * Utility class to run methods on main or background threads
- *
- * @author omar.brugna
- */
-object ThreadHandler {
+fun CoroutineScope.main(
+    start: CoroutineStart = CoroutineStart.DEFAULT,
+    block: suspend CoroutineScope.() -> Unit
+): Job {
+    return launch(Dispatchers.Main, start, block)
+}
 
-    private var looper = Handler(Looper.getMainLooper())
-
-    fun mainThread(runnable: Runnable) {
-        if (Looper.myLooper() != Looper.getMainLooper()) {
-            // we are on a background thread, run on main thread
-            looper.post(runnable)
-        } else runnable.run()
-    }
-
-    fun backgroundThread(runnable: Runnable) {
-        if (Looper.myLooper() == Looper.getMainLooper()) {
-            // we are on the main thread, start a new thread
-            Thread(runnable).start()
-        } else runnable.run()
-    }
+fun CoroutineScope.background(
+    start: CoroutineStart = CoroutineStart.DEFAULT,
+    block: suspend CoroutineScope.() -> Unit
+): Job {
+    return launch(Dispatchers.IO, start, block)
 }

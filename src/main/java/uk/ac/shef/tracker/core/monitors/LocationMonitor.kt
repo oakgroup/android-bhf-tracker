@@ -11,13 +11,19 @@ import android.location.Location
 import android.os.Looper
 import androidx.annotation.WorkerThread
 import com.google.android.gms.location.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import uk.ac.shef.tracker.core.database.models.TrackerDBLocation
 import uk.ac.shef.tracker.core.database.tables.TrackerTableLocations
 import uk.ac.shef.tracker.core.permissions.TrackerPermissions
 import uk.ac.shef.tracker.core.utils.Logger
-import uk.ac.shef.tracker.core.utils.ThreadHandler.backgroundThread
+import uk.ac.shef.tracker.core.utils.background
+import kotlin.coroutines.CoroutineContext
 
-class LocationMonitor(context: Context) {
+class LocationMonitor(context: Context) : CoroutineScope {
+
+    override val coroutineContext: CoroutineContext
+        get() = Dispatchers.Default
 
     private var lastRecordedLocation: Location? = null
     private val locationRequest: LocationRequest = LocationRequest.create()
@@ -83,7 +89,7 @@ class LocationMonitor(context: Context) {
         Logger.i("Flushing locations")
         fusedLocationClient?.flushLocations()
         if (context != null) {
-            backgroundThread {
+            background {
                 TrackerTableLocations.upsert(context, locationsList)
                 locationsList = mutableListOf()
             }
@@ -131,7 +137,7 @@ class LocationMonitor(context: Context) {
     private fun insertLocationIntoDB(context: Context?, location: TrackerDBLocation) {
         locationsList.add(location)
         if (context != null && locationsList.size > MAX_SIZE) {
-            backgroundThread {
+            background {
                 TrackerTableLocations.upsert(context, locationsList)
                 locationsList = mutableListOf()
             }

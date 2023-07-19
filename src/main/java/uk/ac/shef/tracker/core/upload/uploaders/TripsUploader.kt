@@ -8,6 +8,8 @@ import android.content.Context
 import com.google.gson.Gson
 import com.google.gson.JsonSyntaxException
 import com.google.gson.reflect.TypeToken
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import uk.ac.shef.tracker.core.computation.DailyComputation
 import uk.ac.shef.tracker.core.database.tables.TrackerTableTrips
 import uk.ac.shef.tracker.core.deserialization.UploadTripsMap
@@ -20,11 +22,15 @@ import uk.ac.shef.tracker.core.preferences.engine.TrackerPreferences
 import uk.ac.shef.tracker.core.serialization.TripsRequest
 import uk.ac.shef.tracker.core.utils.Constants
 import uk.ac.shef.tracker.core.utils.Logger
-import uk.ac.shef.tracker.core.utils.ThreadHandler.backgroundThread
-import uk.ac.shef.tracker.core.utils.ThreadHandler.mainThread
 import uk.ac.shef.tracker.core.utils.TimeUtils
+import uk.ac.shef.tracker.core.utils.background
+import uk.ac.shef.tracker.core.utils.main
+import kotlin.coroutines.CoroutineContext
 
-object TripsUploader {
+object TripsUploader : CoroutineScope {
+
+    override val coroutineContext: CoroutineContext
+        get() = Dispatchers.Default
 
     private var isUploading = false
 
@@ -35,7 +41,7 @@ object TripsUploader {
             return
         }
 
-        backgroundThread {
+        background {
 
             // we can only send the trips up to yesterday night
             val currentMidnight = TimeUtils.midnightInMsecs(System.currentTimeMillis())
@@ -53,7 +59,7 @@ object TripsUploader {
             if (lastTripsUpload >= (currentMidnight - TimeUtils.ONE_DAY_MILLIS)) {
                 Logger.d("Trying to upload trips on server too soon")
                 listener?.onResult(false)
-                return@backgroundThread
+                return@background
             }
 
             while (lastTripsUpload < currentMidnight) {
@@ -66,7 +72,7 @@ object TripsUploader {
             if (models.isEmpty()) {
                 Logger.d("No trips to upload on server")
                 listener?.onResult(false)
-                return@backgroundThread
+                return@background
             }
 
             isUploading = true
@@ -103,11 +109,11 @@ object TripsUploader {
                         if (map.inserted!! >= models.size) {
                             Logger.d("Trips uploaded to server ${map.inserted} success")
                             TrackerPreferences.lifecycle(context).lastTripsUpload = lastTripsUpload
-                            backgroundThread {
+                            background {
                                 // mark trips as uploaded
                                 models.forEach { it.uploaded = true }
                                 TrackerTableTrips.upsert(context, models)
-                                mainThread {
+                                main {
                                     isUploading = false
                                     listener?.onResult(true)
                                 }

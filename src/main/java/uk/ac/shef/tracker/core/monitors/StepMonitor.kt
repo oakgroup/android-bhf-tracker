@@ -12,14 +12,20 @@ import android.hardware.SensorManager
 import android.os.Build
 import android.os.Handler
 import android.os.Looper
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import uk.ac.shef.tracker.core.database.models.TrackerDBStep
 import uk.ac.shef.tracker.core.database.tables.TrackerTableSteps
 import uk.ac.shef.tracker.core.utils.Constants
 import uk.ac.shef.tracker.core.utils.Logger
-import uk.ac.shef.tracker.core.utils.ThreadHandler.backgroundThread
 import uk.ac.shef.tracker.core.utils.TimeUtils
+import uk.ac.shef.tracker.core.utils.background
+import kotlin.coroutines.CoroutineContext
 
-class StepMonitor internal constructor(private var context: Context?) {
+class StepMonitor internal constructor(private var context: Context?) : CoroutineScope {
+
+    override val coroutineContext: CoroutineContext
+        get() = Dispatchers.Default
 
     private lateinit var taskTimeOutRunnable: Runnable
     private lateinit var taskHandler: Handler
@@ -88,7 +94,7 @@ class StepMonitor internal constructor(private var context: Context?) {
     private fun storeSteps(stepsData: TrackerDBStep) {
         Logger.i("Found ${stepsData.steps} steps at ${TimeUtils.formatMillis(stepsData.timeInMillis, Constants.DATE_FORMAT_HOUR_MINUTE_SECONDS)}")
         stepsList.add(stepsData)
-        backgroundThread {
+        background {
             if (context != null && stepsList.size > MAX_SIZE) {
                 TrackerTableSteps.upsert(context!!, stepsList)
                 stepsList = mutableListOf()
@@ -159,7 +165,7 @@ class StepMonitor internal constructor(private var context: Context?) {
         } catch (e: java.lang.Exception) {
             // do nothing
         }
-        backgroundThread {
+        background {
             if (context != null && stepsList.size > MAX_SIZE) {
                 TrackerTableSteps.upsert(context!!, stepsList)
                 stepsList = mutableListOf()

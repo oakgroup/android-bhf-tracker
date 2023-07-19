@@ -17,6 +17,8 @@ import androidx.core.content.ContextCompat
 import androidx.core.content.IntentCompat
 import androidx.core.content.PackageManagerCompat
 import androidx.core.content.UnusedAppRestrictionsConstants
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import uk.ac.shef.tracker.R
 import uk.ac.shef.tracker.core.database.engine.TrackerDatabase
 import uk.ac.shef.tracker.core.database.tables.*
@@ -27,13 +29,17 @@ import uk.ac.shef.tracker.core.preferences.engine.TrackerPreferences
 import uk.ac.shef.tracker.core.restarter.TrackerRestarter
 import uk.ac.shef.tracker.core.utils.Constants
 import uk.ac.shef.tracker.core.utils.Logger
-import uk.ac.shef.tracker.core.utils.ThreadHandler.backgroundThread
+import uk.ac.shef.tracker.core.utils.background
+import kotlin.coroutines.CoroutineContext
 
 class TrackerManager private constructor(private val activity: AppCompatActivity) {
 
     var currentDateTime: Long = System.currentTimeMillis()
 
-    companion object {
+    companion object : CoroutineScope {
+
+        override val coroutineContext: CoroutineContext
+            get() = Dispatchers.Default
 
         @Volatile
         private var instance: TrackerManager? = null
@@ -57,7 +63,7 @@ class TrackerManager private constructor(private val activity: AppCompatActivity
         private const val REQUEST_UNUSED_RESTRICTIONS_REQUEST_CODE: Int = 983724
 
         fun printInformationLogs(context: Context) {
-            backgroundThread {
+            background {
                 Logger.i("------------------------------------------")
                 Logger.i("Activities -> ${TrackerTableActivities.getAll(context).size}")
                 Logger.i("Batteries  -> ${TrackerTableBatteries.getAll(context).size}")

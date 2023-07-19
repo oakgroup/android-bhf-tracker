@@ -7,13 +7,16 @@ package uk.ac.shef.tracker.core.database.engine
 import android.content.Context
 import androidx.room.Room
 import androidx.room.RoomDatabase
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import net.sqlcipher.database.SQLiteDatabase
 import net.sqlcipher.database.SupportFactory
 import uk.ac.shef.tracker.R
 import uk.ac.shef.tracker.core.database.engine.encryption.TrackerDatabaseKeystore
 import uk.ac.shef.tracker.core.database.models.*
 import uk.ac.shef.tracker.core.database.queries.*
-import uk.ac.shef.tracker.core.utils.ThreadHandler.backgroundThread
+import uk.ac.shef.tracker.core.utils.background
+import kotlin.coroutines.CoroutineContext
 
 /**
  * Main database class
@@ -21,7 +24,10 @@ import uk.ac.shef.tracker.core.utils.ThreadHandler.backgroundThread
  * @author omar.brugna
  */
 @androidx.room.Database(entities = [TrackerDBActivity::class, TrackerDBBattery::class, TrackerDBHeartRate::class, TrackerDBLocation::class, TrackerDBStep::class, TrackerDBTrip::class], version = 1, exportSchema = false)
-internal abstract class TrackerDatabase : RoomDatabase() {
+internal abstract class TrackerDatabase : RoomDatabase(), CoroutineScope {
+
+    override val coroutineContext: CoroutineContext
+        get() = Dispatchers.Default
 
     companion object {
 
@@ -56,7 +62,7 @@ internal abstract class TrackerDatabase : RoomDatabase() {
     }
 
     fun logout() {
-        backgroundThread {
+        background {
             clearAllTables()
         }
     }

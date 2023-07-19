@@ -19,18 +19,24 @@ import com.google.android.gms.location.ActivityTransition
 import com.google.android.gms.location.ActivityTransitionRequest
 import com.google.android.gms.location.ActivityTransitionResult
 import com.google.android.gms.location.DetectedActivity
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import uk.ac.shef.tracker.BuildConfig
 import uk.ac.shef.tracker.core.database.models.TrackerDBActivity
 import uk.ac.shef.tracker.core.database.tables.TrackerTableActivities
 import uk.ac.shef.tracker.core.tracker.TrackerService
 import uk.ac.shef.tracker.core.utils.Logger
-import uk.ac.shef.tracker.core.utils.ThreadHandler.backgroundThread
 import uk.ac.shef.tracker.core.utils.TimeUtils
+import uk.ac.shef.tracker.core.utils.background
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
+import kotlin.coroutines.CoroutineContext
 
-class ActivityMonitor(private var callingService: TrackerService) {
+class ActivityMonitor(private var callingService: TrackerService) : CoroutineScope {
+
+    override val coroutineContext: CoroutineContext
+        get() = Dispatchers.Default
 
     private var activityTransitionsReceiver: ActivityTransitionsReceiver? = null
     var activitiesList: MutableList<TrackerDBActivity> = mutableListOf()
@@ -97,7 +103,7 @@ class ActivityMonitor(private var callingService: TrackerService) {
      * This writes the remaining activities to the database
      */
     private fun flushToDatabase() {
-        backgroundThread {
+        background {
             TrackerTableActivities.upsert(callingService, activitiesList)
             activitiesList = mutableListOf()
         }
@@ -107,7 +113,7 @@ class ActivityMonitor(private var callingService: TrackerService) {
      * This flushes the activities stored in activityDataList into the database
      */
     fun flush(context: Context) {
-        backgroundThread {
+        background {
             TrackerTableActivities.upsert(context, activitiesList)
             activitiesList = mutableListOf()
         }

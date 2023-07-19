@@ -4,14 +4,20 @@
 
 package uk.ac.shef.tracker.core.monitors
 
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import uk.ac.shef.tracker.core.database.models.TrackerDBBattery
 import uk.ac.shef.tracker.core.database.tables.TrackerTableBatteries
 import uk.ac.shef.tracker.core.tracker.TrackerService
 import uk.ac.shef.tracker.core.utils.Logger
-import uk.ac.shef.tracker.core.utils.ThreadHandler.backgroundThread
 import uk.ac.shef.tracker.core.utils.TrackerUtils
+import uk.ac.shef.tracker.core.utils.background
+import kotlin.coroutines.CoroutineContext
 
-class BatteryMonitor(val context: TrackerService) {
+class BatteryMonitor(val context: TrackerService) : CoroutineScope {
+
+    override val coroutineContext: CoroutineContext
+        get() = Dispatchers.Default
 
     private var lastBatterySentMillis: Long = 0L
 
@@ -32,7 +38,7 @@ class BatteryMonitor(val context: TrackerService) {
     }
 
     private fun saveBatteryData() {
-        backgroundThread {
+        background {
             val dbBattery = TrackerDBBattery()
             dbBattery.timeInMillis = System.currentTimeMillis()
             dbBattery.batteryPercent = TrackerUtils.getBatteryPercentage(context)

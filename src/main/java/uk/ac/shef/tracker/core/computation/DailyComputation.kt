@@ -7,6 +7,8 @@ package uk.ac.shef.tracker.core.computation
 import android.content.Context
 import androidx.annotation.WorkerThread
 import com.google.android.gms.location.ActivityTransition
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import uk.ac.shef.tracker.core.database.models.TrackerDBActivity
 import uk.ac.shef.tracker.core.database.models.TrackerDBBattery
 import uk.ac.shef.tracker.core.database.models.TrackerDBHeartRate
@@ -24,11 +26,15 @@ import uk.ac.shef.tracker.core.tracker.TrackerService
 import uk.ac.shef.tracker.core.utils.Constants
 import uk.ac.shef.tracker.core.utils.LocationUtilities
 import uk.ac.shef.tracker.core.utils.Logger
-import uk.ac.shef.tracker.core.utils.ThreadHandler.backgroundThread
-import uk.ac.shef.tracker.core.utils.ThreadHandler.mainThread
 import uk.ac.shef.tracker.core.utils.TimeUtils
+import uk.ac.shef.tracker.core.utils.background
+import uk.ac.shef.tracker.core.utils.main
+import kotlin.coroutines.CoroutineContext
 
-class DailyComputation(private val context: Context, var startTime: Long, var endTime: Long, private val computeChartResults: Boolean = true) {
+class DailyComputation(private val context: Context, var startTime: Long, var endTime: Long, private val computeChartResults: Boolean = true) : CoroutineScope {
+
+    override val coroutineContext: CoroutineContext
+        get() = Dispatchers.Default
 
     private var activities = mutableListOf<TrackerDBActivity>()
     private var batteries = mutableListOf<TrackerDBBattery>()
@@ -43,7 +49,7 @@ class DailyComputation(private val context: Context, var startTime: Long, var en
      * This computes the results in an asynchronous way and sets the live data
      */
     fun computeResultsAsync() {
-        backgroundThread {
+        background {
             computeResults()
         }
     }
@@ -65,7 +71,7 @@ class DailyComputation(private val context: Context, var startTime: Long, var en
         }
 
         if (notifyObserver) {
-            mainThread {
+            main {
                 // update observer
                 trackerObserver?.onTrackerUpdate(TrackerObserverType.ACTIVITIES, activities)
                 trackerObserver?.onTrackerUpdate(TrackerObserverType.BATTERIES, batteries)

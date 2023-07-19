@@ -11,14 +11,20 @@ import android.hardware.SensorEventListener
 import android.hardware.SensorManager
 import android.os.Handler
 import android.os.Looper
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import uk.ac.shef.tracker.core.database.models.TrackerDBHeartRate
 import uk.ac.shef.tracker.core.database.tables.TrackerTableHeartRates
 import uk.ac.shef.tracker.core.tracker.TrackerService
 import uk.ac.shef.tracker.core.utils.Logger
-import uk.ac.shef.tracker.core.utils.ThreadHandler.backgroundThread
 import uk.ac.shef.tracker.core.utils.TimeUtils
+import uk.ac.shef.tracker.core.utils.background
+import kotlin.coroutines.CoroutineContext
 
-class HeartRateMonitor(val context: TrackerService) : SensorEventListener {
+class HeartRateMonitor(val context: TrackerService) : CoroutineScope, SensorEventListener {
+
+    override val coroutineContext: CoroutineContext
+        get() = Dispatchers.Default
 
     private lateinit var taskTimeOutRunnable: Runnable
     private var taskHandler: Handler? = null
@@ -88,7 +94,7 @@ class HeartRateMonitor(val context: TrackerService) : SensorEventListener {
      */
     private fun flushHeartRateToDB() {
         Logger.i("Flushing hr values to database")
-        backgroundThread {
+        background {
             TrackerTableHeartRates.upsert(context, heartRateReadingStack)
             heartRateReadingStack = mutableListOf()
         }
