@@ -13,6 +13,9 @@ import uk.ac.shef.tracker.core.preferences.engine.TrackerPreferences
 import uk.ac.shef.tracker.core.utils.Logger
 import uk.ac.shef.tracker.core.utils.TimeUtils
 
+/**
+ * Broadcast receive to start the tracker when needed
+ */
 class TrackerRestarterBroadcastReceiver : BroadcastReceiver() {
 
     override fun onReceive(context: Context, intent: Intent) {

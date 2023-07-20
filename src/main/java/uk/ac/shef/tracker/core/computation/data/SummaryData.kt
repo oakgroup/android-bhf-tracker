@@ -9,6 +9,9 @@ import uk.ac.shef.tracker.core.database.models.TrackerDBLocation
 import uk.ac.shef.tracker.core.database.models.TrackerDBTrip
 import uk.ac.shef.tracker.core.utils.Logger
 
+/**
+ * The [SummaryData] model
+ */
 class SummaryData(trips: MutableList<TrackerDBTrip>, chart: MutableList<MobilityData>) {
 
     var steps: Int = 0

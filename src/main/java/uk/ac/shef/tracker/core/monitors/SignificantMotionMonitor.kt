@@ -12,6 +12,9 @@ import android.hardware.TriggerEventListener
 import uk.ac.shef.tracker.core.tracker.TrackerService
 import uk.ac.shef.tracker.core.utils.Logger
 
+/**
+ * This class monitors the significant motions data and save them into the database
+ */
 class SignificantMotionMonitor(val trackerService: TrackerService?) {
 
     private var sensorManager: SensorManager? = trackerService?.getSystemService(Context.SENSOR_SERVICE) as SensorManager?

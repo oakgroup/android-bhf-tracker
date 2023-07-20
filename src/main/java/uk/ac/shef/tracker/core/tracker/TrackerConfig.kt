@@ -6,6 +6,9 @@ package uk.ac.shef.tracker.core.tracker
 
 import uk.ac.shef.tracker.core.utils.Constants
 
+/**
+ * This model will be used by the client app to customise the tracker configurations
+ */
 class TrackerConfig {
 
     var baseUrl = Constants.EMPTY

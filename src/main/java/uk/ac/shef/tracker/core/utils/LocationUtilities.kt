@@ -12,7 +12,9 @@ import uk.ac.shef.tracker.core.database.models.TrackerDBLocation
 import uk.ac.shef.tracker.core.database.models.TrackerDBTrip
 import kotlin.math.*
 
-
+/**
+ * Utility class that exposes useful methods to manage locations
+ */
 class LocationUtilities {
 
     companion object {

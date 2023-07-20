@@ -18,6 +18,12 @@ import uk.ac.shef.tracker.core.tracker.TrackerNotification
 import uk.ac.shef.tracker.core.tracker.TrackerService
 import uk.ac.shef.tracker.core.utils.Logger
 
+/**
+ * Tracker coroutine worker that starts the foreground service
+ *
+ * @param context an instance of [Context]
+ * @param workerParams the worker parameters
+ */
 class TrackerRestarterWorker(val context: Context, workerParams: WorkerParameters) : CoroutineWorker(context, workerParams) {
 
     companion object {
@@ -25,6 +31,9 @@ class TrackerRestarterWorker(val context: Context, workerParams: WorkerParameter
         private const val NOTIFICATION_ID = 9972
     }
 
+    /**
+     * This will start the foreground service and shows the permanent notification
+     */
     override suspend fun doWork(): Result {
         return try {
             withContext(Dispatchers.IO) {
@@ -60,6 +69,9 @@ class TrackerRestarterWorker(val context: Context, workerParams: WorkerParameter
         }
     }
 
+    /**
+     * This declares the worker foreground info
+     */
     override suspend fun getForegroundInfo(): ForegroundInfo {
         TrackerNotification.notificationText = "do not close the app, please"
         TrackerNotification.notificationIcon = R.drawable.ic_notification

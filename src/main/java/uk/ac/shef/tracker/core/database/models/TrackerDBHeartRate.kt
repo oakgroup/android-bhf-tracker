@@ -11,6 +11,9 @@ import uk.ac.shef.tracker.core.generics.TrackerBaseModel
 import uk.ac.shef.tracker.core.utils.Constants
 import uk.ac.shef.tracker.core.utils.TimeUtils
 
+/**
+ * Database entity that represents an heart model
+ */
 @Entity(
     tableName = "heart_rates",
     indices = [
@@ -25,18 +28,34 @@ data class TrackerDBHeartRate(@PrimaryKey(autoGenerate = true) var idHeartRate: 
     var timeZone: Int = TimeUtils.getTimezoneOffset(timeInMillis)
     var uploaded: Boolean = false
 
+    /**
+     * @return the model identifier
+     */
     override fun identifier(): String {
         return idHeartRate.toString()
     }
 
+    /**
+     * @return the model description
+     */
     fun description(): String {
         return "[$idHeartRate - $heartRate - $accuracy - $timeInMillis - $timeZone - $uploaded]"
     }
 
+    /**
+     * Check the validity of this model according to the required data
+     *
+     * @return true if the model is valid
+     */
     override fun isValid(): Boolean {
         return idHeartRate != Constants.INVALID && timeInMillis > 0
     }
 
+    /**
+     * Get the priority of this model
+     *
+     * @return the [Long] priority
+     */
     override fun priority(): Long {
         return timeInMillis
     }

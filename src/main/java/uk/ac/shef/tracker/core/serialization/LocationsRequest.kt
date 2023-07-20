@@ -8,6 +8,9 @@ import com.google.gson.annotations.SerializedName
 import uk.ac.shef.tracker.core.database.models.TrackerDBLocation
 import uk.ac.shef.tracker.core.utils.Constants
 
+/**
+ * This class is used to automatically build the payload for the server api
+ */
 class LocationsRequest {
 
     @SerializedName("_id")

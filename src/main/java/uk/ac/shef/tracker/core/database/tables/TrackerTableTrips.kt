@@ -8,11 +8,20 @@ import android.content.Context
 import androidx.annotation.WorkerThread
 import uk.ac.shef.tracker.core.database.engine.TrackerDatabase
 import uk.ac.shef.tracker.core.database.models.TrackerDBTrip
+import uk.ac.shef.tracker.core.database.queries.TrackerTrips
 import uk.ac.shef.tracker.core.utils.Logger
 import uk.ac.shef.tracker.core.utils.TimeUtils
 
+/**
+ * Utility class to execute the queries for the trips table handling the exceptions with a specific [Logger] message
+ * This class should be used for all the operations, do not access directly the [TrackerTrips] dao
+ */
 object TrackerTableTrips {
 
+    /**
+     * @param context an instance of [Context]
+     * @return all the models in the database table
+     */
     @WorkerThread
     fun getAll(context: Context): List<TrackerDBTrip> {
         try {
@@ -24,6 +33,12 @@ object TrackerTableTrips {
         return arrayListOf()
     }
 
+    /**
+     * Get all the models in the database that have not been uploaded
+     *
+     * @param context an instance of [Context]
+     * @return all the models found
+     */
     @WorkerThread
     fun getNotUploaded(context: Context): List<TrackerDBTrip> {
         try {
@@ -35,6 +50,14 @@ object TrackerTableTrips {
         return arrayListOf()
     }
 
+    /**
+     * Get the models in the database that have not been uploaded
+     * Searching only for models before a specific timestamp
+     *
+     * @param context an instance of [Context]
+     * @param millis the models that have a greater timestamp than this won't be considered
+     * @return all the models found
+     */
     @WorkerThread
     fun getNotUploadedBefore(context: Context, millis: Long): List<TrackerDBTrip> {
         try {
@@ -46,6 +69,14 @@ object TrackerTableTrips {
         return arrayListOf()
     }
 
+    /**
+     * Get the count of the models in the database that have not been uploaded
+     * Searching only for models before a specific timestamp
+     *
+     * @param context an instance of [Context]
+     * @param millis the models that have a greater timestamp than this won't be considered
+     * @return the count of all the models found
+     */
     @WorkerThread
     fun getNotUploadedCountBefore(context: Context, millis: Long): Int {
         try {
@@ -57,6 +88,13 @@ object TrackerTableTrips {
         return 0
     }
 
+    /**
+     * Get the model by the identifier
+     *
+     * @param context an instance of [Context]
+     * @param idTrip the model identifier
+     * @return the model if found
+     */
     @WorkerThread
     fun getById(context: Context, idTrip: Int): TrackerDBTrip? {
         try {
@@ -68,11 +106,25 @@ object TrackerTableTrips {
         return null
     }
 
+    /**
+     * Insert a model into the database
+     * If the model already exists, according to its primary key and indices, the model will be updated
+     *
+     * @param context an instance of [Context]
+     * @param model the model to insert/update
+     */
     @WorkerThread
     fun upsert(context: Context, model: TrackerDBTrip) {
         upsert(context, listOf(model))
     }
 
+    /**
+     * Insert a list of models into the database
+     * If the model already exists, according to its primary key and indices, the model will be updated
+     *
+     * @param context an instance of [Context]
+     * @param models the list of models to insert/update
+     */
     @WorkerThread
     fun upsert(context: Context, models: List<TrackerDBTrip>) {
         try {
@@ -83,6 +135,11 @@ object TrackerTableTrips {
         }
     }
 
+    /**
+     * Delete all the today trips from the database
+     *
+     * @param context an instance of [Context]
+     */
     @WorkerThread
     fun deleteTodayTrips(context: Context) {
         try {
@@ -94,6 +151,12 @@ object TrackerTableTrips {
         }
     }
 
+    /**
+     * Delete a model from the database
+     *
+     * @param context an instance of [Context]
+     * @param idTrip the model identifier
+     */
     @WorkerThread
     fun delete(context: Context, idTrip: Int) {
         try {
@@ -104,6 +167,11 @@ object TrackerTableTrips {
         }
     }
 
+    /**
+     * Delete all the models from this database table
+     *
+     * @param context an instance of [Context]
+     */
     @WorkerThread
     fun truncate(context: Context) {
         try {

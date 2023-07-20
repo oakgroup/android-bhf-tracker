@@ -20,6 +20,9 @@ import uk.ac.shef.tracker.core.utils.TimeUtils
 import kotlin.math.abs
 import kotlin.math.max
 
+/**
+ * Database entity that represents a trip model
+ */
 @Entity(
     tableName = "trips",
     indices = [
@@ -51,6 +54,9 @@ data class TrackerDBTrip(@PrimaryKey(autoGenerate = true) var idTrip: Int = 0) :
     @Ignore
     var reliable: Boolean = true
 
+    /**
+     * @constructor from trip attributes
+     */
     constructor(startTime: Int, endTime: Int, activityType: Int, chart: MutableList<MobilityData>) : this() {
         this.startTime = startTime
         this.endTime = endTime
@@ -58,18 +64,34 @@ data class TrackerDBTrip(@PrimaryKey(autoGenerate = true) var idTrip: Int = 0) :
         this.chart = chart
     }
 
+    /**
+     * @return the model identifier
+     */
     override fun identifier(): String {
         return idTrip.toString()
     }
 
+    /**
+     * @return the model description
+     */
     fun description(): String {
         return "[$idTrip - ${TimeUtils.formatMillis(getStartTime(chart), Constants.DATE_FORMAT_HOUR_MINUTE_SECONDS)} - ${TimeUtils.formatMillis(getEndTime(chart), Constants.DATE_FORMAT_HOUR_MINUTE_SECONDS)} - ${TrackerDBActivity.getActivityTypeString(activityType)} - $radiusInMeters - $distanceInMeters - $steps - ${TimeUtils.formatMillis(timeInMillis, Constants.DATE_FORMAT_UTC)} - $timeZone - $uploaded]"
     }
 
+    /**
+     * Check the validity of this model according to the required data
+     *
+     * @return true if the model is valid
+     */
     override fun isValid(): Boolean {
         return idTrip != Constants.INVALID && timeInMillis > 0
     }
 
+    /**
+     * Get the priority of this model
+     *
+     * @return the [Long] priority
+     */
     override fun priority(): Long {
         return timeInMillis
     }
@@ -88,11 +110,20 @@ data class TrackerDBTrip(@PrimaryKey(autoGenerate = true) var idTrip: Int = 0) :
         tagIfSuspicious()
     }
 
+    /**
+     * Get the cadence of this trip
+     *
+     * @return the [Int] cadence
+     */
     fun getCadence(): Int {
         return (steps / getDuration(chart) * 60.0).toInt()
     }
 
-    fun setNumberOfSteps() { // the steps are NOT cumulative
+    /**
+     * Set the number of steps for this trip
+     * The steps are NOT cumulative!
+     */
+    fun setNumberOfSteps() {
         steps = 0
         for (index in startTime..endTime) {
             if (chart[index].steps != MobilityData.INVALID_VALUE)
@@ -100,16 +131,31 @@ data class TrackerDBTrip(@PrimaryKey(autoGenerate = true) var idTrip: Int = 0) :
         }
     }
 
+    /**
+     * Get the trip start time
+     *
+     * @return the [Long] trip start time
+     */
     fun getStartTime(chart: MutableList<MobilityData>): Long {
         if (chart.size > 0) return chart[startTime].timeInMSecs
         return 0
     }
 
+    /**
+     * Get the trip end time
+     *
+     * @return the [Long] trip end time
+     */
     fun getEndTime(chart: MutableList<MobilityData>): Long {
         if (chart.size > 1) return chart[endTime].timeInMSecs
         return 0
     }
 
+    /**
+     * Get the trip duration
+     *
+     * @return the [Long] trip duration
+     */
     fun getDuration(chart: MutableList<MobilityData>): Long {
         val startTime = chart[startTime].timeInMSecs
         val endTime = chart[endTime].timeInMSecs
@@ -118,6 +164,7 @@ data class TrackerDBTrip(@PrimaryKey(autoGenerate = true) var idTrip: Int = 0) :
 
     /**
      * This checks if it is possible to compact two consecutive activities
+     *
      * @param followingTrip
      * @return true/false - it adds the following trip to the subTrips field if compacted
      */
@@ -179,6 +226,11 @@ data class TrackerDBTrip(@PrimaryKey(autoGenerate = true) var idTrip: Int = 0) :
                 && (otherTrip.activityType in listOf(DetectedActivity.WALKING, DetectedActivity.RUNNING, DetectedActivity.ON_FOOT))))
     }
 
+    /**
+     * This extracts the steps from the chart associated to the trip
+     *
+     * @return the list of the steps associated to the trip
+     */
     private fun getTripSteps(): MutableList<TrackerDBStep> {
         val steps: MutableList<TrackerDBStep> = mutableListOf()
         for (index in startTime until endTime) {
@@ -195,8 +247,8 @@ data class TrackerDBTrip(@PrimaryKey(autoGenerate = true) var idTrip: Int = 0) :
 
     /**
      * This extracts the locations from the chart associated to the trip
-     * @param trip
-     * @return
+     *
+     * @return the list of the locations associated to the trip
      */
     private fun getTripLocations(): MutableList<TrackerDBLocation> {
         var locations: MutableList<TrackerDBLocation> = mutableListOf()
@@ -274,7 +326,6 @@ data class TrackerDBTrip(@PrimaryKey(autoGenerate = true) var idTrip: Int = 0) :
      * A car trip is suspicious if it does not move in location and so is a bike trip
      * maybe it is just a matter of the shopping moved around indoor or shopping at the supermarket
      * using a trolley (which looks like cycling)
-     *
      */
     fun tagIfSuspicious() {
         if (isSuspicious(activityType, radiusInMeters)) reliable = false

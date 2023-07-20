@@ -31,6 +31,9 @@ import uk.ac.shef.tracker.core.utils.background
 import uk.ac.shef.tracker.core.utils.main
 import kotlin.coroutines.CoroutineContext
 
+/**
+ * Class that performs the computation for the daily activities
+ */
 class DailyComputation(private val context: Context, var startTime: Long, var endTime: Long, private val computeChartResults: Boolean = true) : CoroutineScope {
 
     override val coroutineContext: CoroutineContext

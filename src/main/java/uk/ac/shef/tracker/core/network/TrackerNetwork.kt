@@ -5,9 +5,7 @@
 package uk.ac.shef.tracker.core.network
 
 /**
- * Utility class that defines some web constants values
- *
- * @author omar.brugna
+ * Utility class that defines some constants values used for network requests
  */
 object TrackerNetwork {
 

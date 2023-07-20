@@ -9,6 +9,9 @@ import java.io.UnsupportedEncodingException
 import java.security.MessageDigest
 import java.security.NoSuchAlgorithmException
 
+/**
+ * Utility class that exposes some encryption methods
+ */
 object Encryption {
 
     private const val ALGORITHM_SHA256 = "SHA-256"

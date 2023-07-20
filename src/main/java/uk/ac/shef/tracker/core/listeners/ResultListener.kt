@@ -4,6 +4,9 @@
 
 package uk.ac.shef.tracker.core.listeners
 
+/**
+ * Utility interface to have a boolean result callback
+ */
 interface ResultListener {
 
     fun onResult(success: Boolean)

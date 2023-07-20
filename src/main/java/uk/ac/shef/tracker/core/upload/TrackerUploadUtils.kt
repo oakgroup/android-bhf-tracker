@@ -16,8 +16,16 @@ import uk.ac.shef.tracker.core.utils.Logger
 import uk.ac.shef.tracker.core.utils.TimeUtils
 import kotlin.math.min
 
+/**
+ * Utility class to understand how many data are still unsent
+ */
 class TrackerUploadUtils(val context: Context) {
 
+    /**
+     * This will return the sum of the unsent rows
+     *
+     * @param limitMillis specify a timestamp in millis to exclude the elements that have a timestamp grater than the input one
+     */
     @WorkerThread
     fun dataToSend(limitMillis: Long? = 0): Int {
         val currentMidnight = TimeUtils.midnightInMsecs(System.currentTimeMillis())

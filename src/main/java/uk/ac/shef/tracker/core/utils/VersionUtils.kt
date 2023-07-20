@@ -9,8 +9,6 @@ import android.os.Build
 
 /**
  * Utility class that provides some useful methods to manage different os versions
- *
- * @author omar.brugna
  */
 @Suppress("unused", "MemberVisibilityCanBePrivate")
 object VersionUtils {

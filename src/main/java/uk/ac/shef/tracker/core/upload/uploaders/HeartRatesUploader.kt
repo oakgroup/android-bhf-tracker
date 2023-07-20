@@ -25,6 +25,9 @@ import uk.ac.shef.tracker.core.utils.background
 import uk.ac.shef.tracker.core.utils.main
 import kotlin.coroutines.CoroutineContext
 
+/**
+ * This class manages the upload of all the heart_rates data
+ */
 object HeartRatesUploader : CoroutineScope {
 
     override val coroutineContext: CoroutineContext
@@ -32,6 +35,12 @@ object HeartRatesUploader : CoroutineScope {
 
     private var isUploading = false
 
+    /**
+     * This starts the data upload
+     *
+     * @param context an instance of [Context]
+     * @param listener an optional listener to receive the result callback
+     */
     fun uploadData(context: Context, listener: ResultListener? = null) {
         if (isUploading) {
             Logger.d("HeartRates upload already in progress")

@@ -8,6 +8,9 @@ import com.google.gson.annotations.SerializedName
 import uk.ac.shef.tracker.core.database.models.TrackerDBHeartRate
 import uk.ac.shef.tracker.core.utils.Constants
 
+/**
+ * This class is used to automatically build the payload for the server api
+ */
 class HeartRatesRequest {
 
     @SerializedName("_id")

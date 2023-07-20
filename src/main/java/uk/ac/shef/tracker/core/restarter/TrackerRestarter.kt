@@ -18,18 +18,27 @@ import uk.ac.shef.tracker.core.upload.TrackerUploadWorker
 import uk.ac.shef.tracker.core.utils.Logger
 import java.util.concurrent.TimeUnit
 
+/**
+ * Class used to start the tracker and manage the data upload worker
+ */
 class TrackerRestarter {
 
-    private val dataUploadingWorkName = "general work manager"
+    private val dataUploadingWorkName = "upload_work_manager"
 
+    /**
+     * Starts the tracker and the data upload (only if charging)
+     *
+     * @param context an instance of [Context]
+     */
     fun startTrackerAndDataUpload(context: Context) {
         startTrackerProper(context)
         startDataUploader(context, true)
     }
 
     /**
-     * This sets the data uplaod every 12 hours if charging
-     * @param context
+     * This sets the data upload every 45 minutes if charging
+     *
+     * @param context an instance of [Context]
      */
     fun startDataUploader(context: Context, requiresCharging: Boolean, resultListener: ResultListener? = null) {
         if (!TrackerPreferences.user(context).isUserRegistered()) {
@@ -81,7 +90,8 @@ class TrackerRestarter {
 
     /**
      * This starts the tracker one off
-     * @param context
+     *
+     * @param context an instance of [Context]
      */
     private fun startTrackerProper(context: Context) {
         if (!TrackerPreferences.user(context).isUserRegistered()) {

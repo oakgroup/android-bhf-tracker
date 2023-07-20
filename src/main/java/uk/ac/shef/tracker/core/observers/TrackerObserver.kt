@@ -4,7 +4,14 @@
 
 package uk.ac.shef.tracker.core.observers
 
+/**
+ * Utility interface to observer the tracker data
+ */
 interface TrackerObserver {
 
+    /**
+     * This method will be called by the tracker whenever there is an update of the data
+     * If the client app is observing, it will be notified
+     */
     fun onTrackerUpdate(type: TrackerObserverType, data: Any)
 }

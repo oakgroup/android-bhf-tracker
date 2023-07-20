@@ -18,9 +18,10 @@ import java.net.HttpURLConnection
 import kotlin.coroutines.CoroutineContext
 
 /**
- * Class used to build a connection using an instance of [TrackerWebService]
+ * Class used to start a network request using an instance of [TrackerWebService]
  *
- * @author omar.brugna
+ * @param webService an instance of [TrackerWebService]
+ * @param listener an instance of [TrackerConnectionListener] to receive the request callbacks
  */
 class TrackerConnection(private val webService: TrackerWebService, private val listener: TrackerConnectionListener) : CoroutineScope {
 
@@ -34,17 +35,27 @@ class TrackerConnection(private val webService: TrackerWebService, private val l
     var tag = Constants.INVALID
 
     private var timeoutExtended = false
+
+    /**
+     * Call this method to use an extended timeout
+     */
     fun timeoutExtended(boolean: Boolean): TrackerConnection {
         timeoutExtended = boolean
         return this
     }
 
+    /**
+     * This method to starts the network request
+     */
     fun connect() {
         background {
             initConnection()
         }
     }
 
+    /**
+     * This method initialises the network request and notifies the listener
+     */
     @WorkerThread
     private fun initConnection() {
         main {
@@ -77,6 +88,9 @@ class TrackerConnection(private val webService: TrackerWebService, private val l
         }
     }
 
+    /**
+     * This method fires the network request and manages the response
+     */
     @Throws(IOException::class)
     private fun startConnection(): String? {
 

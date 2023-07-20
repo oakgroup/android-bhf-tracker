@@ -32,8 +32,16 @@ import uk.ac.shef.tracker.core.utils.Logger
 import uk.ac.shef.tracker.core.utils.background
 import kotlin.coroutines.CoroutineContext
 
+/**
+ * This class exposes useful method for the tracker management
+ *
+ * @param activity an instance of [AppCompatActivity]
+ */
 class TrackerManager private constructor(private val activity: AppCompatActivity) {
 
+    /**
+     * This is the tracker reference time
+     */
     var currentDateTime: Long = System.currentTimeMillis()
 
     companion object : CoroutineScope {
@@ -44,6 +52,12 @@ class TrackerManager private constructor(private val activity: AppCompatActivity
         @Volatile
         private var instance: TrackerManager? = null
 
+        /**
+         * Get the singleton instance of the [TrackerManager]
+         *
+         * @param activity an instance of the [AppCompatActivity]
+         * @return the singleton instance of the [TrackerManager]
+         */
         @Synchronized
         fun getInstance(activity: AppCompatActivity): TrackerManager {
             if (instance == null) {
@@ -62,6 +76,9 @@ class TrackerManager private constructor(private val activity: AppCompatActivity
         private const val REQUEST_BODY_SENSOR_REQUEST_CODE: Int = 1014
         private const val REQUEST_UNUSED_RESTRICTIONS_REQUEST_CODE: Int = 983724
 
+        /**
+         * This is a debuggable method to print the size of the tracker database content
+         */
         fun printInformationLogs(context: Context) {
             background {
                 Logger.i("------------------------------------------")
@@ -79,7 +96,7 @@ class TrackerManager private constructor(private val activity: AppCompatActivity
     }
 
     private fun initialize() {
-
+        // insert initialisation code if needed..
     }
 
     fun onResume() {
@@ -110,7 +127,6 @@ class TrackerManager private constructor(private val activity: AppCompatActivity
 
     /**
      * This asks for permissions (e.g. body sensors) and then starts the tracker
-     *
      */
     private fun askForPermissionAndStartTrackerAux() {
         if (TrackerPreferences.config(activity).useLocationTracking && !hasLocationPermissionsBeenGranted()) {
@@ -135,6 +151,9 @@ class TrackerManager private constructor(private val activity: AppCompatActivity
         }
     }
 
+    /**
+     * This starts the tracker
+     */
     private fun startTracker() {
         // we have to force restart because it will have started without permission and it
         // is being blocked
@@ -142,6 +161,9 @@ class TrackerManager private constructor(private val activity: AppCompatActivity
         trackerRestarter.startTrackerAndDataUpload(activity)
     }
 
+    /**
+     * This stops the tracker
+     */
     private fun stopTracker() {
         // stop the tracker if running
         try {
@@ -181,6 +203,9 @@ class TrackerManager private constructor(private val activity: AppCompatActivity
         }
     }
 
+    /**
+     * This requests the activity recognition permission if needed
+     */
     private fun requestPermissionActivityRecognition(): Boolean {
         val permissions = getRequestActivityRecognitionPermissions()
         return if (permissions != null) {
@@ -191,28 +216,44 @@ class TrackerManager private constructor(private val activity: AppCompatActivity
         }
     }
 
+    /**
+     * This returns the activity recognition permission only if available according to the device apis level
+     */
     private fun getRequestActivityRecognitionPermissions(): Array<String?>? {
         return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             arrayOf(Manifest.permission.ACTIVITY_RECOGNITION)
         } else null
     }
 
+    /**
+     * This requests the body sensors permission
+     */
     private fun requestPermissionBodySensor() {
         val permissions = getRequestBodySensorPermissions()
         ActivityCompat.requestPermissions(activity, permissions, REQUEST_BODY_SENSOR_REQUEST_CODE)
     }
 
+    /**
+     * This returns the body sensors permission
+     */
     private fun getRequestBodySensorPermissions(): Array<String?> {
         return arrayOf(Manifest.permission.BODY_SENSORS)
     }
 
+    /**
+     * This checks if the background location permission has been granted
+     */
     private fun backgroundLocationPermissionGranted(): Boolean {
         return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             ActivityCompat.checkSelfPermission(activity, Manifest.permission.ACCESS_BACKGROUND_LOCATION) == PackageManager.PERMISSION_GRANTED
         } else true
     }
 
-
+    /**
+     * This will process the result of a location permission request
+     *
+     * @param resultCode the [Int] result code
+     */
     private fun processLocationRequest(resultCode: Int) {
         if (resultCode == Activity.RESULT_OK) {
             onLocationPermissionAccepted()
@@ -227,7 +268,11 @@ class TrackerManager private constructor(private val activity: AppCompatActivity
         }
     }
 
-
+    /**
+     * This will process the result of a activity recognition request
+     *
+     * @param resultCode the [Int] result code
+     */
     private fun processActivityRecognitionRequest(resultCode: Int) {
         if (resultCode == Activity.RESULT_OK) {
             onActivityRecognitionPermissionAccepted()
@@ -241,6 +286,11 @@ class TrackerManager private constructor(private val activity: AppCompatActivity
         }
     }
 
+    /**
+     * This will process the result of a body sensor request
+     *
+     * @param resultCode the [Int] result code
+     */
     private fun processBodySensorRequest(resultCode: Int) {
         if (resultCode == Activity.RESULT_OK) {
             onBodySensorPermissionAccepted()
@@ -265,20 +315,32 @@ class TrackerManager private constructor(private val activity: AppCompatActivity
         }
     }
 
+    /**
+     * This is called when the activity recognition permission has been granted
+     */
     private fun onActivityRecognitionPermissionAccepted() {
         askForPermissionAndStartTrackerAux()
     }
 
+    /**
+     * This is called when the body sensors permission has been granted
+     */
     private fun onBodySensorPermissionAccepted() {
         askForPermissionAndStartTrackerAux()
     }
 
+    /**
+     * This is called when the location permission has been granted
+     */
     private fun onLocationPermissionAccepted() {
         if (!backgroundLocationPermissionGranted())
             requestPermissionLocation()
         else askForPermissionAndStartTrackerAux()
     }
 
+    /**
+     * This checks if the location permission has been already granted
+     */
     private fun hasLocationPermissionsBeenGranted(): Boolean {
         val permissionGranted = ActivityCompat.checkSelfPermission(activity, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED &&
                 ActivityCompat.checkSelfPermission(activity, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED
@@ -288,16 +350,28 @@ class TrackerManager private constructor(private val activity: AppCompatActivity
         return permissionGranted
     }
 
+    /**
+     * This checks if the activity recognition has been already granted
+     */
     private fun hasActivityRecognitionPermissionsBeenGranted(): Boolean {
         return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             ActivityCompat.checkSelfPermission(activity, Manifest.permission.ACTIVITY_RECOGNITION) == PackageManager.PERMISSION_GRANTED
         } else true
     }
 
+    /**
+     * This checks if the body sensors permission has been already granted
+     */
     private fun hasBodySensorPermissionsBeenGranted(): Boolean {
         return ActivityCompat.checkSelfPermission(activity, Manifest.permission.BODY_SENSORS) == PackageManager.PERMISSION_GRANTED
     }
 
+    /**
+     * This checks if the unused restrictions has been disabled
+     *
+     * @param activity an instance of [AppCompatActivity]
+     * @param listener the callback to have the async result
+     */
     private fun onboardedUnusedRestrictions(activity: AppCompatActivity, listener: ResultListener) {
         val future = PackageManagerCompat.getUnusedAppRestrictionsStatus(activity)
         future.addListener({
@@ -310,6 +384,11 @@ class TrackerManager private constructor(private val activity: AppCompatActivity
         }, ContextCompat.getMainExecutor(activity))
     }
 
+    /**
+     * This will request to remove the unused restrictions
+     *
+     * @param activity an instance of [AppCompatActivity]
+     */
     fun requestUnusedRestrictions(activity: AppCompatActivity) {
         if (!activity.isDestroyed) {
             AlertDialog.Builder(activity).setTitle(activity.getString(R.string.disable_restrictions))
@@ -332,6 +411,7 @@ class TrackerManager private constructor(private val activity: AppCompatActivity
 
     /**
      * If the user is not registered with the server, it registers it
+     * TODO this method should be used if the tracker wants to register the patient automatically
      */
     fun checkUserRegistration() {
         if (!TrackerPreferences.user(activity).isUserRegistered()) {
@@ -340,6 +420,9 @@ class TrackerManager private constructor(private val activity: AppCompatActivity
         } else Logger.i("User already registered with id ${TrackerPreferences.user(activity).idUser}")
     }
 
+    /**
+     * This will allow the client app to store the user id when it's require that the app manages the user registration
+     */
     fun saveUserRegistrationId(userId: String?) {
         TrackerPreferences.user(activity).idUser = userId
 
@@ -349,6 +432,9 @@ class TrackerManager private constructor(private val activity: AppCompatActivity
         }
     }
 
+    /**
+     * This should be called when the user logout
+     */
     @WorkerThread
     fun logout(context: Context) {
         stopTracker()

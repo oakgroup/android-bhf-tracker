@@ -14,6 +14,9 @@ import uk.ac.shef.tracker.core.utils.TrackerUtils
 import uk.ac.shef.tracker.core.utils.background
 import kotlin.coroutines.CoroutineContext
 
+/**
+ * This class monitors the batteries data and save them into the database
+ */
 class BatteryMonitor(val context: TrackerService) : CoroutineScope {
 
     override val coroutineContext: CoroutineContext

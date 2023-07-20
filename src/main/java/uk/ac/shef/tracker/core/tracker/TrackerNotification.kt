@@ -15,7 +15,7 @@ import androidx.core.app.NotificationCompat.VISIBILITY_PRIVATE
 import androidx.core.app.NotificationManagerCompat.IMPORTANCE_MIN
 
 /**
- * Created by Iman on 08/09/2016.
+ * Utility class to create the permanent tracker notification shown while the foreground service is running
  */
 class TrackerNotification @JvmOverloads constructor(context: Context, private val mId: Int, runningInBackground: Boolean = false) {
 
@@ -117,9 +117,7 @@ class TrackerNotification @JvmOverloads constructor(context: Context, private va
         return notification
     }
 
-
     private fun setNotification(context: Context, text: String?): Notification {
         return setNotification(context, notificationTitle, text, notificationIcon)
     }
-
 }

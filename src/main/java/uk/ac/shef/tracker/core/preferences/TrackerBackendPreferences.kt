@@ -8,8 +8,14 @@ import uk.ac.shef.tracker.R
 import uk.ac.shef.tracker.core.preferences.engine.TrackerBasePreferences
 import uk.ac.shef.tracker.core.utils.Constants
 
+/**
+ * Class that stores all the preferences for the backend configurations
+ */
 class TrackerBackendPreferences : TrackerBasePreferences() {
 
+    /**
+     * The tracker base url used for the network requests
+     */
     var baseUrl: String
         get() = prefs.getString(res.getString(R.string.tracker_preference_backend_base_url_key), Constants.EMPTY) ?: Constants.EMPTY
         set(value) {
@@ -18,6 +24,9 @@ class TrackerBackendPreferences : TrackerBasePreferences() {
             editor.apply()
         }
 
+    /**
+     * This flag indicates if the tracker should upload the data to the server or not
+     */
     var uploadData: Boolean
         get() = prefs.getBoolean(res.getString(R.string.tracker_preference_backend_upload_data_key), false)
         set(value) {
@@ -26,6 +35,9 @@ class TrackerBackendPreferences : TrackerBasePreferences() {
             editor.apply()
         }
 
+    /**
+     * This will be called when the user logout
+     */
     override fun logout() {
         // baseUrl = Constants.EMPTY
         // uploadData = false

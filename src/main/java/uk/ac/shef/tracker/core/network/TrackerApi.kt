@@ -10,8 +10,6 @@ import uk.ac.shef.tracker.core.utils.BaseException
 
 /**
  * Utility enum to declare api urls
- *
- * @author omar.brugna
  */
 enum class TrackerApi(private var apiUrl: Int) {
     EMPTY(R.string.tracker_api_empty),
@@ -23,16 +21,33 @@ enum class TrackerApi(private var apiUrl: Int) {
     INSERT_TRIPS(R.string.tracker_api_insert_trips),
     USER_REGISTRATION(R.string.tracker_api_user_registration);
 
+    /**
+     * This is used if the api contains some placeholders that need to be replaced with real values
+     */
     private var params = ArrayList<String>()
 
+    /**
+     * Clear the api parameters if needed
+     */
     fun clearParams() {
         params.clear()
     }
 
+    /**
+     * Add an api parameter
+     *
+     * @param param the [String] parameter
+     */
     fun addParam(param: String) {
         params.add(param)
     }
 
+    /**
+     * This will replace the placeholders with the parameters if needed and it will return the api url
+     *
+     * @param context an instance of [Context]
+     * @return the api url
+     */
     fun getUrl(context: Context): String {
         if (params.isEmpty()) return context.getString(apiUrl)
         if (params.size == 1) return context.getString(apiUrl, params[0])

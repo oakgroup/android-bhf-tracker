@@ -11,10 +11,7 @@ import uk.ac.shef.tracker.R
 import uk.ac.shef.tracker.core.utils.Logger
 
 /**
- * Abstract preferences class that should be extended from all utility
- * preferences classes
- *
- * @author omar.brugna
+ * Abstract preferences class that should be extended from all the other utility preferences classes
  */
 abstract class TrackerBasePreferences {
 
@@ -23,6 +20,11 @@ abstract class TrackerBasePreferences {
 
     companion object {
 
+        /**
+         * This will run the logout method for each preference entity that will remove the data that should be removed
+         *
+         * @param context an instance of [Context]
+         */
         fun logout(context: Context) {
             TrackerPreferences.backend(context).logout()
             TrackerPreferences.lifecycle(context).logout()
@@ -30,6 +32,11 @@ abstract class TrackerBasePreferences {
             TrackerPreferences.config(context).logout()
         }
 
+        /**
+         * This will print all the preferences stored in the tracker filename
+         *
+         * @param context an instance of [Context]
+         */
         fun printAll(context: Context) {
             val prefs = context.getSharedPreferences(context.getString(R.string.tracker_preference_filename_key), Context.MODE_PRIVATE)
             Logger.d("Stored Preferences")
@@ -38,10 +45,18 @@ abstract class TrackerBasePreferences {
         }
     }
 
+    /**
+     * This setup the preferences and it's needed to avoid having references to an old [Context]
+     *
+     * @param context an instance of [Context]
+     */
     internal fun setupPreferences(context: Context) {
         res = context.resources
         prefs = context.getSharedPreferences(context.getString(R.string.tracker_preference_filename_key), Context.MODE_PRIVATE)
     }
 
+    /**
+     * This will allow to the preferences entities to define their logout logic
+     */
     abstract fun logout()
 }

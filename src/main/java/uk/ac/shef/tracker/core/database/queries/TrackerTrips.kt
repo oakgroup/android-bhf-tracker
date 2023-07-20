@@ -7,6 +7,9 @@ package uk.ac.shef.tracker.core.database.queries
 import androidx.room.*
 import uk.ac.shef.tracker.core.database.models.TrackerDBTrip
 
+/**
+ * Database queries for the trips table
+ */
 @Dao
 interface TrackerTrips {
 

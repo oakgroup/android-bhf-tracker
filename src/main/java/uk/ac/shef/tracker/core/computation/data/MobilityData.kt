@@ -10,6 +10,9 @@ import uk.ac.shef.tracker.core.database.models.TrackerDBLocation
 import uk.ac.shef.tracker.core.utils.Constants
 import uk.ac.shef.tracker.core.utils.TimeUtils
 
+/**
+ * The [MobilityData] model
+ */
 class MobilityData(var timeInMSecs: Long) {
 
     companion object {

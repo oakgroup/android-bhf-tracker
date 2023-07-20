@@ -6,6 +6,9 @@ package uk.ac.shef.tracker.core.listeners
 
 import uk.ac.shef.tracker.core.deserialization.UserRegistrationMap
 
+/**
+ * Utility interface to have a the callback of the user registration api request
+ */
 interface UserRegistrationListener {
 
     fun onSuccess(map: UserRegistrationMap)

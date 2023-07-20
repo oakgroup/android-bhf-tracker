@@ -9,8 +9,6 @@ import android.util.Patterns
 
 /**
  * Utility class that provides some useful methods for data validation
- *
- * @author omar.brugna
  */
 @Suppress("unused", "MemberVisibilityCanBePrivate")
 object Validator {

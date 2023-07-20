@@ -33,6 +33,9 @@ import java.util.Date
 import java.util.Locale
 import kotlin.coroutines.CoroutineContext
 
+/**
+ * This class monitors the activities data and save them into the database
+ */
 class ActivityMonitor(private var callingService: TrackerService) : CoroutineScope {
 
     override val coroutineContext: CoroutineContext

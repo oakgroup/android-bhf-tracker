@@ -10,8 +10,6 @@ import java.util.Locale
 
 /**
  * Utility class that provides some useful methods to get device information
- *
- * @author omar.brugna
  */
 @Suppress("unused", "MemberVisibilityCanBePrivate")
 object DeviceUtils {

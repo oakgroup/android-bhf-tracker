@@ -4,6 +4,10 @@
 
 package uk.ac.shef.tracker.core.observers
 
+/**
+ * This enum lists the different types of the tracker observer
+ * The tracker will notify the client app with one of these types for each notification
+ */
 enum class TrackerObserverType {
     ACTIVITIES,
     BATTERIES,

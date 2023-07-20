@@ -21,6 +21,9 @@ import uk.ac.shef.tracker.core.utils.TimeUtils
 import uk.ac.shef.tracker.core.utils.background
 import kotlin.coroutines.CoroutineContext
 
+/**
+ * This class monitors the heart rates data and save them into the database
+ */
 class HeartRateMonitor(val context: TrackerService) : CoroutineScope, SensorEventListener {
 
     override val coroutineContext: CoroutineContext

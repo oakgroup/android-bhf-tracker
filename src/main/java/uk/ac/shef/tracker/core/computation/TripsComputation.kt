@@ -18,6 +18,9 @@ import uk.ac.shef.tracker.core.utils.LocationUtilities
 import uk.ac.shef.tracker.core.utils.Logger
 import uk.ac.shef.tracker.core.utils.TimeUtils
 
+/**
+ * Class that performs the computation for the trips
+ */
 class TripsComputation(val context: Context, val chart: MutableList<MobilityData>) {
 
     var trips: MutableList<TrackerDBTrip>

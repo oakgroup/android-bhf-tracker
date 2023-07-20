@@ -9,6 +9,9 @@ import com.google.gson.annotations.SerializedName
 import uk.ac.shef.tracker.core.generics.TrackerBaseModel
 import uk.ac.shef.tracker.core.utils.Constants
 
+/**
+ * This class is used to automatically build the payload for the server api
+ */
 class UserRegistrationRequest : TrackerBaseModel {
 
     @SerializedName("phone_model")
@@ -47,10 +50,18 @@ class UserRegistrationRequest : TrackerBaseModel {
     @SerializedName("timeInMsecs")
     var registrationTimestamp: Long? = null
 
+    /**
+     * @return the model identifier even if it's not needed for this model
+     */
     override fun identifier(): String {
         return Constants.EMPTY
     }
 
+    /**
+     * Check the validity of this model according to the required data
+     *
+     * @return true if the model is valid
+     */
     override fun isValid(): Boolean {
         return !TextUtils.isEmpty(phoneModel) &&
                 !TextUtils.isEmpty(appVersion) &&

@@ -4,6 +4,10 @@
 
 package uk.ac.shef.tracker.core.utils
 
+/**
+ * Utility custom exception class
+ */
+@Suppress("unused")
 class BaseException : RuntimeException {
 
     companion object {

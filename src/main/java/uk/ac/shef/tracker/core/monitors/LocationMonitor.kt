@@ -20,6 +20,9 @@ import uk.ac.shef.tracker.core.utils.Logger
 import uk.ac.shef.tracker.core.utils.background
 import kotlin.coroutines.CoroutineContext
 
+/**
+ * This class monitors the locations data and save them into the database
+ */
 class LocationMonitor(context: Context) : CoroutineScope {
 
     override val coroutineContext: CoroutineContext

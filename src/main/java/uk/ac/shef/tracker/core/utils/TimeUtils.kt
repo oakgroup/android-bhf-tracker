@@ -11,8 +11,6 @@ import java.util.*
 
 /**
  * Utility class that provides some useful methods to manage timestamps
- *
- * @author omar.brugna
  */
 @Suppress("MemberVisibilityCanBePrivate")
 object TimeUtils {
@@ -25,24 +23,32 @@ object TimeUtils {
     private val utcTimezone = TimeZone.getTimeZone("UTC")
     private val defaultTimezone = TimeZone.getDefault()
 
+    /**
+     * This returns a calendar with utc timezone
+     */
     fun getUTC(): Calendar {
         return toUTC(getCurrent())
     }
 
+    /**
+     * This returns a calendar with current timezone
+     */
     fun getCurrent(): Calendar {
         return Calendar.getInstance()
     }
 
+    /**
+     * This returns a calendar with current timezone by setting the time in millis
+     */
     fun getCurrent(timeInMillis: Long): Calendar {
         val currentCalendar = getCurrent()
         currentCalendar.timeInMillis = timeInMillis
         return currentCalendar
     }
 
-    fun fromUTC(date: String?): Calendar? {
-        return parse(date, Constants.DATE_FORMAT_UTC)
-    }
-
+    /**
+     * This converts a current timezone calendar into the UTC timezone calendar
+     */
     fun toUTC(calendar: Calendar): Calendar {
         val utcCalendar = getCurrent()
         utcCalendar.timeZone = calendar.timeZone
@@ -51,6 +57,9 @@ object TimeUtils {
         return utcCalendar
     }
 
+    /**
+     * This converts a UTC timezone calendar into the current timezone calendar
+     */
     fun toDefault(calendar: Calendar): Calendar {
         val defaultCalendar = getCurrent()
         defaultCalendar.timeZone = calendar.timeZone
@@ -59,17 +68,16 @@ object TimeUtils {
         return defaultCalendar
     }
 
-    fun getZeroSeconds(fromCalendar: Calendar? = null): Calendar {
-        val calendar = fromCalendar ?: getCurrent()
-        calendar.set(Calendar.SECOND, 0)
-        calendar.set(Calendar.MILLISECOND, 0)
-        return calendar
-    }
-
+    /**
+     * This gets the current timezone offset
+     */
     fun getTimezoneOffset(time: Long): Int {
         return TimeZone.getDefault().getOffset(time)
     }
 
+    /**
+     * This format the input calendar according to the input format
+     */
     fun format(calendar: Calendar, toFormat: String): String {
         try {
             val simpleDateFormat = SimpleDateFormat(toFormat, Locale.getDefault())
@@ -81,6 +89,9 @@ object TimeUtils {
         return Constants.EMPTY
     }
 
+    /**
+     * This parses the input string with the input format and returns the calendar
+     */
     fun parse(date: String?, fromFormat: String): Calendar? {
         if (TextUtils.isEmpty(date)) {
             Logger.e("Trying to parse an empty date string")
@@ -102,6 +113,8 @@ object TimeUtils {
     }
 
     /**
+     * This convert a date from one format to another
+     *
      * @param date date in String
      * @param fromFormat input date format
      * @param toFormat output date format
@@ -117,43 +130,62 @@ object TimeUtils {
         return Constants.EMPTY
     }
 
+    /**
+     * This returns the current day [Int]
+     */
     private fun getCurrentDay(): Int {
         return getCurrent().get(Calendar.DAY_OF_YEAR)
     }
 
+    /**
+     * This returns the current month [Int]
+     */
     private fun getCurrentMonth(): Int {
         return getCurrent().get(Calendar.MONTH)
     }
 
+    /**
+     * This returns the current year [Int]
+     */
     private fun getCurrentYear(): Int {
         return getCurrent().get(Calendar.YEAR)
     }
 
+    /**
+     * This returns the current day of month [Int]
+     */
     fun getDayOfMonth(calendar: Calendar): Int {
         return calendar.get(Calendar.DAY_OF_MONTH)
     }
 
+    /**
+     * This returns true if the input calendar is today
+     */
     fun isToday(calendar: Calendar?): Boolean {
         return isThisMonth(calendar) && calendar?.get(Calendar.DAY_OF_YEAR) == getCurrentDay()
     }
 
+    /**
+     * This returns true if the input calendar is in this month
+     */
     fun isThisMonth(calendar: Calendar?): Boolean {
         return isThisYear(calendar) && calendar?.get(Calendar.MONTH) == getCurrentMonth()
     }
 
+    /**
+     * This returns true if the input calendar is in this year
+     */
     fun isThisYear(calendar: Calendar?): Boolean {
         return calendar?.get(Calendar.YEAR) == getCurrentYear()
     }
 
+    /**
+     * This returns true if the first calendar and the second calendar are in the same day
+     */
     fun isSameDay(calendarStart: Calendar?, calendarEnd: Calendar?): Boolean {
         return calendarStart?.get(Calendar.DAY_OF_YEAR) == calendarEnd?.get(Calendar.DAY_OF_YEAR) &&
                 calendarStart?.get(Calendar.MONTH) == calendarEnd?.get(Calendar.MONTH) &&
                 calendarStart?.get(Calendar.YEAR) == calendarEnd?.get(Calendar.YEAR)
-    }
-
-    fun calculateSuffix(day: Int): String {
-        val calculateDay = day % 10
-        return if (calculateDay == 1) "st" else if (calculateDay == 2) "nd" else if (calculateDay == 3) "rd" else "th"
     }
 
     fun formatHHMMSS(seconds: Long): String {
@@ -225,6 +257,9 @@ object TimeUtils {
         return (timeInMSecs / 1000).toLong()
     }
 
+    /**
+     * This returns true if the input millis is today
+     */
     fun isToday(millis: Long): Boolean {
         val calendar: Calendar = Calendar.getInstance()
         calendar.timeInMillis = millis

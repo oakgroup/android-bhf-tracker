@@ -7,6 +7,9 @@ package uk.ac.shef.tracker.core.database.queries
 import androidx.room.*
 import uk.ac.shef.tracker.core.database.models.TrackerDBStep
 
+/**
+ * Database queries for the steps table
+ */
 @Dao
 interface TrackerSteps {
 

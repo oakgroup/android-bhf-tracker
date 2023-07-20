@@ -14,8 +14,6 @@ import androidx.core.app.ActivityCompat
 
 /**
  * Utility class to manage runtime permissions
- *
- * @author omar.brugna
  */
 class TrackerPermissions(val group: Group) {
 
@@ -28,6 +26,12 @@ class TrackerPermissions(val group: Group) {
         private const val REQUEST_ACCESS_CAMERA_FOR_CAPTURE = 5
     }
 
+    /**
+     * Check is a specific permission is already granted or not
+     *
+     * @param context an instance of [Context]
+     * @return if the permission is already granted
+     */
     fun check(context: Context): Boolean {
         for (permission in group.permissions) {
             val status = ActivityCompat.checkSelfPermission(context, permission)
@@ -37,6 +41,12 @@ class TrackerPermissions(val group: Group) {
         return true
     }
 
+    /**
+     * Check is a specific permission that is not granted should show the explanation
+     *
+     * @param activity an instance of [AppCompatActivity]
+     * @return if the permission should show the explanation
+     */
     fun shouldShowExplanation(activity: AppCompatActivity): Boolean {
         for (permission in group.permissions) {
             val status = ActivityCompat.shouldShowRequestPermissionRationale(activity, permission)
@@ -45,10 +55,18 @@ class TrackerPermissions(val group: Group) {
         return false
     }
 
+    /**
+     * Request a specific permission
+     *
+     * @param activity an instance of [AppCompatActivity]
+     */
     fun request(activity: AppCompatActivity) {
         ActivityCompat.requestPermissions(activity, group.permissions, group.requestCode)
     }
 
+    /**
+     * Utility group that defines the most used android permissions
+     */
     enum class Group(val permissions: Array<String>, val requestCode: Int) {
         ACCESS_FINE_LOCATION(
             arrayOf(

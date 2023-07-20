@@ -13,6 +13,9 @@ import uk.ac.shef.tracker.core.monitors.StepMonitor
 import uk.ac.shef.tracker.core.utils.Constants
 import uk.ac.shef.tracker.core.utils.TimeUtils
 
+/**
+ * Database entity that represents a step model
+ */
 @Entity(
     tableName = "steps",
     indices = [
@@ -29,18 +32,34 @@ data class TrackerDBStep(@PrimaryKey(autoGenerate = true) var idStep: Int = 0) :
     @Ignore
     var cadence: Int = 0
 
+    /**
+     * @return the model identifier
+     */
     override fun identifier(): String {
         return idStep.toString()
     }
 
+    /**
+     * @return the model description
+     */
     fun description(): String {
         return "[$idStep - $steps - ${TimeUtils.formatMillis(timeInMillis, Constants.DATE_FORMAT_UTC)} - $timeZone - $uploaded]"
     }
 
+    /**
+     * Check the validity of this model according to the required data
+     *
+     * @return true if the model is valid
+     */
     override fun isValid(): Boolean {
         return idStep != Constants.INVALID && timeInMillis > 0
     }
 
+    /**
+     * Get the priority of this model
+     *
+     * @return the [Long] priority
+     */
     override fun priority(): Long {
         return timeInMillis
     }

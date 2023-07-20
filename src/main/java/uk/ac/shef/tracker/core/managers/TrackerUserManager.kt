@@ -19,8 +19,17 @@ import uk.ac.shef.tracker.core.utils.Logger
 import uk.ac.shef.tracker.core.utils.TimeUtils
 import uk.ac.shef.tracker.core.utils.TrackerUtils
 
+/**
+ * Utility class to manage the apis requests relative to the current user
+ */
 object TrackerUserManager {
 
+    /**
+     * Try to register an user with the server registration api
+     *
+     * @param context an instance of [Context]
+     * @param listener an optional listener to receive the registration callbacks
+     */
     fun registerUser(context: Context, listener: UserRegistrationListener? = null) {
 
         val request = UserRegistrationRequest()

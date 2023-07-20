@@ -20,7 +20,9 @@ import uk.ac.shef.tracker.core.preferences.engine.TrackerPreferences
 import uk.ac.shef.tracker.core.utils.LocationUtilities
 import uk.ac.shef.tracker.core.utils.Logger
 
-
+/**
+ * This is the tracker service that runs in background
+ */
 class TrackerService : Service() {
 
     private lateinit var updateTimerThread: Runnable
@@ -47,6 +49,9 @@ class TrackerService : Service() {
         private const val NOTIFICATION_ID = 9974
     }
 
+    /**
+     * This creates the tracker service according to the configurations
+     */
     override fun onCreate() {
         super.onCreate()
         Logger.d("Creating the Tracker Service!! $this")
@@ -116,7 +121,7 @@ class TrackerService : Service() {
     }
 
     /**
-     *  it starts the sensors
+     *  This starts the sensors
      */
     fun startTrackers() {
         Logger.d("Starting trackers...")
@@ -155,7 +160,6 @@ class TrackerService : Service() {
     override fun onBind(intent: Intent): IBinder? {
         return null
     }
-
 
     override fun onDestroy() {
         super.onDestroy()

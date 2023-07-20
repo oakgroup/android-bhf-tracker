@@ -13,6 +13,9 @@ import uk.ac.shef.tracker.core.generics.TrackerBaseModel
 import uk.ac.shef.tracker.core.utils.Constants
 import uk.ac.shef.tracker.core.utils.TimeUtils
 
+/**
+ * Database entity that represents a location model
+ */
 @Entity(
     tableName = "locations",
     indices = [
@@ -41,6 +44,9 @@ data class TrackerDBLocation(@PrimaryKey(autoGenerate = true) var idLocation: In
     @Ignore
     var locationsSupportingCentroid: MutableList<TrackerDBLocation> = mutableListOf()
 
+    /**
+     * @constructor from [Location]
+     */
     constructor(location: Location) : this() {
         timeInMillis = location.time
         latitude = location.latitude
@@ -49,6 +55,9 @@ data class TrackerDBLocation(@PrimaryKey(autoGenerate = true) var idLocation: In
         accuracy = location.accuracy.toDouble()
     }
 
+    /**
+     * @constructor from location attributes
+     */
     constructor(timeInMillis: Long, latitude: Double, longitude: Double, accuracy: Double, altitude: Double) : this() {
         this.timeInMillis = timeInMillis
         this.latitude = latitude
@@ -57,18 +66,34 @@ data class TrackerDBLocation(@PrimaryKey(autoGenerate = true) var idLocation: In
         this.accuracy = accuracy
     }
 
+    /**
+     * @return the model identifier
+     */
     override fun identifier(): String {
         return idLocation.toString()
     }
 
+    /**
+     * @return the model description
+     */
     fun description(): String {
         return "[$idLocation - $latitude - $longitude - $altitude - $accuracy - ${TimeUtils.formatMillis(timeInMillis, Constants.DATE_FORMAT_FULL)} - $timeZone - $uploaded]"
     }
 
+    /**
+     * Check the validity of this model according to the required data
+     *
+     * @return true if the model is valid
+     */
     override fun isValid(): Boolean {
         return idLocation != Constants.INVALID && timeInMillis > 0
     }
 
+    /**
+     * Get the priority of this model
+     *
+     * @return the [Long] priority
+     */
     override fun priority(): Long {
         return timeInMillis
     }

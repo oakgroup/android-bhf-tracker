@@ -13,6 +13,9 @@ import uk.ac.shef.tracker.core.monitors.ActivityMonitor
 import uk.ac.shef.tracker.core.utils.Constants
 import uk.ac.shef.tracker.core.utils.TimeUtils
 
+/**
+ * Database entity that represents an activity model
+ */
 @Entity(
     tableName = "activities",
     indices = [
@@ -29,6 +32,12 @@ data class TrackerDBActivity(@PrimaryKey(autoGenerate = true) var idActivity: In
 
     companion object {
 
+        /**
+         * Get the activity type from a string
+         *
+         * @param activityType the activity type [Int]
+         * @return the activity type [String]
+         */
         fun getActivityTypeString(activityType: Int): String {
             return when (activityType) {
                 DetectedActivity.STILL -> "STILL"
@@ -41,27 +50,55 @@ data class TrackerDBActivity(@PrimaryKey(autoGenerate = true) var idActivity: In
             }
         }
 
+        /**
+         * Get the transition type from a string
+         *
+         * @param transitionType the transition type [Int]
+         * @return the transition type [String]
+         */
         fun getTransitionType(transitionType: Int): String {
             return ActivityMonitor.getTransitionTypeString(transitionType)
         }
     }
 
+    /**
+     * @return the model identifier
+     */
     override fun identifier(): String {
         return idActivity.toString()
     }
 
+    /**
+     * @return the model description
+     */
     fun description(): String {
         return "[$idActivity - ${getActivityTypeString(activityType)} - ${getTransitionType(transitionType)} - ${TimeUtils.formatMillis(timeInMillis, Constants.DATE_FORMAT_UTC)} - $timeZone - $uploaded]"
     }
 
+    /**
+     * Check the validity of this model according to the required data
+     *
+     * @return true if the model is valid
+     */
     override fun isValid(): Boolean {
         return idActivity != Constants.INVALID && timeInMillis > 0
     }
 
+    /**
+     * Get the priority of this model
+     *
+     * @return the [Long] priority
+     */
     override fun priority(): Long {
         return timeInMillis
     }
 
+    /**
+     * Copy all the fields of the current object from another one
+     *
+     * @param other the [TrackerDBActivity] to copy the fields from
+     * @return the [Long] priority
+     */
     fun copyFields(other: TrackerDBActivity) {
         timeInMillis = other.timeInMillis
         activityType = other.activityType

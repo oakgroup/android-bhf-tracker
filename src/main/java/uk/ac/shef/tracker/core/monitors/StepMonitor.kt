@@ -22,6 +22,9 @@ import uk.ac.shef.tracker.core.utils.TimeUtils
 import uk.ac.shef.tracker.core.utils.background
 import kotlin.coroutines.CoroutineContext
 
+/**
+ * This class monitors the steps data and save them into the database
+ */
 class StepMonitor internal constructor(private var context: Context?) : CoroutineScope {
 
     override val coroutineContext: CoroutineContext

@@ -28,6 +28,9 @@ import uk.ac.shef.tracker.core.utils.TimeUtils
 import kotlin.math.abs
 import kotlin.math.min
 
+/**
+ * Class that performs the computation for the mobility data
+ */
 class MobilityComputation(val context: Context) {
 
     var steps: MutableList<TrackerDBStep> = mutableListOf()

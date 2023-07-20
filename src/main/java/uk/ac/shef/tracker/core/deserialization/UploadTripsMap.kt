@@ -8,6 +8,9 @@ import com.google.gson.annotations.SerializedName
 import uk.ac.shef.tracker.core.generics.TrackerBaseModel
 import uk.ac.shef.tracker.core.utils.Constants
 
+/**
+ * This class is used to automatically parse a response from the server api
+ */
 class UploadTripsMap : TrackerBaseModel {
 
     @SerializedName("inserted")

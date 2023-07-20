@@ -11,6 +11,9 @@ import uk.ac.shef.tracker.core.generics.TrackerBaseModel
 import uk.ac.shef.tracker.core.utils.Constants
 import uk.ac.shef.tracker.core.utils.TimeUtils
 
+/**
+ * Database entity that represents a battery model
+ */
 @Entity(
     tableName = "batteries",
     indices = [
@@ -25,18 +28,34 @@ data class TrackerDBBattery(@PrimaryKey(autoGenerate = true) var idBattery: Int 
     var timeZone: Int = TimeUtils.getTimezoneOffset(timeInMillis)
     var uploaded: Boolean = false
 
+    /**
+     * @return the model identifier
+     */
     override fun identifier(): String {
         return idBattery.toString()
     }
 
+    /**
+     * @return the model description
+     */
     fun description(): String {
         return "[$idBattery - $batteryPercent - $isCharging - $timeInMillis - $timeZone - $uploaded]"
     }
 
+    /**
+     * Check the validity of this model according to the required data
+     *
+     * @return true if the model is valid
+     */
     override fun isValid(): Boolean {
         return idBattery != Constants.INVALID && timeInMillis > 0
     }
 
+    /**
+     * Get the priority of this model
+     *
+     * @return the [Long] priority
+     */
     override fun priority(): Long {
         return timeInMillis
     }

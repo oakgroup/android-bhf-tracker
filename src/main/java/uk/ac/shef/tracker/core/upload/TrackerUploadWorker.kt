@@ -14,10 +14,20 @@ import uk.ac.shef.tracker.R
 import uk.ac.shef.tracker.core.listeners.ResultListener
 import uk.ac.shef.tracker.core.preferences.engine.TrackerPreferences
 import uk.ac.shef.tracker.core.tracker.TrackerNotification
-import uk.ac.shef.tracker.core.upload.uploaders.*
+import uk.ac.shef.tracker.core.upload.uploaders.ActivitiesUploader
+import uk.ac.shef.tracker.core.upload.uploaders.BatteriesUploader
+import uk.ac.shef.tracker.core.upload.uploaders.HeartRatesUploader
+import uk.ac.shef.tracker.core.upload.uploaders.LocationsUploader
+import uk.ac.shef.tracker.core.upload.uploaders.StepsUploader
+import uk.ac.shef.tracker.core.upload.uploaders.TripsUploader
 import uk.ac.shef.tracker.core.utils.Logger
 
-
+/**
+ * Tracker listenable worker that uploads the data to the server
+ *
+ * @param context an instance of [Context]
+ * @param workerParams the worker parameters
+ */
 class TrackerUploadWorker(val context: Context, workerParams: WorkerParameters) : ListenableWorker(context, workerParams) {
 
     companion object {
@@ -25,9 +35,11 @@ class TrackerUploadWorker(val context: Context, workerParams: WorkerParameters) 
         private const val NOTIFICATION_ID = 9973
     }
 
+    /**
+     * This starts the async data upload
+     */
     override fun startWork(): ListenableFuture<Result> {
         return CallbackToFutureAdapter.getFuture { completer ->
-
             try {
                 Logger.d("Data Upload Work manager fired")
                 uploadData(object : ResultListener {
@@ -42,6 +54,9 @@ class TrackerUploadWorker(val context: Context, workerParams: WorkerParameters) 
         }
     }
 
+    /**
+     * This uploads the tracker data to the server
+     */
     private fun uploadData(listener: ResultListener? = null) {
         if (sendingData) {
             listener?.onResult(true)
@@ -125,6 +140,9 @@ class TrackerUploadWorker(val context: Context, workerParams: WorkerParameters) 
         }
     }
 
+    /**
+     * This declares the worker foreground info
+     */
     override fun getForegroundInfoAsync(): ListenableFuture<ForegroundInfo> {
         return CallbackToFutureAdapter.getFuture { completer ->
             TrackerNotification.notificationText = "Do not close the app, please"

@@ -7,6 +7,9 @@ package uk.ac.shef.tracker.core.database.queries
 import androidx.room.*
 import uk.ac.shef.tracker.core.database.models.TrackerDBHeartRate
 
+/**
+ * Database queries for the heart_rates table
+ */
 @Dao
 interface TrackerHeartRates {
 

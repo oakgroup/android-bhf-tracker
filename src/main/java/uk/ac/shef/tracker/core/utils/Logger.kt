@@ -9,8 +9,6 @@ import uk.ac.shef.tracker.BuildConfig
 
 /**
  * Utility class to log with a specific tag
- *
- * @author omar.brugna
  */
 object Logger {
 

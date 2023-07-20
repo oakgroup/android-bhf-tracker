@@ -6,8 +6,6 @@ package uk.ac.shef.tracker.core.utils
 
 /**
  * Utility class with constants values
- *
- * @author omar.brugna
  */
 object Constants {
 

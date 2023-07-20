@@ -10,8 +10,6 @@ import com.google.android.gms.maps.model.LatLng
 
 /**
  * Utility class that provides some useful methods to manage locations
- *
- * @author omar.brugna
  */
 @Suppress("unused", "MemberVisibilityCanBePrivate")
 object LocationUtils {

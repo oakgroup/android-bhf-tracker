@@ -7,6 +7,9 @@ package uk.ac.shef.tracker.core.database.queries
 import androidx.room.*
 import uk.ac.shef.tracker.core.database.models.TrackerDBLocation
 
+/**
+ * Database queries for the locations table
+ */
 @Dao
 interface TrackerLocations {
 

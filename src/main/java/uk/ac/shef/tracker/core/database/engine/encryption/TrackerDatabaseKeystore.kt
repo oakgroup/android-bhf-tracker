@@ -6,12 +6,14 @@
 
 package uk.ac.shef.tracker.core.database.engine.encryption
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.os.Build
 import android.security.KeyPairGeneratorSpec
 import android.security.keystore.KeyGenParameterSpec
 import android.security.keystore.KeyProperties
 import android.util.Base64
+import uk.ac.shef.tracker.core.database.engine.TrackerDatabase
 import uk.ac.shef.tracker.core.utils.Logger
 import java.math.BigInteger
 import java.security.Key
@@ -23,6 +25,10 @@ import javax.crypto.KeyGenerator
 import javax.crypto.spec.GCMParameterSpec
 import javax.security.auth.x500.X500Principal
 
+/**
+ * This class is used to generate an encrypted key pair and save it to the Android Keystore
+ * Thi key pair is used to encrypt the [TrackerDatabase]
+ */
 object TrackerDatabaseKeystore {
 
     private const val TAG = "DatabaseKeystore"
@@ -32,19 +38,31 @@ object TrackerDatabaseKeystore {
     private const val KEY_ALIAS = "KEY_ALIAS"
     private val KEY_IV = byteArrayOf(7, 2, 3, 8, 4, 0, 3, 1, 4, 2, 5, 7)
 
+    /**
+     * Get the public encrypted key
+     *
+     * @param context an instance of the [Context]
+     * @return the public encrypted key
+     */
     fun getSecretKey(context: Context): String? {
         val key = generateOrGetKey(context)
         return encryptKey(key)
     }
 
+    /**
+     * Generate the key pair and save it to the Android Keystore
+     *
+     * @param context an instance of the [Context]
+     * @return the public key
+     */
+    @SuppressLint("ObsoleteSdkInt")
     private fun generateOrGetKey(context: Context): Key? {
         try {
             val keyStore = KeyStore.getInstance(AndroidKeyStore)
             keyStore.load(null)
             return if (!keyStore.containsAlias(KEY_ALIAS)) {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                    val keyGenerator =
-                        KeyGenerator.getInstance(KeyProperties.KEY_ALGORITHM_AES, AndroidKeyStore)
+                    val keyGenerator = KeyGenerator.getInstance(KeyProperties.KEY_ALGORITHM_AES, AndroidKeyStore)
                     val keyGenParameterSpec = KeyGenParameterSpec.Builder(
                         KEY_ALIAS,
                         KeyProperties.PURPOSE_ENCRYPT or KeyProperties.PURPOSE_DECRYPT
@@ -85,6 +103,13 @@ object TrackerDatabaseKeystore {
         return null
     }
 
+    /**
+     * Encrypt the public key
+     *
+     * @param key the [Key] to encrypt
+     * @return the public key encrypted
+     */
+    @SuppressLint("ObsoleteSdkInt")
     private fun encryptKey(key: Key?): String? {
         try {
             return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
