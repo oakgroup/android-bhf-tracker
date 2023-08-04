@@ -112,10 +112,29 @@ class TrackerManager private constructor(private val activity: AppCompatActivity
     }
 
     /**
+     * This starts the tracker and it should be used when the client app manages the required permissions by itself
+     *
+     * API: all implementations must request this after setting their preferences on which modules
+     * to use
+     *
+     * @see askForPermissionAndStartTracker
+     */
+    fun startTracker(config: TrackerConfig) {
+        setupWith(config)
+        startTracker()
+    }
+
+    /**
      * API: all implementations must request this after setting their preferences on which modules
      * to use
      */
+    @Suppress("MemberVisibilityCanBePrivate")
     fun askForPermissionAndStartTracker(config: TrackerConfig) {
+        setupWith(config)
+        askForPermissionAndStartTrackerAux()
+    }
+
+    private fun setupWith(config: TrackerConfig) {
         TrackerPreferences.backend(activity).baseUrl = config.baseUrl
         TrackerPreferences.config(activity).useActivityRecognition = config.useActivityRecognition
         TrackerPreferences.config(activity).useLocationTracking = config.useLocationTracking
@@ -126,7 +145,6 @@ class TrackerManager private constructor(private val activity: AppCompatActivity
         TrackerPreferences.config(activity).useStayPoints = config.useStayPoints
         TrackerPreferences.config(activity).compactLocations = config.compactLocations
         TrackerPreferences.backend(activity).uploadData = config.uploadData
-        askForPermissionAndStartTrackerAux()
     }
 
     /**
