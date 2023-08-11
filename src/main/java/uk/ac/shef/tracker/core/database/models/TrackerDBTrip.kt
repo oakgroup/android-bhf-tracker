@@ -120,7 +120,9 @@ data class TrackerDBTrip(@PrimaryKey(autoGenerate = true) var idTrip: Int = 0) :
      * @return the [Int] cadence
      */
     fun getCadence(): Int {
-        return (steps / getDuration(chart) * 60.0).toInt()
+        if (getDuration(chart)>0)
+            return (steps / getDuration(chart) * 60.0).toInt()
+        return 0
     }
 
     /**
