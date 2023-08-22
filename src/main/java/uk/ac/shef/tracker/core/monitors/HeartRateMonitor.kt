@@ -101,7 +101,7 @@ class HeartRateMonitor(val context: TrackerService) : CoroutineScope, SensorEven
     private fun flushHeartRateToDB() {
         Logger.i("Flushing hr values to database")
         background {
-            TrackerTableHeartRates.upsert(context, heartRateReadingStack)
+            TrackerTableHeartRates.insert(context, heartRateReadingStack)
             heartRateReadingStack = mutableListOf()
         }
     }

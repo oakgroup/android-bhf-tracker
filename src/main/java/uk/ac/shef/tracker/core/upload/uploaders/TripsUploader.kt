@@ -124,7 +124,7 @@ object TripsUploader : CoroutineScope {
                             background {
                                 // mark trips as uploaded
                                 models.forEach { it.uploaded = true }
-                                TrackerTableTrips.upsert(context, models)
+                                TrackerTableTrips.update(context, models)
                                 main {
                                     isUploading = false
                                     listener?.onResult(true)

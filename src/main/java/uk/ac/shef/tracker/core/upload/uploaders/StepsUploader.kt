@@ -97,7 +97,7 @@ object StepsUploader : CoroutineScope {
                             background {
                                 // mark steps as uploaded
                                 models.forEach { it.uploaded = true }
-                                TrackerTableSteps.upsert(context, models)
+                                TrackerTableSteps.update(context, models)
                                 main {
                                     isUploading = false
                                     listener?.onResult(true)

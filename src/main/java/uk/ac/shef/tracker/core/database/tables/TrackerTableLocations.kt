@@ -109,31 +109,36 @@ object TrackerTableLocations {
     }
 
     /**
-     * Insert a model into the database
-     * If the model already exists, according to its primary key and indices, the model will be updated
+     * Insert a list of models into the database
+     * If the model already exists, according to its primary key and indices, the model won't be inserted
      *
      * @param context an instance of [Context]
-     * @param model the model to insert/update
+     * @param models the list of models to insert
      */
     @WorkerThread
-    fun upsert(context: Context, model: TrackerDBLocation) {
-        upsert(context, listOf(model))
+    fun insert(context: Context, models: List<TrackerDBLocation>) {
+        try {
+            TrackerDatabase.getInstance(context).getLocations().insert(models)
+        } catch (e: Exception) {
+            e.printStackTrace()
+            Logger.e("Error on insert locations to database ${e.localizedMessage}")
+        }
     }
 
     /**
-     * Insert a list of models into the database
+     * Update a list of models into the database
      * If the model already exists, according to its primary key and indices, the model will be updated
      *
      * @param context an instance of [Context]
-     * @param models the list of models to insert/update
+     * @param models the list of models to update
      */
     @WorkerThread
-    fun upsert(context: Context, models: List<TrackerDBLocation>) {
+    fun update(context: Context, models: List<TrackerDBLocation>) {
         try {
-            TrackerDatabase.getInstance(context).getLocations().upsert(models)
+            TrackerDatabase.getInstance(context).getLocations().update(models)
         } catch (e: Exception) {
             e.printStackTrace()
-            Logger.e("Error on upsert locations to database ${e.localizedMessage}")
+            Logger.e("Error on update locations to database ${e.localizedMessage}")
         }
     }
 

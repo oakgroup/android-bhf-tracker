@@ -111,7 +111,7 @@ class ActivityMonitor(private var callingService: TrackerService) : CoroutineSco
      */
     private fun flushToDatabase() {
         background {
-            TrackerTableActivities.upsert(callingService, activitiesList)
+            TrackerTableActivities.insert(callingService, activitiesList)
             activitiesList = mutableListOf()
         }
     }
@@ -121,7 +121,7 @@ class ActivityMonitor(private var callingService: TrackerService) : CoroutineSco
      */
     fun flush(context: Context) {
         background {
-            TrackerTableActivities.upsert(context, activitiesList)
+            TrackerTableActivities.insert(context, activitiesList)
             activitiesList = mutableListOf()
         }
     }

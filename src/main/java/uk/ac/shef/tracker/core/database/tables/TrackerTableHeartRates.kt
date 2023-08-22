@@ -109,31 +109,36 @@ object TrackerTableHeartRates {
     }
 
     /**
-     * Insert a model into the database
-     * If the model already exists, according to its primary key and indices, the model will be updated
+     * Insert a list of models into the database
+     * If the model already exists, according to its primary key and indices, the model won't be inserted
      *
      * @param context an instance of [Context]
-     * @param model the model to insert/update
+     * @param models the list of models to insert
      */
     @WorkerThread
-    fun upsert(context: Context, model: TrackerDBHeartRate) {
-        upsert(context, listOf(model))
+    fun insert(context: Context, models: List<TrackerDBHeartRate>) {
+        try {
+            TrackerDatabase.getInstance(context).getHeartRates().insert(models)
+        } catch (e: Exception) {
+            e.printStackTrace()
+            Logger.e("Error on insert heart rates to database ${e.localizedMessage}")
+        }
     }
 
     /**
-     * Insert a list of models into the database
+     * Update a list of models into the database
      * If the model already exists, according to its primary key and indices, the model will be updated
      *
      * @param context an instance of [Context]
-     * @param models the list of models to insert/update
+     * @param models the list of models to update
      */
     @WorkerThread
-    fun upsert(context: Context, models: List<TrackerDBHeartRate>) {
+    fun update(context: Context, models: List<TrackerDBHeartRate>) {
         try {
-            TrackerDatabase.getInstance(context).getHeartRates().upsert(models)
+            TrackerDatabase.getInstance(context).getHeartRates().update(models)
         } catch (e: Exception) {
             e.printStackTrace()
-            Logger.e("Error on upsert heart rates to database ${e.localizedMessage}")
+            Logger.e("Error on update heart rates to database ${e.localizedMessage}")
         }
     }
 

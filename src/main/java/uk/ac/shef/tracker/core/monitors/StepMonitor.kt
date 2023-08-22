@@ -103,7 +103,7 @@ class StepMonitor internal constructor(private var context: Context?) : Coroutin
         stepsList.add(stepsData)
         background {
             if (context != null && stepsList.size > MAX_SIZE) {
-                TrackerTableSteps.upsert(context!!, stepsList)
+                TrackerTableSteps.insert(context!!, stepsList)
                 stepsList = mutableListOf()
             }
         }
@@ -174,7 +174,7 @@ class StepMonitor internal constructor(private var context: Context?) : Coroutin
         }
         background {
             if (context != null && stepsList.size > MAX_SIZE) {
-                TrackerTableSteps.upsert(context!!, stepsList)
+                TrackerTableSteps.insert(context!!, stepsList)
                 stepsList = mutableListOf()
             }
         }

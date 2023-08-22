@@ -37,16 +37,6 @@ interface TrackerSteps {
     @Update(onConflict = OnConflictStrategy.IGNORE)
     fun update(models: List<TrackerDBStep>)
 
-    fun upsert(model: TrackerDBStep) {
-        upsert(listOf(model))
-    }
-
-    @Transaction
-    fun upsert(models: List<TrackerDBStep>) {
-        insert(models)
-        update(models)
-    }
-
     @Query("DELETE FROM steps WHERE idStep == :idStep")
     fun delete(idStep: Int)
 

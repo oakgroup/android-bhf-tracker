@@ -112,7 +112,7 @@ class MobilityComputation(val context: Context) {
         summaryData = SummaryData(trips, chart)
 
         TrackerTableTrips.deleteTodayTrips(context)
-        TrackerTableTrips.upsert(context, trips)
+        TrackerTableTrips.insert(context, trips)
     }
 
 

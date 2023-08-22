@@ -37,16 +37,6 @@ interface TrackerBatteries {
     @Update(onConflict = OnConflictStrategy.IGNORE)
     fun update(models: List<TrackerDBBattery>)
 
-    fun upsert(model: TrackerDBBattery) {
-        upsert(listOf(model))
-    }
-
-    @Transaction
-    fun upsert(models: List<TrackerDBBattery>) {
-        insert(models)
-        update(models)
-    }
-
     @Query("DELETE FROM batteries WHERE idBattery == :idBattery")
     fun delete(idBattery: Int)
 

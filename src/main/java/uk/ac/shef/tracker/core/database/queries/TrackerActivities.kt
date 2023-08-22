@@ -38,16 +38,6 @@ interface TrackerActivities {
     @Update(onConflict = OnConflictStrategy.IGNORE)
     fun update(models: List<TrackerDBActivity>)
 
-    fun upsert(model: TrackerDBActivity) {
-        upsert(listOf(model))
-    }
-
-    @Transaction
-    fun upsert(models: List<TrackerDBActivity>) {
-        insert(models)
-        update(models)
-    }
-
     @Query("DELETE FROM activities WHERE idActivity == :idActivity")
     fun delete(idActivity: Int)
 

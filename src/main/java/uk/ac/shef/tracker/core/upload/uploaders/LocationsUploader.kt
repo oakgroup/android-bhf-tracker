@@ -96,7 +96,7 @@ object LocationsUploader : CoroutineScope {
                             background {
                                 // mark locations as uploaded
                                 models.forEach { it.uploaded = true }
-                                TrackerTableLocations.upsert(context, models)
+                                TrackerTableLocations.update(context, models)
                                 main {
                                     isUploading = false
                                     listener?.onResult(true)

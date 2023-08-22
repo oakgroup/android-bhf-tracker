@@ -97,7 +97,7 @@ object BatteriesUploader : CoroutineScope {
                             background {
                                 // mark batteries as uploaded
                                 models.forEach { it.uploaded = true }
-                                TrackerTableBatteries.upsert(context, models)
+                                TrackerTableBatteries.update(context, models)
                                 main {
                                     isUploading = false
                                     listener?.onResult(true)

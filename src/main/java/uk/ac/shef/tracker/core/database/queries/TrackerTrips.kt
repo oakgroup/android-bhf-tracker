@@ -38,16 +38,6 @@ interface TrackerTrips {
     @Update(onConflict = OnConflictStrategy.IGNORE)
     fun update(models: List<TrackerDBTrip>)
 
-    fun upsert(model: TrackerDBTrip) {
-        upsert(listOf(model))
-    }
-
-    @Transaction
-    fun upsert(models: List<TrackerDBTrip>) {
-        insert(models)
-        update(models)
-    }
-
     @Query("DELETE FROM trips WHERE startTime > :startOfTheDay")
     fun deleteTodayTrips(startOfTheDay: Long)
 

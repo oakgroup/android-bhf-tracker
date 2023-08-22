@@ -38,16 +38,6 @@ interface TrackerHeartRates {
     @Update(onConflict = OnConflictStrategy.IGNORE)
     fun update(models: List<TrackerDBHeartRate>)
 
-    fun upsert(model: TrackerDBHeartRate) {
-        upsert(listOf(model))
-    }
-
-    @Transaction
-    fun upsert(models: List<TrackerDBHeartRate>) {
-        insert(models)
-        update(models)
-    }
-
     @Query("DELETE FROM heart_rates WHERE idHeartRate == :idHeartRate")
     fun delete(idHeartRate: Int)
 

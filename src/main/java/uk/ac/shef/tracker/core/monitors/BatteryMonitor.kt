@@ -50,7 +50,7 @@ class BatteryMonitor(val context: TrackerService) : CoroutineScope {
             dbBattery.timeInMillis = System.currentTimeMillis()
             dbBattery.batteryPercent = TrackerUtils.getBatteryPercentage(context)
             dbBattery.isCharging = TrackerUtils.isCharging(context)
-            TrackerTableBatteries.upsert(context, dbBattery)
+            TrackerTableBatteries.insert(context, dbBattery)
             Logger.d("Writing battery to database ${dbBattery.description()}")
             lastBatterySentMillis = dbBattery.timeInMillis
         }

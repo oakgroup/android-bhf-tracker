@@ -97,7 +97,7 @@ object HeartRatesUploader : CoroutineScope {
                             background {
                                 // mark heart rates as uploaded
                                 models.forEach { it.uploaded = true }
-                                TrackerTableHeartRates.upsert(context, models)
+                                TrackerTableHeartRates.update(context, models)
                                 main {
                                     isUploading = false
                                     listener?.onResult(true)

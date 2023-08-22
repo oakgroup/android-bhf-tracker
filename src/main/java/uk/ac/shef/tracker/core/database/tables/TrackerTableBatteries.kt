@@ -111,30 +111,47 @@ object TrackerTableBatteries {
 
     /**
      * Insert a model into the database
-     * If the model already exists, according to its primary key and indices, the model will be updated
+     * If the model already exists, according to its primary key and indices, the model won't be inserted
      *
      * @param context an instance of [Context]
-     * @param model the model to insert/update
+     * @param model the model to insert
      */
     @WorkerThread
-    fun upsert(context: Context, model: TrackerDBBattery) {
-        upsert(context, listOf(model))
+    fun insert(context: Context, model: TrackerDBBattery) {
+        insert(context, listOf(model))
     }
 
     /**
      * Insert a list of models into the database
+     * If the model already exists, according to its primary key and indices, the model won't be inserted
+     *
+     * @param context an instance of [Context]
+     * @param models the list of models to insert
+     */
+    @WorkerThread
+    fun insert(context: Context, models: List<TrackerDBBattery>) {
+        try {
+            TrackerDatabase.getInstance(context).getBatteries().insert(models)
+        } catch (e: Exception) {
+            e.printStackTrace()
+            Logger.e("Error on insert batteries to database ${e.localizedMessage}")
+        }
+    }
+
+    /**
+     * Update a list of models into the database
      * If the model already exists, according to its primary key and indices, the model will be updated
      *
      * @param context an instance of [Context]
-     * @param models the list of models to insert/update
+     * @param models the list of models to update
      */
     @WorkerThread
-    fun upsert(context: Context, models: List<TrackerDBBattery>) {
+    fun update(context: Context, models: List<TrackerDBBattery>) {
         try {
-            TrackerDatabase.getInstance(context).getBatteries().upsert(models)
+            TrackerDatabase.getInstance(context).getBatteries().update(models)
         } catch (e: Exception) {
             e.printStackTrace()
-            Logger.e("Error on upsert batteries to database ${e.localizedMessage}")
+            Logger.e("Error on update batteries to database ${e.localizedMessage}")
         }
     }
 

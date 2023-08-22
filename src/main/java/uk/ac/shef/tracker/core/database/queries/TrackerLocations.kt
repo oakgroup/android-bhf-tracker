@@ -38,16 +38,6 @@ interface TrackerLocations {
     @Update(onConflict = OnConflictStrategy.IGNORE)
     fun update(models: List<TrackerDBLocation>)
 
-    fun upsert(model: TrackerDBLocation) {
-        upsert(listOf(model))
-    }
-
-    @Transaction
-    fun upsert(models: List<TrackerDBLocation>) {
-        insert(models)
-        update(models)
-    }
-
     @Query("DELETE FROM locations WHERE idLocation == :idLocation")
     fun delete(idLocation: Int)
 

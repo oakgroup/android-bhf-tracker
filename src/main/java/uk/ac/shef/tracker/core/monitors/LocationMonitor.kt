@@ -96,7 +96,7 @@ class LocationMonitor(context: Context) : CoroutineScope {
         fusedLocationClient?.flushLocations()
         if (context != null) {
             background {
-                TrackerTableLocations.upsert(context, locationsList)
+                TrackerTableLocations.insert(context, locationsList)
                 locationsList = mutableListOf()
             }
         }
@@ -144,7 +144,7 @@ class LocationMonitor(context: Context) : CoroutineScope {
         locationsList.add(location)
         if (context != null && locationsList.size > MAX_SIZE) {
             background {
-                TrackerTableLocations.upsert(context, locationsList)
+                TrackerTableLocations.insert(context, locationsList)
                 locationsList = mutableListOf()
             }
         }
