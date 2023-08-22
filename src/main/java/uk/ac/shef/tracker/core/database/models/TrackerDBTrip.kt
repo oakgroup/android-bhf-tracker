@@ -457,9 +457,9 @@ data class TrackerDBTrip(@PrimaryKey(autoGenerate = true) var idTrip: Int = 0) :
             } else finalList.add(this)
         } else if (newActivityType in listOf<Int>(DetectedActivity.WALKING, DetectedActivity.RUNNING)) {
             // this is to be fixed. See 17.11.2022 data for example: note that as the A/R sensor did not work, there
-            // is walking an that is recognised correctly but the start time is all wrong
-            // finalList.addAll(findWalkingMovementInStepsList(getTripSteps(), newActivityType, chart))
-            finalList.add(this)
+            // is walking anthat is recognised correctly but the start time is all wrong
+            //finalList.add(this)
+            finalList.addAll(findWalkingMovementInStepsList(getTripSteps(), newActivityType, chart))
         } else
             finalList.add(this)
         // if the last one is a still it must end at the end of the current trip
