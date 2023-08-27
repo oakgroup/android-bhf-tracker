@@ -11,12 +11,12 @@
 
     <!-- not translatable apis -->
     <string name="tracker_api_empty" translatable="false" />
-    <string name="tracker_api_insert_activities" translatable="false">insert_activities</string>
-    <string name="tracker_api_insert_batteries" translatable="false">insert_batteries</string>
-    <string name="tracker_api_insert_heart_rates" translatable="false">insert_heart_rates</string>
-    <string name="tracker_api_insert_locations" translatable="false">insert_locations</string>
-    <string name="tracker_api_insert_steps" translatable="false">insert_steps</string>
-    <string name="tracker_api_insert_trips" translatable="false">insert_trips</string>
+    <string name="tracker_api_insert_activities" translatable="false">v2/insert_activities</string>
+    <string name="tracker_api_insert_batteries" translatable="false">v2/insert_batteries</string>
+    <string name="tracker_api_insert_heart_rates" translatable="false">v2/insert_heart_rates</string>
+    <string name="tracker_api_insert_locations" translatable="false">v2/insert_locations</string>
+    <string name="tracker_api_insert_steps" translatable="false">v2/insert_steps</string>
+    <string name="tracker_api_insert_trips" translatable="false">v2/insert_trips</string>
     <string name="tracker_api_user_registration" translatable="false">user_registration</string>
 
 </resources>
