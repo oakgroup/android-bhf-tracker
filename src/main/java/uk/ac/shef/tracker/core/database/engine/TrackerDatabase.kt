@@ -37,7 +37,8 @@ import kotlin.coroutines.CoroutineContext
  *
  * @return the public key encrypted
  */
-@androidx.room.Database(entities = [TrackerDBActivity::class, TrackerDBBattery::class, TrackerDBHeartRate::class, TrackerDBLocation::class, TrackerDBStep::class, TrackerDBTrip::class], version = 1, exportSchema = false)
+@androidx.room.Database(entities = [TrackerDBActivity::class, TrackerDBBattery::class, TrackerDBHeartRate::class, TrackerDBLocation::class, TrackerDBStep::class, TrackerDBTrip::class],
+    version = 2, exportSchema = false)
 internal abstract class TrackerDatabase : RoomDatabase(), CoroutineScope {
 
     override val coroutineContext: CoroutineContext
