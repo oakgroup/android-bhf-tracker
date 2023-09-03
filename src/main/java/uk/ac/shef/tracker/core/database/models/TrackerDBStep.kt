@@ -83,4 +83,10 @@ data class TrackerDBStep(@PrimaryKey(autoGenerate = true) var idStep: Int = 0) :
         cadence = (stepDiff / secdiff * 60.0).toInt()
         return cadence
     }
+
+    override fun toString(): String {
+        return "Steps(timeInMillis=${TimeUtils.formatMillis(timeInMillis, Constants.DATE_FORMAT_FULL)}, steps=$steps, cadence=$cadence)"
+    }
+
+
 }

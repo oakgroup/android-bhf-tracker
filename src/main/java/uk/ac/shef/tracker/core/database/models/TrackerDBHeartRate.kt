@@ -63,4 +63,10 @@ data class TrackerDBHeartRate(@PrimaryKey(autoGenerate = true) var idHeartRate: 
     override fun priority(): Long {
         return timeInMillis
     }
+
+    override fun toString(): String {
+        return "HeartRate(time=${TimeUtils.formatMillis(timeInMillis, Constants.DATE_FORMAT_FULL)}, heartRate=$heartRate, accuracy=$accuracy)"
+    }
+
+
 }

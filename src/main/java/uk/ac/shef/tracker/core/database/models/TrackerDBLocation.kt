@@ -100,4 +100,10 @@ data class TrackerDBLocation(@PrimaryKey(autoGenerate = true) var idLocation: In
     override fun priority(): Long {
         return timeInMillis
     }
+
+    override fun toString(): String {
+        return "Location(time=${TimeUtils.formatMillis(timeInMillis, Constants.DATE_FORMAT_FULL)}, latitude=$latitude, longitude=$longitude, accuracy=$accuracy,  distance=$distance, speed=$speed)"
+    }
+
+
 }
