@@ -9,6 +9,7 @@ No part of this code can be used without the explicit written permission by the 
 package uk.ac.shef.tracker.core.computation
 
 import android.content.Context
+import android.util.Log
 import androidx.annotation.WorkerThread
 import com.google.android.gms.location.ActivityTransition
 import com.google.android.gms.location.DetectedActivity.IN_VEHICLE
@@ -36,7 +37,7 @@ import kotlin.math.min
  * Class that performs the computation for the mobility data
  */
 class MobilityComputation(val context: Context) {
-
+    val _tag = MobilityComputation::class.java.simpleName
     var steps: MutableList<TrackerDBStep> = mutableListOf()
     var locations: MutableList<TrackerDBLocation> = mutableListOf()
     var activities: MutableList<TrackerDBActivity> = mutableListOf()
@@ -58,6 +59,16 @@ class MobilityComputation(val context: Context) {
      */
     @WorkerThread
     fun computeResults() {
+//        Log.i(_tag, "+------ :STPS --------+")
+//        for (step in steps)
+//            Log.i(_tag, "step::: ${step.toString()}")
+//        Log.i(_tag, "+------ :LCS --------+")
+//        for (location in locations)
+//            Log.i(_tag, "loc::: ${location.toString()}")
+//        Log.i(_tag, "+------ :ACTS --------+")
+        for (activity in activities)
+            Log.i(_tag, "act::: ${activity.toString()}")
+        Log.i(_tag, "+--------------+")
         val boundariesList = mergeAllBoundaries(steps, locations, activities)
         for (boundary in boundariesList) {
             val element = MobilityData(boundary.priority())

@@ -22,7 +22,7 @@ import uk.ac.shef.tracker.core.utils.TimeUtils
 @Entity(
     tableName = "activities",
     indices = [
-        Index(value = ["timeInMillis"], unique = true)
+        Index(value = ["timeInMillis", "activityType"], unique = true)
     ]
 )
 data class TrackerDBActivity(@PrimaryKey(autoGenerate = true) var idActivity: Int = 0) : TrackerBaseModel {
@@ -109,4 +109,10 @@ data class TrackerDBActivity(@PrimaryKey(autoGenerate = true) var idActivity: In
         timeZone = other.timeZone
         idActivity = other.idActivity
     }
+
+    override fun toString(): String {
+        return "Activity(time=${TimeUtils.formatMillis(timeInMillis, Constants.DATE_FORMAT_FULL)}, activityType=$activityType, transitionType=$transitionType"
+    }
+
+
 }
