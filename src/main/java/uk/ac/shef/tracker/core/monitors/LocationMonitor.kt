@@ -11,6 +11,7 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.content.IntentFilter
 import android.location.Location
+import android.os.Build
 import android.os.Looper
 import androidx.annotation.WorkerThread
 import com.google.android.gms.location.*
@@ -30,18 +31,22 @@ class LocationMonitor(context: Context) : CoroutineScope {
 
     override val coroutineContext: CoroutineContext
         get() = Dispatchers.Default
-
+    private val _tag = this::class.java.simpleName
     private var lastRecordedLocation: Location? = null
-    private val locationRequest: LocationRequest = LocationRequest.create()
+    private var locationRequest: LocationRequest
     private val fusedLocationClient: FusedLocationProviderClient?
     private val locationTracker: LocationMonitor
 
     var currentLocation: Location? = null
     var locationsList: MutableList<TrackerDBLocation> = mutableListOf()
 
+    val attributionContext =  if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R)
+                                context.createAttributionContext("sharePhotos")
+                                else null
+
     companion object {
 
-        const val DETECTION_FREQUENCY_IN_MSECS = 5000
+        const val DETECTION_FREQUENCY_IN_MSECS = 10000
 
         /** This is the delay in returning the locations, used to avoid awakening Android
          * for just one location. Let's pack all the locations in the past minute and return
@@ -64,12 +69,14 @@ class LocationMonitor(context: Context) : CoroutineScope {
 
     init {
         val filter = IntentFilter()
-        filter.addAction(javaClass.simpleName)
-        locationRequest.interval = DETECTION_FREQUENCY_IN_MSECS.toLong()
-        locationRequest.maxWaitTime = DETECTION_DELAY_IN_MSECS.toLong()
-        locationRequest.priority = LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY
-        locationRequest.fastestInterval = DETECTION_FREQUENCY_IN_MSECS.toLong()
-        locationRequest.smallestDisplacement = SMALLEST_DISPLACEMENT.toFloat()
+        filter.addAction(_tag)
+        locationRequest = LocationRequest.Builder(Priority.PRIORITY_HIGH_ACCURACY,
+            DETECTION_FREQUENCY_IN_MSECS.toLong())
+            .apply {
+                setMinUpdateDistanceMeters(SMALLEST_DISPLACEMENT.toFloat())
+                setGranularity(Granularity.GRANULARITY_FINE)
+                setWaitForAccurateLocation(true)
+            }.build()
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(context)
         locationTracker = this
     }

@@ -27,7 +27,7 @@ import kotlin.coroutines.CoroutineContext
 /**
  * This class monitors the heart rates data and save them into the database
  */
-class HeartRateMonitor(val context: TrackerService) : CoroutineScope, SensorEventListener {
+class HeartRateMonitor(val context: Context) : CoroutineScope, SensorEventListener {
 
     override val coroutineContext: CoroutineContext
         get() = Dispatchers.Default

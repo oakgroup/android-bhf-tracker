@@ -8,6 +8,7 @@ No part of this code can be used without the explicit written permission by the 
 
 package uk.ac.shef.tracker.core.monitors
 
+import android.content.Context
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import uk.ac.shef.tracker.core.database.models.TrackerDBBattery
@@ -21,7 +22,7 @@ import kotlin.coroutines.CoroutineContext
 /**
  * This class monitors the batteries data and save them into the database
  */
-class BatteryMonitor(val context: TrackerService) : CoroutineScope {
+class BatteryMonitor(val context: Context) : CoroutineScope {
 
     override val coroutineContext: CoroutineContext
         get() = Dispatchers.Default

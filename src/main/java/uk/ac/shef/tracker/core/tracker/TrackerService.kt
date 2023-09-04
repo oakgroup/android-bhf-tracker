@@ -10,6 +10,7 @@ package uk.ac.shef.tracker.core.tracker
 
 import android.annotation.SuppressLint
 import android.app.Service
+import android.content.Context
 import android.content.Intent
 import android.content.pm.ServiceInfo
 import android.location.Location
@@ -33,6 +34,11 @@ class TrackerService : Service() {
     private var wakeLockHandler: Handler? = null
     private var savedLocation: Location? = null
     private var isContDownTimerRunning: Boolean = false
+
+    // https://developer.android.com/guide/topics/data/audit-access
+    // from android 11 the sensors need an attribution tag declared in teh manifest and
+    // used when accessing the sensor manager to create a sensor
+    lateinit var attributionContext: Context
 
     var countDownTimer: CountDownTimer? = null
 
@@ -61,6 +67,10 @@ class TrackerService : Service() {
         Logger.d("Creating the Tracker Service!! $this")
         currentTracker = this
 
+        attributionContext = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            createAttributionContext("data_collection_attribution_tag")
+        } else
+            this
         // This initialises the sensor trackers and the repository before starting the foreground process
         // We do it in the onCreate so to avoid calling this every time the intent is re-delivered
         val useStepCounter = TrackerPreferences.config(this).useStepCounter
@@ -70,15 +80,15 @@ class TrackerService : Service() {
         val useBatteryMonitoring = TrackerPreferences.config(this).useBatteryMonitor
 
         if (locationTracker == null && useLocationTracking)
-            locationTracker = LocationMonitor(this)
+            locationTracker = LocationMonitor(attributionContext)
         if (activityRecognition == null && useActivityRecognition)
-            activityRecognition = ActivityMonitor(this)
+            activityRecognition = ActivityMonitor(currentTracker!!, attributionContext)
         if (stepCounter == null && useStepCounter)
-            stepCounter = StepMonitor(this)
+            stepCounter = StepMonitor(attributionContext)
         if (heartMonitor == null && useHeartRateMonitoring)
-            heartMonitor = HeartRateMonitor(this)
+            heartMonitor = HeartRateMonitor(attributionContext)
         if (batteryMonitor == null && useBatteryMonitoring)
-            batteryMonitor = BatteryMonitor(this)
+            batteryMonitor = BatteryMonitor(attributionContext)
 
         initCountDownToStoppingSensors()
     }

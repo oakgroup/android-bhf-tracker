@@ -40,7 +40,7 @@ import kotlin.coroutines.CoroutineContext
 /**
  * This class monitors the activities data and save them into the database
  */
-class ActivityMonitor(private var callingService: TrackerService) : CoroutineScope {
+class ActivityMonitor(private var callingService: TrackerService, private var attributeContext: Context) : CoroutineScope {
 
     override val coroutineContext: CoroutineContext
         get() = Dispatchers.Default
@@ -71,9 +71,9 @@ class ActivityMonitor(private var callingService: TrackerService) : CoroutineSco
     init {
         val intent = Intent(transitionsReceiverAction)
         arPendingIntent = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-            PendingIntent.getBroadcast(callingService, REQUEST_CODE, intent, PendingIntent.FLAG_MUTABLE)
+            PendingIntent.getBroadcast(attributeContext, REQUEST_CODE, intent, PendingIntent.FLAG_MUTABLE)
         } else {
-            PendingIntent.getBroadcast(callingService, REQUEST_CODE, intent, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE)
+            PendingIntent.getBroadcast(attributeContext, REQUEST_CODE, intent, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE)
         }
     }
 
@@ -82,7 +82,7 @@ class ActivityMonitor(private var callingService: TrackerService) : CoroutineSco
      */
     fun startActivityRecognition(context: Context) {
         Logger.d("Starting A/R")
-        activityTransitionsReceiver = registerARReceiver(callingService, activityTransitionsReceiver)
+        activityTransitionsReceiver = registerARReceiver(attributeContext, activityTransitionsReceiver)
         setupActivityTransitions(context)
     }
 
@@ -93,7 +93,7 @@ class ActivityMonitor(private var callingService: TrackerService) : CoroutineSco
      */
     fun stopActivityRecognition(context: Context) {
         // Unregister the transitions:
-        if (ActivityCompat.checkSelfPermission(callingService, Manifest.permission.ACTIVITY_RECOGNITION) != PackageManager.PERMISSION_GRANTED) {
+        if (ActivityCompat.checkSelfPermission(attributeContext, Manifest.permission.ACTIVITY_RECOGNITION) != PackageManager.PERMISSION_GRANTED) {
             return
         }
         ActivityRecognition.getClient(context).removeActivityTransitionUpdates(arPendingIntent)
@@ -111,7 +111,7 @@ class ActivityMonitor(private var callingService: TrackerService) : CoroutineSco
      */
     private fun flushToDatabase() {
         background {
-            TrackerTableActivities.insert(callingService, activitiesList)
+            TrackerTableActivities.insert(attributeContext, activitiesList)
             activitiesList = mutableListOf()
         }
     }
