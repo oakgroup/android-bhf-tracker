@@ -14,6 +14,7 @@ import android.app.AlertDialog
 import android.content.Context
 import android.content.pm.PackageManager
 import android.os.Build
+import android.util.Log
 import androidx.annotation.WorkerThread
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
@@ -104,6 +105,15 @@ class TrackerManager private constructor(private val activity: AppCompatActivity
     }
 
     fun onResume() {
+        val userId = TrackerPreferences.user(activity).idUser ?: Constants.EMPTY
+        if (userId!=Constants.EMPTY) {
+            Log.i("user ID", "userId: $userId")
+            val trackerRestarter = TrackerRestarter()
+            Logger.i("Starting tracker")
+            trackerRestarter.startTrackerAndDataUpload(activity)
+            Logger.i("Started tracker")
+
+        }
         TrackerService.currentTracker?.keepFlushingToDB(true)
     }
 
