@@ -334,10 +334,12 @@ data class TrackerDBTrip(@PrimaryKey(autoGenerate = true) var idTrip: Int = 0) :
      * using a trolley (which looks like cycling)
      */
     fun tagIfSuspicious() {
-        if (isSuspicious(activityType, radiusInMeters)) reliable = false
+        if (isSuspicious(activityType, radiusInMeters))
+            reliable = false
     }
 
     fun isSuspicious(activityType: Int, radiusInMeters: Int): Boolean {
+        if (activityType == MobilityData.INVALID_VALUE) return true
         if (activityType == DetectedActivity.IN_VEHICLE && radiusInMeters < Constants.MINIMUM_RADIUS_FOR_VEHICLES) return true
         if (activityType == DetectedActivity.ON_BICYCLE && radiusInMeters < Constants.MINIMUM_RADIUS_FOR_BIKES) return true
         return false
@@ -460,8 +462,15 @@ data class TrackerDBTrip(@PrimaryKey(autoGenerate = true) var idTrip: Int = 0) :
             // is walking anthat is recognised correctly but the start time is all wrong
             //finalList.add(this)
             finalList.addAll(findWalkingMovementInStepsList(getTripSteps(), newActivityType, chart))
-        } else
+        } else if ((activityType==DetectedActivity.STILL || activityType==MobilityData.INVALID_VALUE) && newActivityType==DetectedActivity.IN_VEHICLE){
+            //we are proposing a vehicle for still or invalid = let's accept it - it means that we have found that there is considerable distance
+            activityType = newActivityType
             finalList.add(this)
+            reliable= true
+        } else {
+            finalList.add(this)
+            tagIfSuspicious()
+        }
         // if the last one is a still it must end at the end of the current trip
         // as it may not have locations, this may have been lost
         if (finalList.size > 1 && finalList[finalList.size - 1].activityType == DetectedActivity.STILL)
@@ -528,4 +537,12 @@ data class TrackerDBTrip(@PrimaryKey(autoGenerate = true) var idTrip: Int = 0) :
         }
         return chart.size - 1
     }
+
+    override fun toString(): String {
+        return "${TimeUtils.formatMillis(getStartTime(chart), Constants.DATE_FORMAT_HOUR_MINUTE)} -"  +
+                "${TimeUtils.formatMillis(getEndTime(chart), Constants.DATE_FORMAT_HOUR_MINUTE)}+" +
+                "activity:$activityType radius:$radiusInMeters distance:$distanceInMeters steps: $steps "
+    }
 }
+
+//TimeUtils.formatMillis(dbTrip.getStartTime(chart), Constants.DATE_FORMAT_HOUR_MINUTE) + " - " + TimeUtils.formatMillis(dbTrip.getEndTime(chart), "HH:mm")
