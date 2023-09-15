@@ -247,7 +247,8 @@ class LocationUtilities {
         if (useGlobalSED != null && !useGlobalSED) {
             val locationCopies2: MutableList<TrackerDBLocation> = mutableListOf()
             for (loc in locationCopies) {
-                locationCopies2.add(loc.copy())
+                //you cannot use the default copy as the fields are defined as var and those are not copied by the copy
+                locationCopies2.add(loc.copyDeep())
             }
             simplifyLocationsListUsingSED(locationCopies2)
             locationCopies = locationCopies2

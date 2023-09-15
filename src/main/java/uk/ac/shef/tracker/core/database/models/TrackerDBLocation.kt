@@ -26,7 +26,6 @@ import uk.ac.shef.tracker.core.utils.TimeUtils
     ]
 )
 data class TrackerDBLocation(@PrimaryKey(autoGenerate = true) var idLocation: Int = 0) : TrackerBaseModel {
-
     var latitude: Double = 0.0
     var longitude: Double = 0.0
     var altitude: Double = 0.0
@@ -61,7 +60,13 @@ data class TrackerDBLocation(@PrimaryKey(autoGenerate = true) var idLocation: In
     /**
      * @constructor from location attributes
      */
-    constructor(timeInMillis: Long, latitude: Double, longitude: Double, accuracy: Double, altitude: Double) : this() {
+    constructor(
+        timeInMillis: Long,
+        latitude: Double,
+        longitude: Double,
+        accuracy: Double,
+        altitude: Double
+    ) : this() {
         this.timeInMillis = timeInMillis
         this.latitude = latitude
         this.longitude = longitude
@@ -80,7 +85,12 @@ data class TrackerDBLocation(@PrimaryKey(autoGenerate = true) var idLocation: In
      * @return the model description
      */
     fun description(): String {
-        return "[$idLocation - $latitude - $longitude - $altitude - $accuracy - ${TimeUtils.formatMillis(timeInMillis, Constants.DATE_FORMAT_FULL)} - $timeZone - $uploaded]"
+        return "[$idLocation - $latitude - $longitude - $altitude - $accuracy - ${
+            TimeUtils.formatMillis(
+                timeInMillis,
+                Constants.DATE_FORMAT_FULL
+            )
+        } - $timeZone - $uploaded]"
     }
 
     /**
@@ -102,8 +112,27 @@ data class TrackerDBLocation(@PrimaryKey(autoGenerate = true) var idLocation: In
     }
 
     override fun toString(): String {
-        return "Location(time=${TimeUtils.formatMillis(timeInMillis, Constants.DATE_FORMAT_FULL)}, latitude=$latitude, longitude=$longitude, accuracy=$accuracy,  distance=$distance, speed=$speed)"
+        return "Location(time=${
+            TimeUtils.formatMillis(
+                timeInMillis,
+                Constants.DATE_FORMAT_FULL
+            )
+        }, latitude=$latitude, longitude=$longitude, accuracy=$accuracy,  distance=$distance, speed=$speed)"
     }
 
-
+    fun copyDeep(): TrackerDBLocation {
+        val anotherLocation= TrackerDBLocation()
+        anotherLocation.latitude = latitude
+        anotherLocation.longitude = longitude
+        anotherLocation.altitude = altitude
+        anotherLocation.accuracy = accuracy
+        anotherLocation.timeInMillis = timeInMillis
+        anotherLocation.timeZone = timeZone
+        anotherLocation.uploaded = uploaded
+        anotherLocation.distance = distance
+        anotherLocation.sed = sed
+        anotherLocation.speed = speed
+        anotherLocation.locationsSupportingCentroid = locationsSupportingCentroid
+        return anotherLocation
+    }
 }
