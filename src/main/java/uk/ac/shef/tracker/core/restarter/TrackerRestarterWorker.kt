@@ -8,9 +8,11 @@ No part of this code can be used without the explicit written permission by the 
 
 package uk.ac.shef.tracker.core.restarter
 
+import android.app.ActivityManager
 import android.content.Context
 import android.content.Intent
 import android.os.Build
+import androidx.core.content.ContextCompat.getSystemService
 import androidx.work.CoroutineWorker
 import androidx.work.ForegroundInfo
 import androidx.work.WorkerParameters
@@ -21,6 +23,7 @@ import uk.ac.shef.tracker.core.preferences.engine.TrackerPreferences
 import uk.ac.shef.tracker.core.tracker.TrackerNotification
 import uk.ac.shef.tracker.core.tracker.TrackerService
 import uk.ac.shef.tracker.core.utils.Logger
+
 
 /**
  * Tracker coroutine worker that starts the foreground service
@@ -45,33 +48,43 @@ class TrackerRestarterWorker(val context: Context, workerParams: WorkerParameter
                     if (TrackerPreferences.user(context).isUserRegistered()) {
                         // start the tracker only if the user id is set
                         Logger.i("Checking if current service is null: ${TrackerService.currentTracker}")
-                        if (TrackerService.currentTracker == null) {
-                            Logger.i("Launching the tracker from the job service")
-                            val trackerServiceIntent = Intent(context, TrackerService::class.java)
-                            TrackerNotification.notificationText = "Do not close the app, please"
-                            TrackerNotification.notificationIcon = R.drawable.ic_notification
-                            Logger.i("Launching tracker")
-                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                                context.startForegroundService(trackerServiceIntent)
-                            } else {
-                                context.startService(trackerServiceIntent)
-                            }
-                            Logger.d("Started service")
+                        try {
+                            Logger.i("Stopping foreground service")
+                            TrackerService.currentTracker?.stopSelf()
+                        } catch (e: java.lang.Exception) {
+                            Logger.i("service crashed when stopping - maybe it did nto exist in the end")
                         }
+                        Logger.i("Launching the tracker from the job service")
+                        val trackerServiceIntent = Intent(context, TrackerService::class.java)
+                        TrackerNotification.notificationText = "Do not close the app, please"
+                        TrackerNotification.notificationIcon = R.drawable.ic_notification
+                        Logger.i("Launching tracker")
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                            context.startForegroundService(trackerServiceIntent)
+                        } else {
+                            context.startService(trackerServiceIntent)
+                        }
+                        Logger.d("Started service")
+
                     } else {
                         // stop the tracker if the user id is not set
+                        Logger.i("user is not registered yet - stopping the tracker")
                         TrackerService.currentTracker?.stopSelf()
                     }
                 } catch (e: Exception) {
                     // nothing that we can do
-                    Logger.e("Could not start Tracker at boot or regular restart")
+                    Logger.e("Could not start Tracker at boot or regular restart ${e.message}")
                 }
                 Result.success()
             }
         } catch (e: Throwable) {
+            Logger.e("Could not start Tracker at boot or regular restart ${e.message}")
             Result.failure()
         }
     }
+
+
+
 
     /**
      * This declares the worker foreground info
