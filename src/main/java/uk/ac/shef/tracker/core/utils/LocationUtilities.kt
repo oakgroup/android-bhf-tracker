@@ -271,9 +271,12 @@ class LocationUtilities {
      * @return a list of location timing indicating separated activities
      * (e.g. ( (1234556 1234556 1322234) (33344455 33344433 666545566 ) ... (77766677 86677766))
      */
-    fun findLocationMovementInLocationsList(locations: MutableList<TrackerDBLocation>, minimumDistanceInMeters: Int, activityType: Int, chart: MutableList<MobilityData>): MutableList<TrackerDBTrip> {
+    fun findLocationMovementInLocationsList(locations: MutableList<TrackerDBLocation>,
+                                            minimumDistanceInMeters: Int,
+                                            startTime: Long,
+                                            endTime: Long,
+                                            activityType: Int, chart: MutableList<MobilityData>): MutableList<TrackerDBTrip> {
         val tripsList = mutableListOf<TrackerDBTrip>()
-
         var prevLocation: TrackerDBLocation? = null
         val initialStartTime = if (locations.size > 0) getChartIndexOfLocation(locations.get(0), chart) else -1
         var newTrip = TrackerDBTrip()
@@ -281,7 +284,11 @@ class LocationUtilities {
         newTrip.endTime = Constants.INVALID
         newTrip.activityType = STILL
         newTrip.chart = chart
+        // locations have by construction a first
         for (location in locations) {
+            // sometimes we add some contextual locations from the preceding or following activity
+            if (location.timeInMillis < startTime || location.timeInMillis > endTime)
+                continue
             if (prevLocation != null) {
                 // val distance = computeDistance(prevLocation, location)
                 val differenceInTime = location.timeInMillis - prevLocation.timeInMillis

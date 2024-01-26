@@ -169,37 +169,23 @@ class TripsComputation(val context: Context, val chart: MutableList<MobilityData
      * @param context the calling context
      */
     private fun recoverLostActivities(context: Context) {
-        val useGlobalSED = TrackerPreferences.config(context).compactLocations
         val finalTrips = mutableListOf<TrackerDBTrip>()
         for (trip in trips) {
             if ((trip.activityType == DetectedActivity.STILL || trip.activityType == INVALID_VALUE) && trip.getDuration(chart) > MobilityComputation.SHORT_ACTIVITY_DURATION * 2) {
-                val locationUtilities = LocationUtilities()
                 if (trip.hasAverageHighCadence(chart) || trip.steps > 1000) {
                     trip.activityType = DetectedActivity.WALKING
-                    // we should check if the trip takes the entire duration or not
-                    // in principle we could stay still for two hours and then travel for 10 minutes
-                    // we do not do it for now but this is definitely a @todo
-                    // @todo trimTripDuration should trim the sides of the trip and return potentially three
-                    // trips - still - veh - still if the two stills are long enough to be a real
-                    // activity -
-
-                    // this is to be fixed. See 4.07.2022 data for example: note that as the A/R sensor did not work, there
-                    // are walking and car trips in the same STILL so first you should extract the walking and then try to extract the vehicles
-                    val subTrips = trip.trimTripDuration(DetectedActivity.WALKING)
+                    val subTrips = trip.extractWalkingAndOtherActivitiesFromStill(context, DetectedActivity.WALKING)
                     finalTrips.addAll(subTrips)
                 } else {
-                    val movementFound = locationUtilities.isLinearTrajectoryInActivity(trip.locations, useGlobalSED, 1500)
-                    if (movementFound) {
-                        val subTrips = trip.trimTripDuration(DetectedActivity.IN_VEHICLE)
-                        finalTrips.addAll(subTrips)
-                    } else
-                        finalTrips.add(trip)
+                    finalTrips.addAll(trip.detectVehicleInStills(context))
                 }
             } else
                 finalTrips.add(trip)
         }
         trips = finalTrips
     }
+
+
 
     /**
      * This checks the suspicious trips and in case it changes the activity type

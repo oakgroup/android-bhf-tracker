@@ -36,7 +36,7 @@ import kotlin.math.min
 /**
  * Class that performs the computation for the mobility data
  */
-class MobilityComputation(val context: Context) {
+class MobilityComputation(val context: Context, val startTime: Long, val endTime: Long) {
     val _tag = MobilityComputation::class.java.simpleName
     var steps: MutableList<TrackerDBStep> = mutableListOf()
     var locations: MutableList<TrackerDBLocation> = mutableListOf()
@@ -66,9 +66,9 @@ class MobilityComputation(val context: Context) {
 //        for (location in locations)
 //            Log.i(_tag, "loc::: ${location.toString()}")
 //        Log.i(_tag, "+------ :ACTS --------+")
-        for (activity in activities)
-            Log.i(_tag, "act::: ${activity.toString()}")
-        Log.i(_tag, "+--------------+")
+//        for (activity in activities)
+//            Log.i(_tag, "act::: ${activity.toString()}")
+//        Log.i(_tag, "+--------------+")
         val boundariesList = mergeAllBoundaries(steps, locations, activities)
         for (boundary in boundariesList) {
             val element = MobilityData(boundary.priority())
@@ -109,10 +109,9 @@ class MobilityComputation(val context: Context) {
         }
         // create trips and summaries
         if (chart.size == 0) {          // default trip from now until midnight
-            val now = System.currentTimeMillis()
-            val activity1 = MobilityData(TimeUtils.midnightInMsecs(now))
+            val activity1 = MobilityData(TimeUtils.midnightInMsecs(startTime))
             activity1.activityIn = STILL
-            val activity2 = MobilityData(TimeUtils.midnightInMsecs(now + TimeUtils.ONE_DAY_MILLIS))
+            val activity2 = MobilityData(TimeUtils.midnightInMsecs(startTime + TimeUtils.ONE_DAY_MILLIS))
             activity2.activityOut = STILL
             chart = mutableListOf()
             chart.add(activity1)

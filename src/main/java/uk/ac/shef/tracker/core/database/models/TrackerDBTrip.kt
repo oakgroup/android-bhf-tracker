@@ -8,11 +8,13 @@ No part of this code can be used without the explicit written permission by the 
 
 package uk.ac.shef.tracker.core.database.models
 
+import android.content.Context
 import androidx.room.Entity
 import androidx.room.Ignore
 import androidx.room.Index
 import androidx.room.PrimaryKey
 import com.google.android.gms.location.DetectedActivity
+import com.google.android.gms.location.DetectedActivity.STILL
 import uk.ac.shef.tracker.core.computation.MobilityComputation
 import uk.ac.shef.tracker.core.computation.data.MobilityData
 import uk.ac.shef.tracker.core.generics.TrackerBaseModel
@@ -61,7 +63,12 @@ data class TrackerDBTrip(@PrimaryKey(autoGenerate = true) var idTrip: Int = 0) :
     /**
      * @constructor from trip attributes
      */
-    constructor(startTime: Int, endTime: Int, activityType: Int, chart: MutableList<MobilityData>) : this() {
+    constructor(
+        startTime: Int,
+        endTime: Int,
+        activityType: Int,
+        chart: MutableList<MobilityData>
+    ) : this() {
         this.startTime = startTime
         this.endTime = endTime
         this.activityType = activityType
@@ -79,7 +86,22 @@ data class TrackerDBTrip(@PrimaryKey(autoGenerate = true) var idTrip: Int = 0) :
      * @return the model description
      */
     fun description(): String {
-        return "[$idTrip - ${TimeUtils.formatMillis(getStartTime(chart), Constants.DATE_FORMAT_HOUR_MINUTE_SECONDS)} - ${TimeUtils.formatMillis(getEndTime(chart), Constants.DATE_FORMAT_HOUR_MINUTE_SECONDS)} - ${TrackerDBActivity.getActivityTypeString(activityType)} - $radiusInMeters - $distanceInMeters - $steps - ${TimeUtils.formatMillis(timeInMillis, Constants.DATE_FORMAT_UTC)} - $timeZone - $uploaded]"
+        return "[$idTrip - ${
+            TimeUtils.formatMillis(
+                getStartTime(chart),
+                Constants.DATE_FORMAT_HOUR_MINUTE_SECONDS
+            )
+        } - ${
+            TimeUtils.formatMillis(
+                getEndTime(chart),
+                Constants.DATE_FORMAT_HOUR_MINUTE_SECONDS
+            )
+        } - ${TrackerDBActivity.getActivityTypeString(activityType)} - $radiusInMeters - $distanceInMeters - $steps - ${
+            TimeUtils.formatMillis(
+                timeInMillis,
+                Constants.DATE_FORMAT_UTC
+            )
+        } - $timeZone - $uploaded]"
     }
 
     /**
@@ -120,7 +142,7 @@ data class TrackerDBTrip(@PrimaryKey(autoGenerate = true) var idTrip: Int = 0) :
      * @return the [Int] cadence
      */
     fun getCadence(): Int {
-        if (getDuration(chart)>0)
+        if (getDuration(chart) > 0)
             return (steps / getDuration(chart) * 60.0).toInt()
         return 0
     }
@@ -175,7 +197,8 @@ data class TrackerDBTrip(@PrimaryKey(autoGenerate = true) var idTrip: Int = 0) :
      * @return true/false - it adds the following trip to the subTrips field if compacted
      */
     fun compactIfPossible(followingTrip: TrackerDBTrip): Boolean {
-        val diff = abs(chart[endTime].timeInMSecs - followingTrip.chart[followingTrip.startTime].timeInMSecs)
+        val diff =
+            abs(chart[endTime].timeInMSecs - followingTrip.chart[followingTrip.startTime].timeInMSecs)
         if (compatibleActivityType(followingTrip) && diff < MobilityComputation.SHORT_ACTIVITY_DURATION) {
             subTrips.add(followingTrip)
             // select the best type for the conglomerate before changing the end time
@@ -205,7 +228,11 @@ data class TrackerDBTrip(@PrimaryKey(autoGenerate = true) var idTrip: Int = 0) :
                 // has just been added
                 if (subTrip.startTime > endTime) {
                     activityDurations[subTrip.activityType] =
-                        if (activityDurations[subTrip.activityType] != null) max(subTrip.getDuration(chart), activityDurations[subTrip.activityType]!!)
+                        if (activityDurations[subTrip.activityType] != null) max(
+                            subTrip.getDuration(
+                                chart
+                            ), activityDurations[subTrip.activityType]!!
+                        )
                         else subTrip.getDuration(chart)
                 }
             }
@@ -223,13 +250,29 @@ data class TrackerDBTrip(@PrimaryKey(autoGenerate = true) var idTrip: Int = 0) :
         return (activityType == otherTrip.activityType
                 // compact on foot with whatever walking or running
                 || ((activityType in listOf(DetectedActivity.WALKING, DetectedActivity.ON_FOOT))
-                && (otherTrip.activityType in listOf(DetectedActivity.WALKING, DetectedActivity.ON_FOOT)))
+                && (otherTrip.activityType in listOf(
+            DetectedActivity.WALKING,
+            DetectedActivity.ON_FOOT
+        )))
                 || ((activityType in listOf(DetectedActivity.RUNNING, DetectedActivity.ON_FOOT))
-                && (otherTrip.activityType in listOf(DetectedActivity.RUNNING, DetectedActivity.ON_FOOT)))
+                && (otherTrip.activityType in listOf(
+            DetectedActivity.RUNNING,
+            DetectedActivity.ON_FOOT
+        )))
                 // if type is not identical do not compact a long walk followed by a long run: they are distinct activities
-                || ((getDuration(chart) < 2 * MobilityComputation.SHORT_ACTIVITY_DURATION || otherTrip.getDuration(chart) < 2 * MobilityComputation.SHORT_ACTIVITY_DURATION)
-                && (activityType in listOf(DetectedActivity.WALKING, DetectedActivity.RUNNING, DetectedActivity.ON_FOOT))
-                && (otherTrip.activityType in listOf(DetectedActivity.WALKING, DetectedActivity.RUNNING, DetectedActivity.ON_FOOT))))
+                || ((getDuration(chart) < 2 * MobilityComputation.SHORT_ACTIVITY_DURATION || otherTrip.getDuration(
+            chart
+        ) < 2 * MobilityComputation.SHORT_ACTIVITY_DURATION)
+                && (activityType in listOf(
+            DetectedActivity.WALKING,
+            DetectedActivity.RUNNING,
+            DetectedActivity.ON_FOOT
+        ))
+                && (otherTrip.activityType in listOf(
+            DetectedActivity.WALKING,
+            DetectedActivity.RUNNING,
+            DetectedActivity.ON_FOOT
+        ))))
     }
 
     /**
@@ -323,7 +366,8 @@ data class TrackerDBTrip(@PrimaryKey(autoGenerate = true) var idTrip: Int = 0) :
         for ((index1, loc1) in locations.withIndex()) {
             for (index2 in index1 until locations.size) {
                 val loc2 = locations[index2]
-                if (loc1 != loc2) radiusInMeters = max(radiusInMeters, locationUtils.computeDistance(loc1, loc2).toInt())
+                if (loc1 != loc2) radiusInMeters =
+                    max(radiusInMeters, locationUtils.computeDistance(loc1, loc2).toInt())
             }
         }
     }
@@ -408,7 +452,8 @@ data class TrackerDBTrip(@PrimaryKey(autoGenerate = true) var idTrip: Int = 0) :
         var maxDistance = 0
         // do not use low accuracy locations for the trip radius
         for (location in locationUtils.removeLowAccuracyLocations(locations)) {
-            maxDistance = max(maxDistance, locationUtils.computeDistance(location, baseLocation).toInt())
+            maxDistance =
+                max(maxDistance, locationUtils.computeDistance(location, baseLocation).toInt())
         }
         return maxDistance / 2
     }
@@ -421,11 +466,21 @@ data class TrackerDBTrip(@PrimaryKey(autoGenerate = true) var idTrip: Int = 0) :
      * @param newActivityType
      * @return
      */
-    fun trimTripDuration(newActivityType: Int): List<TrackerDBTrip> {
+    fun extractWalkingAndOtherActivitiesFromStill(
+        context: Context,
+        newActivityType: Int
+    ): List<TrackerDBTrip> {
         val finalList = mutableListOf<TrackerDBTrip>()
-        if (newActivityType == DetectedActivity.IN_VEHICLE && activityType == DetectedActivity.STILL) {
+        if (newActivityType == DetectedActivity.IN_VEHICLE && activityType == STILL) {
             val locationUtils = LocationUtilities()
-            val tripsList = locationUtils.findLocationMovementInLocationsList(locations, 100, newActivityType, chart)
+            val tripsList = locationUtils.findLocationMovementInLocationsList(
+                locations,
+                100,
+                chart[startTime].timeInMSecs,
+                chart[endTime].timeInMSecs,
+                newActivityType,
+                chart
+            )
             var prevTripData: TrackerDBTrip? = null
             if (tripsList.size > 1) {
                 var stTime = startTime
@@ -434,13 +489,13 @@ data class TrackerDBTrip(@PrimaryKey(autoGenerate = true) var idTrip: Int = 0) :
                     if (tripModel.locations.size > 0) {
                         for (index in stTime..endTime) {
                             if (chart[index].timeInMSecs == tripModel.locations[0].timeInMillis) {
-                                if (tripModel.activityType == DetectedActivity.STILL)
+                                if (tripModel.activityType == STILL)
                                     tripModel.startTime = stTime
                                 else
                                     tripModel.startTime = index
                                 // if the last one is a still it must end at the end of the current trip
                                 // as it may not have locations, this may have been lost
-                                if (prevTripData?.activityType == DetectedActivity.STILL)
+                                if (prevTripData?.activityType == STILL)
                                     prevTripData.endTime = index
                             }
                             if (chart[index].timeInMSecs == tripModel.locations[tripModel.locations.size - 1].timeInMillis) {
@@ -457,38 +512,62 @@ data class TrackerDBTrip(@PrimaryKey(autoGenerate = true) var idTrip: Int = 0) :
                     // if there are no locations then we skip the subtrip
                 }
             } else finalList.add(this)
-        } else if (newActivityType in listOf<Int>(DetectedActivity.WALKING, DetectedActivity.RUNNING)) {
-            // this is to be fixed. See 17.11.2022 data for example: note that as the A/R sensor did not work, there
-            // is walking anthat is recognised correctly but the start time is all wrong
-            //finalList.add(this)
-            finalList.addAll(findWalkingMovementInStepsList(getTripSteps(), newActivityType, chart))
-        } else if ((activityType==DetectedActivity.STILL || activityType==MobilityData.INVALID_VALUE) && newActivityType==DetectedActivity.IN_VEHICLE){
+        } else if (newActivityType in listOf(DetectedActivity.WALKING, DetectedActivity.RUNNING)) {
+            finalList.addAll(
+                findWalkingMovementInStepsList(
+                    context,
+                    getTripSteps(),
+                    newActivityType,
+                    chart
+                )
+            )
+        } else if ((activityType == STILL || activityType == MobilityData.INVALID_VALUE) && newActivityType == DetectedActivity.IN_VEHICLE) {
             //we are proposing a vehicle for still or invalid = let's accept it - it means that we have found that there is considerable distance
             activityType = newActivityType
             finalList.add(this)
-            reliable= true
+            reliable = true
         } else {
             finalList.add(this)
             tagIfSuspicious()
         }
         // if the last one is a still it must end at the end of the current trip
         // as it may not have locations, this may have been lost
-        if (finalList.size > 1 && finalList[finalList.size - 1].activityType == DetectedActivity.STILL)
+        if (finalList.size > 1 && finalList[finalList.size - 1].activityType == STILL)
             finalList[finalList.size - 1].endTime = endTime
+        // otherwise add a still until the end
+        else if (finalList.size > 1){
+            val newTrip = TrackerDBTrip()
+            newTrip.startTime= finalList[finalList.size - 1].endTime
+            newTrip.endTime= endTime
+            newTrip.activityType= STILL
+            newTrip.chart = chart
+            newTrip.finalise(false)
+            finalList.add(newTrip)
+        }
+        for (trip in finalList)
+            trip.finalise(true)
         return finalList
     }
 
-    private fun findWalkingMovementInStepsList(steps: MutableList<TrackerDBStep>, activityType: Int, chart: MutableList<MobilityData>): MutableList<TrackerDBTrip> {
+    /**
+     * it looks for the activities hidden in a still
+     */
+    private fun findWalkingMovementInStepsList(
+        context: Context,
+        steps: MutableList<TrackerDBStep>,
+        activityType: Int,
+        chart: MutableList<MobilityData>
+    ): MutableList<TrackerDBTrip> {
         val tripsList = mutableListOf<TrackerDBTrip>()
-
         var prevSteps: TrackerDBStep? = null
         val initialStartTime = if (steps.size > 0) getChartIndexOfSteps(steps.get(0), chart) else -1
 
         var newTrip = TrackerDBTrip()
         newTrip.startTime = initialStartTime
-        newTrip.endTime = Constants.INVALID
-        newTrip.activityType = DetectedActivity.STILL
+        newTrip.endTime = initialStartTime
+        newTrip.activityType = STILL
         newTrip.chart = chart
+        tripsList.add(newTrip)
 
         for (step in steps) {
             if (prevSteps != null) {
@@ -498,30 +577,68 @@ data class TrackerDBTrip(@PrimaryKey(autoGenerate = true) var idTrip: Int = 0) :
                     newTrip.activityType = activityType
                 } else {
                     val stepTime = getChartIndexOfSteps(step, chart)
-                    newTrip.endTime = stepTime
-                    // have we walked enough? If not we set it to still
-                    tripsList.add(newTrip)
-                    newTrip.finalise(true)
-                    if (newTrip.getDuration(chart) < 60000 || newTrip.steps < 200) newTrip.activityType = DetectedActivity.STILL
-
-                    newTrip = TrackerDBTrip()
-                    newTrip.startTime = stepTime
-                    newTrip.endTime = Constants.INVALID
-                    newTrip.activityType = DetectedActivity.STILL
-                    newTrip.chart = chart
+                    newTrip = closeDownCurrentTrip(tripsList, newTrip, stepTime, true)
                 }
+            } else {
+                val stepTime = getChartIndexOfSteps(step, chart)
+                // as the add additional still param will be false, we have to update the endtag, otehrwise we will have a
+                // missed period
+                newTrip.endTime= stepTime
+                newTrip = closeDownCurrentTrip(tripsList, newTrip, stepTime, false)
             }
             prevSteps = step
+            // always update the end or you will lose it
+            newTrip.endTime = getChartIndexOfSteps(step, chart)
         }
         // add the last one as not added yet
         if (tripsList.size > 0) {
             val locationTime = getChartIndexOfSteps(prevSteps!!, chart)
             newTrip.endTime = locationTime
-            tripsList.add(newTrip)
             newTrip.finalise(true)
-            if (newTrip.getDuration(chart) < 60000 || newTrip.steps < 200) newTrip.activityType = DetectedActivity.STILL
+            if (newTrip.getDuration(chart) < 60000 || newTrip.steps < 200) newTrip.activityType =
+                STILL
         }
-        return tripsList
+        // add an additional final trip if we do not reach  midnight as we may have further locations
+        addFinalElement(tripsList)
+
+        val finalFinalList: MutableList<TrackerDBTrip> = mutableListOf()
+        for (trip in tripsList) {
+            // now check if the stills are actually vehicles
+            if (trip.activityType == STILL)
+                finalFinalList.addAll(trip.detectVehicleInStills(context))
+            else
+                finalFinalList.add(trip)
+        }
+        return finalFinalList
+    }
+
+    private fun closeDownCurrentTrip(
+        tripsList: MutableList<TrackerDBTrip>,
+        currentTrip: TrackerDBTrip,
+        stepTime: Int,
+        addAdditionlStill: Boolean
+    ): TrackerDBTrip {
+        // current trip has already end assigned so we finalise it
+        currentTrip.finalise(true)
+        if (currentTrip.getDuration(chart) < 60000 || currentTrip.steps < 200) currentTrip.activityType =
+            STILL
+        // if there was a gap in steps, then we insert a still in between the two walking
+        if (addAdditionlStill) {
+            val newTrip = TrackerDBTrip()
+            newTrip.startTime = currentTrip.endTime
+            newTrip.endTime = stepTime
+            newTrip.activityType = STILL
+            newTrip.chart = chart
+            newTrip.finalise(true)
+            tripsList.add(newTrip)
+        }
+        val newTrip = TrackerDBTrip()
+        newTrip.startTime = stepTime
+        newTrip.endTime = stepTime
+        newTrip.activityType = STILL
+        newTrip.chart = chart
+        tripsList.add(newTrip)
+        return newTrip
     }
 
     /**
@@ -539,9 +656,32 @@ data class TrackerDBTrip(@PrimaryKey(autoGenerate = true) var idTrip: Int = 0) :
     }
 
     override fun toString(): String {
-        return "${TimeUtils.formatMillis(getStartTime(chart), Constants.DATE_FORMAT_HOUR_MINUTE)} -"  +
+        return "${
+            TimeUtils.formatMillis(
+                getStartTime(chart),
+                Constants.DATE_FORMAT_HOUR_MINUTE
+            )
+        } -" +
                 "${TimeUtils.formatMillis(getEndTime(chart), Constants.DATE_FORMAT_HOUR_MINUTE)}+" +
                 "activity:$activityType radius:$radiusInMeters distance:$distanceInMeters steps: $steps "
+    }
+
+
+    /**
+     * given a still trip, it returns the list of vehicle movements detected using locations
+     */
+    fun detectVehicleInStills(context: Context): Collection<TrackerDBTrip> {
+        val useGlobalSED = TrackerPreferences.config(context).compactLocations
+        val locationUtilities = LocationUtilities()
+        val movementFound =
+            locationUtilities.isLinearTrajectoryInActivity(locations, useGlobalSED, 1500)
+        return if (movementFound) {
+            extractWalkingAndOtherActivitiesFromStill(context, DetectedActivity.IN_VEHICLE)
+        } else {
+            val finalList: MutableList<TrackerDBTrip> = mutableListOf()
+            finalList.add(this)
+            finalList
+        }
     }
 }
 

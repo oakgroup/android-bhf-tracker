@@ -10,6 +10,7 @@ package uk.ac.shef.tracker.core.computation
 import android.content.Context
 import androidx.annotation.WorkerThread
 import com.google.android.gms.location.ActivityTransition
+import com.google.android.gms.location.DetectedActivity
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import uk.ac.shef.tracker.core.database.models.TrackerDBActivity
@@ -47,7 +48,7 @@ class DailyComputation(private val context: Context, var startTime: Long, var en
     private var heartRates = mutableListOf<TrackerDBHeartRate>()
     private var locations = mutableListOf<TrackerDBLocation>()
     private var steps = mutableListOf<TrackerDBStep>()
-    private var mobilityComputation = MobilityComputation(context)
+    private var mobilityComputation = MobilityComputation(context, startTime, endTime)
 
     private var trackerObserver: TrackerObserver? = null
 
@@ -64,6 +65,16 @@ class DailyComputation(private val context: Context, var startTime: Long, var en
     fun computeResults(notifyObserver: Boolean = true) {
         Logger.d("Computing day results for ${TimeUtils.formatMillis(startTime, Constants.DATE_FORMAT_UTC)}")
         activities = collectActivitiesFromDatabase(TrackerService.currentTracker)
+//        if (activities.size == 0){
+//            val startActivity= TrackerDBActivity(1234)
+//            startActivity.timeInMillis= TimeUtils.midnightInMsecs(startTime)
+//            startActivity.activityType= DetectedActivity.STILL
+//            startActivity.transitionType = ActivityTransition.ACTIVITY_TRANSITION_ENTER
+//            startActivity.uploaded = false
+//            activities.add(startActivity)
+//            //no need to add the final one as it i automatically added later
+//        }
+
         batteries = collectBatteriesFromDatabase()
         heartRates = collectHeartRatesFromDatabase(TrackerService.currentTracker)
         locations = collectLocationsFromDatabase(TrackerService.currentTracker)
@@ -102,7 +113,7 @@ class DailyComputation(private val context: Context, var startTime: Long, var en
         heartRates = mutableListOf()
         locations = mutableListOf()
         steps = mutableListOf()
-        mobilityComputation = MobilityComputation(context)
+        mobilityComputation = MobilityComputation(context, startTime, endTime)
     }
 
     fun registerObserver(observer: TrackerObserver) {

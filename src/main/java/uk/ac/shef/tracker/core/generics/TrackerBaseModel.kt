@@ -7,8 +7,12 @@
 
 package uk.ac.shef.tracker.core.generics
 
+import com.google.android.gms.location.DetectedActivity
+import com.google.android.gms.location.DetectedActivity.STILL
+import uk.ac.shef.tracker.core.database.models.TrackerDBTrip
 import uk.ac.shef.tracker.core.utils.Constants
 import uk.ac.shef.tracker.core.utils.Logger
+import uk.ac.shef.tracker.core.utils.TimeUtils
 
 /**
  * Base interface that should be implemented by all the models
@@ -51,5 +55,27 @@ interface TrackerBaseModel : Comparable<TrackerBaseModel?> {
     fun priority(): Long {
         Logger.e("Called base priority method, this should never happen")
         return 0
+    }
+
+    /**
+     *  add an additional final trip if we do not reach  midnight as we may have further locations
+     */
+    fun addFinalElement(tripsList: MutableList<TrackerDBTrip>){
+        val lastElem = tripsList[tripsList.size-1]
+        // if we have a still,. just extend until midnight
+        if (lastElem.activityType==STILL) {
+            lastElem.endTime = lastElem.chart.size-1
+            return
+        }
+        val endInMsecs = lastElem.chart[lastElem.endTime].timeInMSecs
+        if (endInMsecs < TimeUtils.midnightInMsecs(endInMsecs)+ TimeUtils.ONE_DAY_MILLIS-1) {
+            val finalTrip = TrackerDBTrip()
+            finalTrip.startTime = lastElem.endTime
+            finalTrip.endTime = lastElem.chart.size-1
+            finalTrip.activityType= STILL
+            finalTrip.chart = lastElem.chart
+            finalTrip.finalise(true)
+            tripsList.add(finalTrip)
+        }
     }
 }
