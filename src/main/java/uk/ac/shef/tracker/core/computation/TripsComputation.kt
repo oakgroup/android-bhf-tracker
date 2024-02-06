@@ -36,6 +36,13 @@ class TripsComputation(val context: Context, val chart: MutableList<MobilityData
         trips = correctSuspiciousTrips(chart)
         trips = compactConsecutiveTrips()
         finaliseLocations()
+        finaliseHeartMinutes()
+    }
+
+    private fun finaliseHeartMinutes() {
+        for (trip in trips){
+
+        }
     }
 
     /**
@@ -63,7 +70,7 @@ class TripsComputation(val context: Context, val chart: MutableList<MobilityData
         }
         if (tripsList.size > 0 && currentTrip.endTime == 0 && currentTrip.startTime != chart.size - 1) {
             currentTrip.endTime = chart.size - 1
-            currentTrip.setNumberOfSteps()
+            currentTrip.finaliseStepsAndCadence()
             tripsList.add(currentTrip)
             currentTrip.finalise(true)
 

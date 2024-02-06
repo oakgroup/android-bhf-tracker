@@ -32,6 +32,9 @@ class SummaryData(trips: MutableList<TrackerDBTrip>, chart: MutableList<Mobility
 
     var radius: Int = 0
 
+    var heartMsecs : Long = 0
+    var heartDistance :  Double = 0.0
+
     init {
         Logger.d("Creating day summary results")
         var baseLocation: TrackerDBLocation? = null
@@ -62,11 +65,15 @@ class SummaryData(trips: MutableList<TrackerDBTrip>, chart: MutableList<Mobility
                 ) -> {
                     walkingMsecs += trip.getDuration(chart)
                     walkingDistance += trip.distanceInMeters
+                    heartMsecs +=  trip.briskMSecs
+                    heartDistance += trip.heartDistanceInMeters
                 }
 
                 DetectedActivity.RUNNING -> {
                     runningMsecs += trip.getDuration(chart)
                     runningDistance += trip.distanceInMeters
+                    heartMsecs +=  trip.briskMSecs
+                    heartDistance += trip.heartDistanceInMeters
                 }
 
                 DetectedActivity.STILL -> {

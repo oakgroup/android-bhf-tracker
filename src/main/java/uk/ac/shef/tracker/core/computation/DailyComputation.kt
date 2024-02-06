@@ -239,6 +239,10 @@ class DailyComputation(private val context: Context, var startTime: Long, var en
             currentTracker.stepCounter?.flush()
         }
         computeCadenceForSteps(models)
+        Logger.i("+--- ${models.size} Steps retrieved from DB ---+")
+//        for (stepData in models) {
+//            Logger.i("$stepData")
+//        }
         return models
     }
 

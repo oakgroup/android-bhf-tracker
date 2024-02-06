@@ -18,6 +18,7 @@ import com.google.android.gms.location.DetectedActivity.STILL
 import uk.ac.shef.tracker.core.computation.MobilityComputation
 import uk.ac.shef.tracker.core.computation.data.MobilityData
 import uk.ac.shef.tracker.core.generics.TrackerBaseModel
+import uk.ac.shef.tracker.core.monitors.StepMonitor
 import uk.ac.shef.tracker.core.preferences.engine.TrackerPreferences
 import uk.ac.shef.tracker.core.tracker.TrackerService
 import uk.ac.shef.tracker.core.utils.Constants
@@ -51,6 +52,13 @@ data class TrackerDBTrip(@PrimaryKey(autoGenerate = true) var idTrip: Int = 0) :
     @Ignore
     var chart: MutableList<MobilityData> = arrayListOf()
 
+    /**
+     * the number of milliseconds spent over the brisk limit in walking
+     */
+    @Ignore
+    var briskMSecs : Long = 0
+    @Ignore
+    var heartDistanceInMeters : Long = 0
     @Ignore
     var locations: MutableList<TrackerDBLocation> = mutableListOf()
 
@@ -60,6 +68,9 @@ data class TrackerDBTrip(@PrimaryKey(autoGenerate = true) var idTrip: Int = 0) :
     @Ignore
     var reliable: Boolean = true
 
+    companion object {
+        const val BRISK_CADENCE=100
+    }
     /**
      * @constructor from trip attributes
      */
@@ -126,7 +137,7 @@ data class TrackerDBTrip(@PrimaryKey(autoGenerate = true) var idTrip: Int = 0) :
      * Called when all the information has been set. Remember to call it after compacting as well
      */
     fun finalise(computeLocations: Boolean) {
-        setNumberOfSteps()
+        finaliseStepsAndCadence()
         if (computeLocations) {
             locations = this.getTripLocations()
             cleanLocations()
@@ -148,14 +159,27 @@ data class TrackerDBTrip(@PrimaryKey(autoGenerate = true) var idTrip: Int = 0) :
     }
 
     /**
-     * Set the number of steps for this trip
+     * Set the number of steps for this trip and counts the number of heartMSeconds
      * The steps are NOT cumulative!
      */
-    fun setNumberOfSteps() {
+    fun finaliseStepsAndCadence() {
         steps = 0
+        briskMSecs = 0L
+        /** TODO to be computed */
+        heartDistanceInMeters = 0L
         for (index in startTime..endTime) {
-            if (chart[index].steps != MobilityData.INVALID_VALUE)
+
+            var prevIndex = -1
+            if (chart[index].steps != MobilityData.INVALID_VALUE) {
                 steps += chart[index].steps
+                if (chart[index].cadence>BRISK_CADENCE)
+                    if (prevIndex==-1){
+                        briskMSecs += StepMonitor.WAITING_TIME_IN_MSECS
+                    } else {
+                        briskMSecs += chart[index].timeInMSecs-chart[prevIndex].timeInMSecs
+                    }
+
+            }
         }
     }
 
