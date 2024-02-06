@@ -360,7 +360,7 @@ class LocationUtilities {
      * Spikes must be removed because they let the tracker think that a still activity
      * is actually a car activity or that a short walk is actually a walk on a train
      * (which is converted in vehicle)
-     * @param locations the locations list
+     * @param originalLocations the locations list
      * @return the filtered locations list
      */
     fun removeSpikes(originalLocations: MutableList<TrackerDBLocation>): MutableList<TrackerDBLocation> {
@@ -392,8 +392,9 @@ class LocationUtilities {
                     // average location
                     skipNext = false
                     removed = true
-                    cleanedLocations.add(getAverageLocation(loc1, loc2, loc3))
-                    Logger.i("Skipping location $loc2")
+                    val correctedLocation = getAverageLocation(loc1, loc2, loc3)
+                    cleanedLocations.add(correctedLocation)
+                    Logger.i("Correcting location $loc2 as $correctedLocation")
                 }
             }
             cleanedLocations.add(locations[locations.size - 1])

@@ -85,8 +85,11 @@ class TrackerService : Service() {
             activityRecognition = ActivityMonitor(currentTracker!!, attributionContext)
         if (stepCounter == null && useStepCounter)
             stepCounter = StepMonitor(attributionContext)
-        if (heartMonitor == null && useHeartRateMonitoring)
+        if (heartMonitor == null && useHeartRateMonitoring) {
             heartMonitor = HeartRateMonitor(attributionContext)
+            if (heartMonitor?.monitorIsAvailable() == false)
+                heartMonitor=null
+        }
         if (batteryMonitor == null && useBatteryMonitoring)
             batteryMonitor = BatteryMonitor(attributionContext)
 
@@ -128,6 +131,9 @@ class TrackerService : Service() {
      */
     @SuppressLint("WakelockTimeout")
     fun startWakeLock() {
+        if (wakeLock?.isHeld == true)
+                    wakeLockHandler?.removeCallbacks(updateTimerThread)
+
         Logger.d("Acquiring the wakelock")
         val powerManager = getSystemService(POWER_SERVICE) as PowerManager
         wakeLock = powerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, javaClass.simpleName)
@@ -158,13 +164,13 @@ class TrackerService : Service() {
             Logger.e("Error starting the location tracker: " + e.localizedMessage)
         }
         try {
-            Logger.d("Starting heart rate monitoring ${batteryMonitor != null}")
+            Logger.d("Starting heart rate monitoring ${heartMonitor != null}")
             heartMonitor?.startMonitoring()
         } catch (e: Exception) {
             Logger.e("Error starting the hr monitor: " + e.localizedMessage)
         }
         try {
-            Logger.d("Starting battery monitoring ${heartMonitor != null}")
+            Logger.d("Starting battery monitoring ${batteryMonitor != null}")
             batteryMonitor?.insertData()
         } catch (e: Exception) {
             Logger.e("Error starting the battery monitor: " + e.localizedMessage)

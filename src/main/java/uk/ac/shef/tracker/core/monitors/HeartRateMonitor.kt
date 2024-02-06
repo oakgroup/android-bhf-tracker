@@ -199,4 +199,8 @@ class HeartRateMonitor(val context: Context) : CoroutineScope, SensorEventListen
         sensorManager?.flush(this)
         flushHeartRateToDB()
     }
+
+    fun monitorIsAvailable(): Boolean {
+        return heartRateSensor!=null
+    }
 }

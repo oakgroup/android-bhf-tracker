@@ -12,6 +12,7 @@ import android.Manifest
 import android.app.PendingIntent
 import android.content.BroadcastReceiver
 import android.content.Context
+import android.content.Context.RECEIVER_EXPORTED
 import android.content.Intent
 import android.content.IntentFilter
 import android.content.pm.PackageManager
@@ -23,6 +24,7 @@ import com.google.android.gms.location.ActivityTransition
 import com.google.android.gms.location.ActivityTransitionRequest
 import com.google.android.gms.location.ActivityTransitionResult
 import com.google.android.gms.location.DetectedActivity
+import com.google.android.gms.tasks.Task
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import uk.ac.shef.tracker.BuildConfig
@@ -62,6 +64,7 @@ class ActivityMonitor(private var callingService: TrackerService, private var at
                 else -> "--"
             }
         }
+        var activityMonitor: ActivityMonitor? = null
 
         private var STANDARD_MAX_SIZE = 10
         private var MAX_SIZE = STANDARD_MAX_SIZE
@@ -69,11 +72,24 @@ class ActivityMonitor(private var callingService: TrackerService, private var at
     }
 
     init {
-        val intent = Intent(transitionsReceiverAction)
-        arPendingIntent = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-            PendingIntent.getBroadcast(attributeContext, REQUEST_CODE, intent, PendingIntent.FLAG_MUTABLE)
-        } else {
-            PendingIntent.getBroadcast(attributeContext, REQUEST_CODE, intent, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE)
+        activityMonitor = this
+        Logger.d("transition receiver action: $transitionsReceiverAction")
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+            val intent = Intent(attributeContext, ActivityTransitionsReceiver::class.java)
+            intent.setAction(transitionsReceiverAction)
+            Logger.d("Trying to launch A/R")
+            arPendingIntent = PendingIntent.getBroadcast(attributeContext, REQUEST_CODE, intent,
+                 PendingIntent.FLAG_MUTABLE )
+
+        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            val intent = Intent(transitionsReceiverAction)
+            arPendingIntent = PendingIntent.getBroadcast(attributeContext, REQUEST_CODE, intent,
+                PendingIntent.FLAG_MUTABLE)
+        }
+        else {
+            val intent = Intent(transitionsReceiverAction)
+            arPendingIntent = PendingIntent.getBroadcast(attributeContext, REQUEST_CODE, intent,
+                PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE)
         }
     }
 
@@ -157,8 +173,8 @@ class ActivityMonitor(private var callingService: TrackerService, private var at
             Logger.d("Recognition permissions allowed")
         }
         ActivityRecognition.getClient(context).requestActivityTransitionUpdates(request, arPendingIntent)
-        // task.addOnSuccessListener { Logger.d("Transitions  successfully registered.") }
-        // task.addOnFailureListener { e: Error -> Logger.e("Error in Transition Registration: $e") }
+            .addOnSuccessListener { Logger.d("Transitions  successfully registered.") }
+            .addOnFailureListener { e: java.lang.Exception -> Logger.e("Error in Transition Registration: $e") }
     }
 
     /**
@@ -211,25 +227,35 @@ class ActivityMonitor(private var callingService: TrackerService, private var at
             }
         }
         val newActivityTransitionsReceiver = ActivityTransitionsReceiver()
-        context.registerReceiver(
-            newActivityTransitionsReceiver,
-            IntentFilter(transitionsReceiverAction)
-        )
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            context.registerReceiver(
+                newActivityTransitionsReceiver,
+                IntentFilter(transitionsReceiverAction),
+                RECEIVER_EXPORTED
+            )
+        } else {
+            context.registerReceiver(
+                newActivityTransitionsReceiver,
+                IntentFilter(transitionsReceiverAction)
+            )
+        }
         return newActivityTransitionsReceiver
     }
 
     /**
      * A  BroadcastReceiver handling intents from the Transitions API
      */
-    inner class ActivityTransitionsReceiver : BroadcastReceiver() {
-        override fun onReceive(context: Context, intent: Intent) {
-            if (!TextUtils.equals(transitionsReceiverAction, intent.action)) {
+         class ActivityTransitionsReceiver : BroadcastReceiver() {
+            override fun onReceive(context: Context, intent: Intent) {
+            if (!TextUtils.equals(activityMonitor?.transitionsReceiverAction, intent.action)) {
                 Logger.d("Unsupported action in ActivityTransitionsReceiver: " + intent.action)
                 return
             }
             if (ActivityTransitionResult.hasResult(intent)) {
                 val transitionsResults = ActivityTransitionResult.extractResult(intent)
                 val transitionsEvents = transitionsResults?.transitionEvents
+                Logger.d("Transition results found. Is it valid? ${(transitionsEvents!=null)}")
+
                 if (transitionsEvents != null) {
                     for (transitionEvent in transitionsEvents) {
                         // there is a discussion saying that callbacks are received for old activities when the receiver is registered
@@ -238,17 +264,17 @@ class ActivityMonitor(private var callingService: TrackerService, private var at
                         val transitionType = transitionEvent.transitionType
                         transitionEvent.elapsedRealTimeNanos
                         val eventTimeInMsecs = TimeUtils.fromEventTimeToEpoch(transitionEvent.getElapsedRealTimeNanos())
-                        Logger.d("Transition: " + getActivityType(transitionEvent.activityType) + " (" + getTransitionTypeString(transitionType) + ")" + "   " + SimpleDateFormat("HH:mm:ss", Locale.US).format(Date()))
+                        Logger.d("Transition: " + activityMonitor?.getActivityType(transitionEvent.activityType) + " (" + getTransitionTypeString(transitionType) + ")" + "   " + SimpleDateFormat("HH:mm:ss", Locale.US).format(Date()))
                         // insert the  activity into the db
                         val dbActivity = TrackerDBActivity()
                         dbActivity.activityType = transitionEvent.activityType
                         dbActivity.transitionType = transitionType
                         dbActivity.timeInMillis = eventTimeInMsecs
-                        activitiesList.add(dbActivity)
-                        if (activitiesList.size > MAX_SIZE) {
-                            flushToDatabase()
+                        activityMonitor?.activitiesList?.add(dbActivity)
+                        if (activityMonitor?.activitiesList != null && activityMonitor?.activitiesList!!.size > MAX_SIZE) {
+                            activityMonitor?.flushToDatabase()
                         }
-                        callingService.currentActivity(dbActivity)
+                        activityMonitor?.callingService?.currentActivity(dbActivity)
                     }
                 }
             }
