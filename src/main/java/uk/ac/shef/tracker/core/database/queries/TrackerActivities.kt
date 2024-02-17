@@ -23,7 +23,7 @@ interface TrackerActivities {
     @Query("SELECT * FROM activities WHERE timeInMillis >= :start AND timeInMillis <= :end ORDER BY timeInMillis, transitionType DESC")
     fun getBetween(start: Long, end: Long): List<TrackerDBActivity>
 
-    @Query("SELECT * FROM activities WHERE uploaded = 0 ORDER BY timeInMillis")
+    @Query("SELECT * FROM activities WHERE uploaded = 0 ORDER BY timeInMillis LIMIT 300")
     fun getNotUploaded(): List<TrackerDBActivity>
 
     @Query("SELECT count(0) FROM activities WHERE uploaded = 0 AND timeInMillis < :millis ORDER BY timeInMillis")

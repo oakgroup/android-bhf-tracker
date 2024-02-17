@@ -23,7 +23,7 @@ interface TrackerTrips {
     @Query("SELECT * FROM trips WHERE uploaded = 0 ORDER BY timeInMillis")
     fun getNotUploaded(): List<TrackerDBTrip>
 
-    @Query("SELECT * FROM trips WHERE uploaded = 0 AND timeInMillis < :millis ORDER BY timeInMillis")
+    @Query("SELECT * FROM trips WHERE uploaded = 0 AND timeInMillis < :millis ORDER BY timeInMillis LIMIT 300")
     fun getNotUploadedBefore(millis: Long): List<TrackerDBTrip>
 
     @Query("SELECT count(0) FROM trips WHERE uploaded = 0 AND timeInMillis < :millis ORDER BY timeInMillis")

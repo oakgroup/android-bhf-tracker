@@ -23,7 +23,7 @@ interface TrackerLocations {
     @Query("SELECT * FROM locations WHERE timeInMillis >= :start AND timeInMillis <= :end ORDER BY timeInMillis")
     fun getBetween(start: Long, end: Long): List<TrackerDBLocation>
 
-    @Query("SELECT * FROM locations WHERE uploaded = 0 ORDER BY timeInMillis")
+    @Query("SELECT * FROM locations WHERE uploaded = 0 ORDER BY timeInMillis LIMIT 300")
     fun getNotUploaded(): List<TrackerDBLocation>
 
     @Query("SELECT count(0) FROM locations WHERE uploaded = 0 AND timeInMillis < :millis ORDER BY timeInMillis")

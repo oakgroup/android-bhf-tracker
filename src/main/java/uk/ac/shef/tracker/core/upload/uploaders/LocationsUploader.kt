@@ -50,7 +50,6 @@ object LocationsUploader : CoroutineScope {
             listener?.onResult(false)
             return
         }
-
         background {
 
             val models = TrackerTableLocations.getNotUploaded(context)
@@ -59,6 +58,8 @@ object LocationsUploader : CoroutineScope {
                 listener?.onResult(false)
                 return@background
             }
+
+            Logger.d("uploading ${models.size} locations to server")
 
             isUploading = true
 
@@ -101,6 +102,7 @@ object LocationsUploader : CoroutineScope {
                                     isUploading = false
                                     listener?.onResult(true)
                                 }
+                                Logger.d("locations uploaded to the server successfully!")
                             }
 
                         } else {

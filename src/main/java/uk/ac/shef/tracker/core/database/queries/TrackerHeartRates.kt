@@ -23,7 +23,7 @@ interface TrackerHeartRates {
     @Query("SELECT * FROM heart_rates WHERE timeInMillis >= :start AND timeInMillis <= :end ORDER BY timeInMillis")
     fun getBetween(start: Long, end: Long): List<TrackerDBHeartRate>
 
-    @Query("SELECT * FROM heart_rates WHERE uploaded = 0 ORDER BY timeInMillis")
+    @Query("SELECT * FROM heart_rates WHERE uploaded = 0 ORDER BY timeInMillis LIMIT 300")
     fun getNotUploaded(): List<TrackerDBHeartRate>
 
     @Query("SELECT count(0) FROM heart_rates WHERE uploaded = 0 AND timeInMillis < :millis ORDER BY timeInMillis")

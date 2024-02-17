@@ -22,7 +22,7 @@ interface TrackerBatteries {
     @Query("SELECT * FROM batteries WHERE timeInMillis >= :start AND timeInMillis <= :end ORDER BY timeInMillis")
     fun getBetween(start: Long, end: Long): List<TrackerDBBattery>
 
-    @Query("SELECT * FROM batteries WHERE uploaded = 0 ORDER BY timeInMillis")
+    @Query("SELECT * FROM batteries WHERE uploaded = 0 ORDER BY timeInMillis LIMIT 300")
     fun getNotUploaded(): List<TrackerDBBattery>
 
     @Query("SELECT count(0) FROM batteries WHERE uploaded = 0 AND timeInMillis < :millis ORDER BY timeInMillis")
