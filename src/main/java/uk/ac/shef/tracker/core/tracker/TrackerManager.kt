@@ -441,28 +441,6 @@ class TrackerManager private constructor(private val activity: AppCompatActivity
         }
     }
 
-    /**
-     * If the user is not registered with the server, it registers it
-     * TODO this method should be used if the tracker wants to register the patient automatically
-     */
-    fun checkUserRegistration() {
-        if (!TrackerPreferences.user(activity).isUserRegistered()) {
-            Logger.i("Registering user")
-            TrackerUserManager.registerUser(activity)
-        } else Logger.i("User already registered with id ${TrackerPreferences.user(activity).idUser}")
-    }
-
-    /**
-     * This will allow the client app to store the user id when it's require that the app manages the user registration
-     */
-    fun saveUserRegistrationId(userId: String?) {
-        TrackerPreferences.user(activity).idUser = userId
-
-        val firstInstall = TrackerPreferences.lifecycle(activity).firstInstall
-        if (firstInstall == null || firstInstall == Constants.INVALID.toLong()) {
-            TrackerPreferences.lifecycle(activity).firstInstall = System.currentTimeMillis()
-        }
-    }
 
     /**
      * This should be called when the user logout
@@ -470,7 +448,8 @@ class TrackerManager private constructor(private val activity: AppCompatActivity
     @WorkerThread
     fun logout(context: Context) {
         stopTracker()
-        saveUserRegistrationId(null)
+        val utils= TrackerUtils()
+        utils.saveUserRegistrationId(activity, null)
         TrackerBasePreferences.logout(activity)
         TrackerDatabase.getInstance(context).logout()
     }
